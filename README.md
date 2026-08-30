@@ -4,10 +4,16 @@ Turns raw footage plus a music track into short-form vertical videos, in two
 stages that stay strictly separated:
 
 1. **Planning** (AI) produces a JSON Edit Decision List. It never touches ffmpeg.
-2. **Rendering** (deterministic) consumes that EDL and produces an mp4. No API calls.
+2. **Rendering** (deterministic) consumes that EDL and produces an mp4.
 
-So any plan can be inspected and hand-edited before a render is paid for, and a
-render can be repeated exactly without new API calls.
+So any plan can be inspected and hand-edited before rendering, and a render can
+be repeated exactly without going back to the model.
+
+Because the AI's only output is JSON, the handoff is plain text — which means it
+can cross that gap by copy-paste just as well as by HTTP. The planner runs in
+**manual mode**: it writes a prompt you paste into the Claude app you already
+have, and reads the reply back. Nothing in this project calls an API, so
+**the whole pipeline runs offline** and there is no per-run cost.
 
 ## Setup
 
@@ -24,8 +30,8 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 |---|---|---|
 | 1. Ingest | `ingest.py` | done |
 | 2. EDL schema | `schema.py` | done |
+| 2b. Plan (manual) | `plan.py` | done |
 | 3. Render | `render.py` | done |
-| 2. Plan | `plan.py` | not started |
 | 4. Learn | `log.py` | not started |
 
 ---
@@ -193,3 +199,69 @@ uv run tools/contact_sheet.py out/v.mp4 --at 0.5 2.0 7.0
 
 Red bands mark where TikTok's UI sits, so a caption that would be covered is
 obvious at a glance.
+
+
+---
+
+## Stage 2 — Plan (manual mode)
+
+```bash
+uv run plan.py prompt --profile profiles/goodbye-party.json \
+    --notes "trying a fast-cut hook where the first shot is under half a second"
+```
+
+Writes three things to `plans/`:
+
+- `<stamp>-prompt.md` — paste this whole file into Claude
+- `<stamp>-keyframes/` — attach every image in here to the same message
+- `<stamp>-meta.json` — what was sent, for traceability
+
+Then save Claude's reply to a file and read it back:
+
+```bash
+uv run plan.py ingest reply.txt --profile profiles/goodbye-party.json
+uv run plan.py ingest - --profile profiles/...   # or pipe it in
+```
+
+Each variant is validated against the schema, snapped to the beat grid, and
+written to `plans/<stamp>-<variant>.json`. Invalid variants are rejected
+individually with the exact field errors — one bad variant does not lose the
+others. Then render whichever you like:
+
+```bash
+uv run render.py plans/20260830-135954-fast-cut-hook.json
+```
+
+### What goes into the prompt
+
+The footage profile with the dense curves downsampled (raw curves run to
+thousands of points and crowd out everything useful), a selected spread of
+keyframes, the transcript, the beat grid and section map, your free-text trend
+notes, and the retrieval history. The schema section is **generated from the
+Pydantic models**, so the prompt can never drift from what validation actually
+enforces.
+
+Until at least 8 videos are logged, the prompt says so plainly rather than
+implying a history it does not have.
+
+### Snapping happens in code, not in the prompt
+
+The model is told to place cuts musically and *approximately*, and explicitly
+told not to compute beat-aligned timestamps itself — arithmetic across a beat
+grid is where models drift, and a cut 40ms off the beat is visible.
+
+`snap_edl_to_beats()` then makes them exact. A segment's position in the
+finished video is the running sum of the segments before it, so the moment that
+matters musically is at `audio.start + timeline_position`. The whole grid is
+aligned first by snapping `audio.start` itself — otherwise every downstream cut
+inherits that offset. Two guards: a snap that would push a segment past the end
+of its clip falls back to the previous beat, and one that would collapse a
+segment below 0.15s is skipped and reported. Segments with
+`snap_to_beat: false` are left exactly as written.
+
+### Reading the reply back
+
+`extract_json_objects()` handles what a chat reply actually looks like: a fenced
+block, several fenced blocks, a bare array, or JSON with prose around it. Brace
+scanning ignores brackets inside strings, so a caption reading `a } b { c` does
+not break parsing.

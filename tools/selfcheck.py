@@ -19,6 +19,7 @@ import ingest  # noqa: E402
 import schema  # noqa: E402
 import render  # noqa: E402
 import caption_styles as cs  # noqa: E402
+import plan  # noqa: E402
 
 CHECKS: list[tuple[str, callable]] = []
 
@@ -379,6 +380,169 @@ def _():
             [config.FFMPEG, "-v", "error", "-i", str(out), "-f", "rawvideo",
              "-pix_fmt", "gray", "-"], capture_output=True).stdout
         assert np.frombuffer(raw, dtype=np.uint8).max() > 200, "no text was drawn"
+
+
+# --- plan -------------------------------------------------------------------
+
+def _profile():
+    return common.read_json("profiles/goodbye-party.json")
+
+
+def _plan_edl(segments, audio_start=0.035, **over):
+    base = {
+        "variant_name": "snap-test", "strategy_notes": "n", "target_duration": 1.0,
+        "audio": {"source": "music/goodbye-party.wav", "start": audio_start},
+        "segments": segments, "captions": [],
+    }
+    base.update(over)
+    return schema.EDL.model_validate(base)
+
+
+@check("downsample_curve thins a dense curve but keeps its shape")
+def _():
+    times = [i * 0.01 for i in range(1000)]
+    values = [float(i < 500) for i in range(1000)]
+    out = plan.downsample_curve({"times": times, "values": values}, points=20)
+    assert len(out) == 20, len(out)
+    assert out[0][1] == 1.0 and out[-1][1] == 0.0, out
+    assert out[0][0] == 0.0
+    # a short curve is passed through untouched
+    short = {"times": [0.0, 1.0], "values": [0.5, 0.6]}
+    assert plan.downsample_curve(short, points=20) == [[0.0, 0.5], [1.0, 0.6]]
+    assert plan.downsample_curve({"times": [], "values": []}) == []
+
+
+@check("extract_json_objects copes with how a chat reply is actually shaped")
+def _():
+    obj = '{"a": 1}'
+    cases = {
+        "bare object": obj,
+        "bare array": f"[{obj}]",
+        "one fenced block": f"```json\n[{obj}]\n```",
+        "prose around a fence": f"Here you go:\n```json\n[{obj}]\n```\nHope that helps!",
+        "several fenced blocks": f"one\n```json\n{obj}\n```\ntwo\n```json\n{obj}\n```",
+        "unlabelled fence": f"```\n[{obj}]\n```",
+        "prose, no fence": f"Sure. {obj} That is variant one.",
+    }
+    for label, text in cases.items():
+        found = plan.extract_json_objects(text)
+        assert found and all(f == {"a": 1} for f in found), f"{label}: {found}"
+    # braces inside strings must not confuse the scanner
+    tricky = '{"text": "a } b { c", "n": 2}'
+    assert plan.extract_json_objects(tricky) == [{"text": "a } b { c", "n": 2}]
+    assert plan.extract_json_objects("no json at all") == []
+
+
+@check("snapping puts every snapped cut on a beat and leaves the others alone")
+def _():
+    profile = _profile()
+    beats = profile["audio"]["beats"]
+    edl = _plan_edl([
+        {"clip": "raw/test-a.mp4", "in": 12.0, "out": 12.83, "snap_to_beat": True},
+        {"clip": "raw/test-b.mp4", "in": 5.2, "out": 6.1, "snap_to_beat": True},
+        {"clip": "raw/test-a.mp4", "in": 2.0, "out": 5.9, "speed": 2.0, "snap_to_beat": True},
+        {"clip": "raw/test-b.mp4", "in": 0.2, "out": 3.4, "snap_to_beat": False},
+    ], audio_start=8.17)
+    snapped, report = plan.snap_edl_to_beats(edl, profile)
+    assert snapped.audio.start in beats, "the grid itself must be aligned first"
+
+    t = 0.0
+    for i, seg in enumerate(snapped.segments):
+        t += seg.output_duration
+        music_t = snapped.audio.start + t
+        off = min(abs(music_t - b) for b in beats)
+        if seg.snap_to_beat:
+            assert off < 0.002, f"segment {i} lands {off*1000:.0f}ms off the beat"
+        else:
+            assert off > 0.05, f"segment {i} was not asked to snap but did"
+    assert abs(snapped.target_duration - t) < 0.002, "target_duration must follow the snap"
+    assert report, "snapping should say what it moved"
+
+
+@check("snapping never pushes a segment past the end of its clip")
+def _():
+    profile = _profile()
+    dur = next(c["duration"] for c in profile["clips"] if c["path"] == "raw/test-b.mp4")
+    # out is close enough to the clip end that the nearest beat forward overruns it
+    edl = _plan_edl([{"clip": "raw/test-b.mp4", "in": 14.2, "out": 14.95, "snap_to_beat": True}])
+    snapped, report = plan.snap_edl_to_beats(edl, profile)
+    seg = snapped.segments[0]
+    assert seg.out_ <= dur, f"snapped out {seg.out_} exceeds clip duration {dur}"
+    assert seg.out_ > seg.in_
+    # it should have fallen back to the earlier beat rather than giving up
+    assert seg.snap_to_beat is True, report
+    errors, _ = schema.validate_media(snapped)
+    assert not errors, errors
+
+
+@check("snapping refuses to collapse a segment to nothing")
+def _():
+    profile = _profile()
+    # a very short segment whose nearest beat is behind its start
+    edl = _plan_edl([{"clip": "raw/test-a.mp4", "in": 1.0, "out": 1.06, "snap_to_beat": True}],
+                    audio_start=0.035)
+    snapped, report = plan.snap_edl_to_beats(edl, profile)
+    seg = snapped.segments[0]
+    assert seg.output_duration >= plan.MIN_SEGMENT or seg.snap_to_beat is False, \
+        f"left a {seg.output_duration:.3f}s segment"
+    if not seg.snap_to_beat:
+        assert any("unsnapped" in line for line in report), report
+
+
+@check("snapping is a no-op when nothing asks for it")
+def _():
+    profile = _profile()
+    segs = [{"clip": "raw/test-a.mp4", "in": 1.0, "out": 3.7, "snap_to_beat": False}]
+    edl = _plan_edl(segs, audio_start=1.234)
+    snapped, _ = plan.snap_edl_to_beats(edl, profile)
+    assert snapped.audio.start == 1.234, "audio must not move if no segment snaps"
+    assert snapped.segments[0].out_ == 3.7
+
+
+@check("keyframe selection respects the budget and covers every clip")
+def _():
+    profile = _profile()
+    for budget in (2, 6, 12, 500):
+        picked = plan.select_keyframes(profile, budget)
+        assert len(picked) <= budget, f"budget {budget}: got {len(picked)}"
+        assert len({(k["clip"], k["t"]) for k in picked}) == len(picked), "duplicates"
+        for k in picked:
+            assert Path(k["image"]).exists(), k
+        if budget >= 2 * len(profile["clips"]):
+            covered = {k["clip"] for k in picked}
+            assert covered == {c["path"] for c in profile["clips"]}, \
+                f"budget {budget} left a clip unseen: {covered}"
+
+
+@check("the prompt names the real clips, the beat grid and the missing history")
+def _():
+    profile = _profile()
+    keyframes = plan.select_keyframes(profile, 6)
+    prompt, history, logged = plan.build_prompt(
+        profile, variants=3, notes="try a slow burn", keyframes=keyframes)
+    assert logged == 0
+    assert "No performance history yet" in prompt, "must not imply history it does not have"
+    for clip in profile["clips"]:
+        assert clip["path"] in prompt, clip["path"]
+    assert "music/goodbye-party.wav" in prompt
+    assert str(profile["audio"]["bpm"]) in prompt
+    assert "try a slow burn" in prompt, "trend notes must reach the prompt"
+    assert "3 EDLs" in prompt
+    # the schema in the prompt must be the one that is actually enforced
+    assert "^[a-z0-9]+(?:-[a-z0-9]+)*$" in prompt
+    assert "snap_to_beat" in prompt
+    # and it must tell the model not to do the arithmetic itself
+    assert "Do not\ntry to compute beat-aligned timestamps yourself" in prompt
+
+
+@check("compact_numbers collapses numeric arrays without changing the data")
+def _():
+    import json as _json
+    data = {"beats": [0.035, 0.534, 1.033], "curve": [[0.0, 0.2], [1.0, 0.3]], "bpm": 120.19}
+    text = plan.compact_numbers(_json.dumps(data, indent=2))
+    assert _json.loads(text) == data, "collapsing must not alter the JSON"
+    assert "[0.035, 0.534, 1.033]" in text
+    assert text.count("\n") < _json.dumps(data, indent=2).count("\n")
 
 
 def main() -> int:
