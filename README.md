@@ -32,7 +32,7 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 | 2. EDL schema | `schema.py` | done |
 | 2b. Plan (manual) | `plan.py` | done |
 | 3. Render | `render.py` | done |
-| 4. Learn | `log.py` | not started |
+| 4. Learn | `log.py` + SQLite | done |
 
 ---
 
@@ -265,3 +265,63 @@ segment below 0.15s is skipped and reported. Segments with
 block, several fenced blocks, a bare array, or JSON with prose around it. Brace
 scanning ignores brackets inside strings, so a caption reading `a } b { c` does
 not break parsing.
+
+
+---
+
+## Stage 4 — Learn
+
+A local SQLite database (`luckydog.db`) with two tables. `videos` holds the
+rendered file, its EDL, the derived features and what you posted with it;
+`metrics` holds one row per pull, so a video's numbers can be recorded again
+after a few days and you can see how it matured.
+
+```bash
+uv run log.py post out/fast-cut-hook-20260830-140027.mp4 \
+    --posted-at 2026-08-30 --caption "we recorded this in one take" --hashtags "#luckydog"
+uv run log.py list                  # ids for everything logged
+uv run log.py metrics 1             # type in the TikTok numbers
+uv run log.py report
+```
+
+`post` reads the sidecar `render.py` wrote next to the mp4, so the EDL and the
+derived features come across without you retyping anything. The song section a
+variant used is resolved automatically by matching the EDL's audio path against
+the profiles in `profiles/`.
+
+`metrics` prompts field by field. It accepts the shapes you would actually type
+— `12,400`, `31k`, `1.2M`, `42%`, `0.42`, and a bare `42` (read as a percentage,
+since TikTok shows it that way). Blank skips a field, and a value it cannot
+parse re-asks instead of storing a wrong number.
+
+### The report
+
+Groups by hook type, cut pace, song section and beat sync, printing median
+views, mean watch-through, share rate and like rate per group, **with counts**.
+Groups below 3 are marked *(too few to trust)*, and below 8 logged videos the
+report says outright that none of it is worth acting on.
+
+Hooks are bucketed into types — `question`, `pov`, `number`, `negation`,
+`command`, `statement`, `none` — because grouping by the literal caption text
+would put one video in each group and tell you nothing. What you want to know is
+whether *questions* beat *claims*.
+
+### One bug worth recording
+
+`latest_metrics` originally picked each video's most recent pull with
+`MAX(pulled_at)` and `MAX(id)` in the same subquery. Those can come from
+different rows: enter a pull, then backfill one with an *earlier* date, and no
+row satisfies both conditions — so the video vanishes from the report entirely,
+with no error. Backfilling an earlier date is a completely normal thing to do.
+It now picks the row by `ORDER BY pulled_at DESC, id DESC LIMIT 1`, and there is
+a regression test that enters pulls out of order.
+
+### Seeing the report before you have data
+
+```bash
+uv run tools/seed_demo_db.py --db demo.db     # 12 invented videos, 2 pulls each
+uv run log.py --db demo.db report
+uv run plan.py prompt --profile profiles/x.json --db demo.db   # retrieval in the prompt
+```
+
+The numbers are made up. The tool refuses to seed `luckydog.db`.
