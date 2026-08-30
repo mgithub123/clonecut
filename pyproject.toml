@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Lucky Dog TikTok tool: AI plans the edit, ffmpeg renders it."
 requires-python = ">=3.11"
 dependencies = [
-    "anthropic>=0.40",
     "faster-whisper>=1.0",
     "librosa>=0.10",
     "numpy>=1.26",

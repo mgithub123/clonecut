@@ -342,6 +342,63 @@ def json_schema() -> dict[str, Any]:
     return EDL.model_json_schema(by_alias=True)
 
 
+def describe_schema() -> str:
+    """A compact, readable field spec for the planning prompt.
+
+    Generated from the models rather than written out by hand, so the prompt can
+    never drift from what validation actually enforces.
+    """
+    schema = EDL.model_json_schema(by_alias=True)
+    defs = schema.get("$defs", {})
+    lines: list[str] = []
+
+    def render(title: str, node: dict[str, Any], indent: str = "  ") -> None:
+        lines.append(f"{title}:")
+        required = set(node.get("required", []))
+        for name, field in node.get("properties", {}).items():
+            lines.append(f"{indent}{name}{' (required)' if name in required else ''}"
+                         f"  {_type_of(field, defs)}")
+            desc = field.get("description")
+            if desc:
+                lines.append(f"{indent}    {desc}")
+
+    render("EDL (top level)", schema)
+    for name in ("AudioSpec", "Segment", "Caption"):
+        if name in defs:
+            lines.append("")
+            render(name, defs[name])
+    return "\n".join(lines)
+
+
+def _type_of(field: dict[str, Any], defs: dict[str, Any]) -> str:
+    """Render one field's type and constraints the way a human would read them."""
+    ref = field.get("$ref") or (field.get("allOf") or [{}])[0].get("$ref")
+    if ref:
+        target = defs.get(ref.rsplit("/", 1)[-1], {})
+        if "enum" in target:
+            return "one of: " + ", ".join(repr(v) for v in target["enum"])
+        return ref.rsplit("/", 1)[-1]
+
+    kind = field.get("type", "any")
+    if kind == "array":
+        items = field.get("items", {})
+        inner = _type_of(items, defs) if items else "any"
+        kind = f"array of {inner}"
+
+    bits = [kind]
+    for key, label in (("minimum", ">="), ("exclusiveMinimum", ">"),
+                       ("maximum", "<="), ("exclusiveMaximum", "<"),
+                       ("minLength", "min length"), ("maxLength", "max length"),
+                       ("minItems", "min items")):
+        if key in field:
+            bits.append(f"{label} {field[key]}")
+    if "pattern" in field:
+        bits.append(f"matching {field['pattern']}")
+    if "default" in field:
+        bits.append(f"default {field['default']!r}")
+    return ", ".join(bits)
+
+
 def main(argv: list[str] | None = None) -> int:
     """Validate EDL files from the command line."""
     import argparse
