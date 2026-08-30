@@ -43,7 +43,11 @@ WHISPER_COMPUTE_TYPE = os.environ.get("LD_WHISPER_COMPUTE", "int8")
 WHISPER_DEVICE = os.environ.get("LD_WHISPER_DEVICE", "cpu")
 
 # --- planning ---------------------------------------------------------------
-PLAN_MODEL = "claude-sonnet-4-6"
+# The planner runs in manual mode: it writes a prompt for you to paste into the
+# Claude app you already have, and reads the reply back. Nothing here calls an
+# API, so the whole pipeline is offline.
+PLAN_VARIANTS = 3               # how many genuinely different edits to ask for
+PLAN_KEYFRAME_BUDGET = 12       # how many keyframes to put in front of the model
 MIN_HISTORY_FOR_RETRIEVAL = 8   # below this, history is reported as not meaningful
 
 
