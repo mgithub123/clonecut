@@ -163,8 +163,14 @@ def select_keyframes(profile: dict[str, Any], budget: int) -> list[dict[str, Any
 # history (Stage 4 fills this in; until then it says so)
 # ---------------------------------------------------------------------------
 
-def retrieve_history(limit: int = 5, db_path: Path | None = None) -> tuple[str, int]:
-    """Past EDLs and how they performed. Returns (text, logged_count)."""
+def retrieve_history(limit: int = 5, db_path: Path | None = None,
+                     profile: dict[str, Any] | None = None,
+                     notes: str | None = None) -> tuple[str, int]:
+    """Past EDLs and how they performed. Returns (text, logged_count).
+
+    The profile and notes go through so retrieval can rank by similarity to what
+    is being planned now, rather than just by what performed best.
+    """
     try:
         import log
     except ImportError:
@@ -174,7 +180,7 @@ def retrieve_history(limit: int = 5, db_path: Path | None = None) -> tuple[str, 
             "choices is proven.",
             0,
         )
-    return log.history_for_prompt(limit, db_path)
+    return log.history_for_prompt(limit, db_path, profile=profile, notes=notes)
 
 
 # ---------------------------------------------------------------------------
@@ -261,7 +267,7 @@ def build_prompt(profile: dict[str, Any], *, variants: int, notes: str | None,
                  keyframes: list[dict[str, Any]],
                  db_path: Path | None = None) -> tuple[str, str, int]:
     compact = compact_profile(profile)
-    history, logged = retrieve_history(db_path=db_path)
+    history, logged = retrieve_history(db_path=db_path, profile=profile, notes=notes)
 
     footage = dict(compact)
     music = footage.pop("music")

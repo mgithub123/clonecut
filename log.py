@@ -26,7 +26,7 @@ import common
 import config
 from common import ToolError, rel
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 # A group smaller than this is reported but flagged: with three videos you are
 # looking at noise, and the report should say so rather than imply a finding.
@@ -79,6 +79,14 @@ CREATE TABLE IF NOT EXISTS metrics (
 CREATE INDEX IF NOT EXISTS metrics_video ON metrics(video_id, pulled_at);
 """
 
+# v2 adds the context a video was planned from, so retrieval can ask "what did I
+# do last time the material looked like this" rather than only "what did best".
+MIGRATION_V2 = """
+ALTER TABLE videos ADD COLUMN audio_source TEXT;
+ALTER TABLE videos ADD COLUMN bpm REAL;
+ALTER TABLE videos ADD COLUMN clips_json TEXT;
+"""
+
 
 # ---------------------------------------------------------------------------
 # database
@@ -90,12 +98,49 @@ def connect(path: Path | None = None) -> sqlite3.Connection:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
-    version = conn.execute("PRAGMA user_version").fetchone()[0]
-    if version < SCHEMA_VERSION:
-        conn.executescript(SCHEMA)
-        conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-        conn.commit()
+    migrate(conn)
     return conn
+
+
+def migrate(conn: sqlite3.Connection) -> None:
+    """Bring an existing database up to the current schema, in order.
+
+    Each step is guarded by user_version, so an old database upgrades in place
+    and a new one is created at the current version.
+    """
+    version = conn.execute("PRAGMA user_version").fetchone()[0]
+    if version < 1:
+        conn.executescript(SCHEMA)
+        version = 1
+    if version < 2:
+        conn.executescript(SCHEMA)          # no-ops on an existing database
+        conn.executescript(MIGRATION_V2)
+        _backfill_v2(conn)
+        version = 2
+    conn.execute(f"PRAGMA user_version = {version}")
+    conn.commit()
+
+
+def _backfill_v2(conn: sqlite3.Connection) -> None:
+    """Fill the new context columns for rows written before they existed.
+
+    Track and clips come straight out of the stored EDL. BPM needs the ingest
+    profile, which may no longer be on disk - left NULL when it is not, and
+    similarity treats a missing component as unavailable rather than as zero.
+    """
+    for row in conn.execute("SELECT id, edl_json FROM videos").fetchall():
+        try:
+            edl = json.loads(row["edl_json"])
+        except (json.JSONDecodeError, TypeError):
+            continue
+        source = edl.get("audio", {}).get("source")
+        clips = sorted({s["clip"] for s in edl.get("segments", [])})
+        profile = find_profile_for_audio(source) if source else None
+        bpm = (profile or {}).get("audio", {}).get("bpm")
+        conn.execute(
+            "UPDATE videos SET audio_source = ?, clips_json = ?, bpm = ? WHERE id = ?",
+            (source, json.dumps(clips), bpm, row["id"]),
+        )
 
 
 def now() -> str:
@@ -185,6 +230,8 @@ def record_video(conn: sqlite3.Connection, video: Path, *, posted_at: str,
     edl = sidecar["edl"]
     features = dict(sidecar["derived_features"])
 
+    if profile is None:
+        profile = find_profile_for_audio(edl["audio"]["source"])
     section_label, section_index = resolve_song_section(edl, profile)
     features["song_section"] = section_label
     features["song_section_index"] = section_index
@@ -216,6 +263,10 @@ def record_video(conn: sqlite3.Connection, video: Path, *, posted_at: str,
         "song_section_index": section_index,
         "beat_synced": int(bool(features.get("beat_synced"))),
         "uses_speed_ramp": int(bool(features.get("uses_speed_ramp"))),
+        # the context this edit was planned from, for similarity retrieval
+        "audio_source": edl["audio"]["source"],
+        "bpm": (profile or {}).get("audio", {}).get("bpm"),
+        "clips_json": json.dumps(sorted({s["clip"] for s in edl["segments"]})),
         "created_at": now(),
     }
 
@@ -419,15 +470,178 @@ def summarise(rows: Iterable[dict[str, Any]], key: str) -> list[dict[str, Any]]:
 
 
 # ---------------------------------------------------------------------------
-# retrieval for the planner (Stage 6 makes this similarity-based)
+# similarity retrieval
+# ---------------------------------------------------------------------------
+#
+# The planner asks "what did I do last time the material looked like this",
+# which is a different question from "what did best". A past video shot to a
+# different song at a different tempo is weak evidence about this one however
+# well it performed.
+#
+# Every component is a named number in 0..1 with a fixed weight, so a retrieval
+# can be explained in the prompt rather than being a black box. A component that
+# cannot be computed (no BPM recorded, no notes typed) is dropped and the
+# remaining weights are renormalised, rather than being scored zero - which
+# would silently punish older rows for missing data.
+
+WEIGHTS = {
+    "same_track": 0.40,     # the strongest signal: same song, same structure
+    "tempo": 0.25,          # a similar BPM means similar cutting rhythms work
+    "clips": 0.20,          # overlapping source footage
+    "notes": 0.15,          # what you said you were going for this time
+}
+
+TEMPO_SPAN = 40.0           # BPM difference at which tempo similarity reaches 0
+SIMILAR_ENOUGH = 0.25       # below this, retrieval is not really similarity
+
+_STOPWORDS = {
+    "the", "and", "for", "with", "that", "this", "from", "into", "over", "under",
+    "than", "then", "when", "where", "what", "how", "why", "its", "it's", "was",
+    "are", "you", "your", "out", "one", "two", "not", "but", "all", "can", "has",
+    "have", "will", "would", "video", "edit", "shot", "clip", "cut", "cuts",
+}
+
+
+def _tokens(*texts: str | None) -> set[str]:
+    out: set[str] = set()
+    for text in texts:
+        if not text:
+            continue
+        word = ""
+        for ch in text.lower():
+            if ch.isalnum():
+                word += ch
+            else:
+                if len(word) >= 3 and word not in _STOPWORDS:
+                    out.add(word)
+                word = ""
+        if len(word) >= 3 and word not in _STOPWORDS:
+            out.add(word)
+    return out
+
+
+def similarity(context: dict[str, Any], video: dict[str, Any]) -> tuple[float, list[str]]:
+    """Score a past video against the current planning context.
+
+    Returns the score in 0..1 and the human-readable reasons it scored.
+    """
+    parts: dict[str, float] = {}
+    reasons: list[str] = []
+
+    here = context.get("audio_source")
+    there = video.get("audio_source")
+    if here and there:
+        same = Path(here).name == Path(there).name
+        parts["same_track"] = 1.0 if same else 0.0
+        if same:
+            reasons.append("same track")
+
+    a, b = context.get("bpm"), video.get("bpm")
+    if a and b:
+        closeness = max(0.0, 1.0 - abs(a - b) / TEMPO_SPAN)
+        parts["tempo"] = closeness
+        if closeness >= 0.85:
+            reasons.append(f"similar tempo ({b:.0f} vs {a:.0f} BPM)")
+
+    mine = {Path(c).name for c in context.get("clips") or []}
+    theirs = {Path(c).name for c in video.get("clips") or []}
+    if mine and theirs:
+        overlap = len(mine & theirs) / len(mine | theirs)
+        parts["clips"] = overlap
+        if mine & theirs:
+            reasons.append(f"shares {len(mine & theirs)} clip(s)")
+
+    note_tokens = _tokens(context.get("notes"))
+    if note_tokens:
+        past = _tokens(video.get("strategy_notes"), video.get("hook_text"),
+                       video.get("variant_name"))
+        if past:
+            shared = note_tokens & past
+            parts["notes"] = len(shared) / len(note_tokens)
+            if shared:
+                reasons.append("matches your notes (" + ", ".join(sorted(shared)[:3]) + ")")
+
+    available = {k: v for k, v in parts.items() if k in WEIGHTS}
+    if not available:
+        return 0.0, ["nothing comparable recorded"]
+    total_weight = sum(WEIGHTS[k] for k in available)
+    score = sum(WEIGHTS[k] * v for k, v in available.items()) / total_weight
+    return score, reasons or ["different material"]
+
+
+def build_context(profile: dict[str, Any] | None, notes: str | None) -> dict[str, Any]:
+    """What the planner is working from right now, in the shape similarity wants."""
+    audio = (profile or {}).get("audio", {})
+    return {
+        "audio_source": audio.get("path"),
+        "bpm": audio.get("bpm"),
+        "clips": [c["path"] for c in (profile or {}).get("clips", [])],
+        "notes": notes,
+    }
+
+
+def candidates(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """Every posted video with metrics, as a flat record for retrieval."""
+    metrics = latest_metrics(conn)
+    out = []
+    for video in posted_videos(conn):
+        m = metrics.get(video["id"])
+        if m is None:
+            continue
+        try:
+            edl = json.loads(video["edl_json"])
+        except (json.JSONDecodeError, TypeError):
+            edl = {}
+        try:
+            clips = json.loads(video["clips_json"]) if video["clips_json"] else []
+        except (json.JSONDecodeError, TypeError):
+            clips = []
+        out.append({
+            "id": video["id"],
+            "variant_name": video["variant_name"],
+            "strategy_notes": edl.get("strategy_notes"),
+            "hook_type": video["hook_type"] or "none",
+            "hook_text": video["hook_text"],
+            "pace": pace_bucket(video["avg_segment_length"]),
+            "cut_count": video["cut_count"],
+            "avg_segment_length": video["avg_segment_length"],
+            "duration": video["duration"],
+            "song_section": video["song_section"] or "unknown",
+            "beat_synced": bool(video["beat_synced"]),
+            "audio_source": video["audio_source"],
+            "bpm": video["bpm"],
+            "clips": clips,
+            "views": m["views"],
+            "watch_through_rate": m["watch_through_rate"],
+            "share_rate": _rate(m["shares"], m["views"]),
+            "like_rate": _rate(m["likes"], m["views"]),
+        })
+    return out
+
+
+def most_similar(conn: sqlite3.Connection, context: dict[str, Any],
+                 limit: int) -> list[dict[str, Any]]:
+    scored = []
+    for video in candidates(conn):
+        score, reasons = similarity(context, video)
+        scored.append({**video, "similarity": score, "why": reasons})
+    # Similarity first, then watch-through, so ties break toward what worked.
+    scored.sort(key=lambda v: (-v["similarity"], -(v["watch_through_rate"] or 0)))
+    return scored[:limit]
+
+
+# ---------------------------------------------------------------------------
+# retrieval for the planner
 # ---------------------------------------------------------------------------
 
-def history_for_prompt(limit: int = 5, db_path: Path | None = None) -> tuple[str, int]:
-    """Text about past performance for the planning prompt, and how many videos
-    it is based on.
+def history_for_prompt(limit: int = 5, db_path: Path | None = None,
+                       profile: dict[str, Any] | None = None,
+                       notes: str | None = None) -> tuple[str, int]:
+    """What to tell the planner about past performance, and how many videos it
+    is based on.
 
-    Below the threshold this says so rather than dressing up two data points as
-    a finding.
+    Below the threshold this says so rather than dressing up a handful of data
+    points as a finding.
     """
     try:
         conn = connect(db_path)
@@ -435,7 +649,10 @@ def history_for_prompt(limit: int = 5, db_path: Path | None = None) -> tuple[str
         return ("No performance history is available (the database could not be opened).", 0)
 
     with conn:
-        rows = build_rows(conn)
+        rows = candidates(conn)
+        context = build_context(profile, notes)
+        picked = most_similar(conn, context, limit) if rows else []
+        groups = {key: summarise(build_rows(conn), key) for key, _ in GROUPINGS} if rows else {}
 
     if len(rows) < config.MIN_HISTORY_FOR_RETRIEVAL:
         return (
@@ -446,18 +663,41 @@ def history_for_prompt(limit: int = 5, db_path: Path | None = None) -> tuple[str
             len(rows),
         )
 
-    ranked = sorted(rows, key=lambda r: -(r["watch_through_rate"] or 0))[:limit]
-    lines = [
-        f"{len(rows)} posted videos have metrics logged. The strongest by watch-through:",
-        "",
-    ]
-    for r in ranked:
+    lines = [f"{len(rows)} posted videos have metrics logged.", ""]
+    # Do not claim these are "similar" when nothing scored as similar - with a
+    # new track and new footage the ranking falls back to raw performance, and
+    # the model should be told that is what it is looking at.
+    best = max((v["similarity"] for v in picked), default=0.0)
+    if best >= SIMILAR_ENOUGH:
+        lines.append("The closest past edits to the material you are planning from now:")
+    else:
+        lines.append("Nothing logged was made from material like this, so these are "
+                     "simply the strongest so far - weak evidence for this edit:")
+    lines.append("")
+    for v in picked:
         lines.append(
-            f"- {r['variant_name']}: {_pct(r['watch_through_rate'])} watch-through, "
-            f"{_pct(r['share_rate'])} share rate, {r['views'] or 0:,} views - "
-            f"{r['hook_type']} hook, {r['pace']}, {r['song_section']} section, {r['beat_synced']}"
+            f"- {v['variant_name']}: {_pct(v['watch_through_rate'])} watch-through, "
+            f"{_pct(v['share_rate'])} share rate, {_int(v['views'])} views"
         )
-    lines += ["", "This is a small sample. Use it as a hint, not a rule."]
+        lines.append(
+            f"    {v['hook_type']} hook, {v['pace']}, {v['song_section']} section, "
+            f"{'beat-synced' if v['beat_synced'] else 'not beat-synced'}, "
+            f"{v['cut_count']} cuts averaging {v['avg_segment_length']:.2f}s"
+        )
+        if v.get("hook_text"):
+            lines.append(f"    hook was: {v['hook_text']!r}")
+        lines.append(f"    retrieved because: {', '.join(v['why'])}")
+
+    lines += ["", f"Across all {len(rows)} videos, mean watch-through by group "
+                  f"(number of videos in brackets):"]
+    for key, title in GROUPINGS:
+        parts = [f"{g['group']} {_pct(g['watch_through'])} [{g['n']}]" for g in groups.get(key, [])]
+        if len(parts) > 1:
+            lines.append(f"  {title[3:]}: " + ", ".join(parts))
+
+    lines += ["", "These are small numbers over a handful of videos. Use them as a hint "
+                  "about what to try, not a rule - and if the footage points somewhere "
+                  "else, follow the footage and say so in strategy_notes."]
     return "\n".join(lines), len(rows)
 
 

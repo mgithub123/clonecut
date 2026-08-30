@@ -33,6 +33,7 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 | 2b. Plan (manual) | `plan.py` | done |
 | 3. Render | `render.py` | done |
 | 4. Learn | `log.py` + SQLite | done |
+| 5. Retrieval | `log.py` -> `plan.py` | done |
 
 ---
 
@@ -325,3 +326,74 @@ uv run plan.py prompt --profile profiles/x.json --db demo.db   # retrieval in th
 ```
 
 The numbers are made up. The tool refuses to seed `luckydog.db`.
+
+
+---
+
+## Stage 5 — Retrieval
+
+The planner asks *"what did I do last time the material looked like this"*,
+which is a different question from *"what did best"*. A video shot to another
+song at another tempo is weak evidence about this one however well it did.
+
+So `plan.py prompt` passes the profile and your trend notes into
+`log.history_for_prompt`, which ranks past videos by similarity to what you are
+planning now:
+
+| Component | Weight | |
+|---|---|---|
+| Same track | 0.40 | the strongest signal — same song, same structure |
+| Tempo | 0.25 | linear falloff, zero at 40 BPM apart |
+| Clip overlap | 0.20 | Jaccard over the source clips |
+| Your notes | 0.15 | word overlap with past strategy notes and hooks |
+
+Every component is a named number in 0–1 with a fixed weight, and the prompt
+prints **why** each video was retrieved (`same track, similar tempo (120 vs 120
+BPM), shares 2 clip(s), matches your notes (click, fast, track)`). Nothing about
+the ranking is hidden.
+
+A component that cannot be computed — no BPM recorded, no notes typed — is
+dropped and the remaining weights renormalise, rather than scoring zero. Scoring
+zero would silently punish older rows for missing data they never had a chance
+to record.
+
+### It refuses to overclaim
+
+If the best match scores below 0.25 the header changes from *"the closest past
+edits"* to *"nothing logged was made from material like this, so these are simply
+the strongest so far — weak evidence for this edit"*. A new song and new footage
+should not produce a confident-sounding list.
+
+Verified against a seeded database where the **other** track's videos have
+higher watch-through: planning against `goodbye-party` retrieves the
+goodbye-party edits, not the better-performing back-room ones.
+
+### Schema migration
+
+Retrieval needs context the v1 schema did not store, so `videos` gained
+`audio_source`, `bpm` and `clips_json`. `connect()` migrates in place, guarded by
+`PRAGMA user_version`, and backfills the new columns from each row's stored EDL —
+BPM comes from the ingest profile if it is still on disk, and stays NULL if not.
+An existing database upgrades on next open with no action from you, and there is
+a test that builds a real v1 database and opens it.
+
+---
+
+## The whole loop
+
+```bash
+uv run ingest.py --video raw/*.mp4 --audio music/track.wav
+uv run plan.py prompt --profile profiles/track.json --notes "..."
+#   paste into Claude, attach the keyframes, save the reply
+uv run plan.py ingest reply.txt --profile profiles/track.json
+uv run render.py plans/<stamp>-<variant>.json
+uv run log.py post out/<variant>-<stamp>.mp4 --posted-at YYYY-MM-DD --caption "..."
+uv run log.py metrics <id>          # again after a few days
+uv run log.py report
+```
+
+Then the next `plan.py prompt` draws on everything logged so far.
+
+```bash
+uv run tools/selfcheck.py           # 45 checks, no media or network needed
+```
