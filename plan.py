@@ -163,10 +163,10 @@ def select_keyframes(profile: dict[str, Any], budget: int) -> list[dict[str, Any
 # history (Stage 4 fills this in; until then it says so)
 # ---------------------------------------------------------------------------
 
-def retrieve_history(limit: int = 5) -> tuple[str, int]:
+def retrieve_history(limit: int = 5, db_path: Path | None = None) -> tuple[str, int]:
     """Past EDLs and how they performed. Returns (text, logged_count)."""
     try:
-        import log  # noqa: F401  - added in Stage 4
+        import log
     except ImportError:
         return (
             "No performance history yet - the logging stage is not built. Judge this "
@@ -174,7 +174,7 @@ def retrieve_history(limit: int = 5) -> tuple[str, int]:
             "choices is proven.",
             0,
         )
-    return log.history_for_prompt(limit)   # type: ignore[attr-defined]
+    return log.history_for_prompt(limit, db_path)
 
 
 # ---------------------------------------------------------------------------
@@ -258,9 +258,10 @@ in `strategy_notes` and do what the footage supports.
 
 
 def build_prompt(profile: dict[str, Any], *, variants: int, notes: str | None,
-                 keyframes: list[dict[str, Any]]) -> tuple[str, str, int]:
+                 keyframes: list[dict[str, Any]],
+                 db_path: Path | None = None) -> tuple[str, str, int]:
     compact = compact_profile(profile)
-    history, logged = retrieve_history()
+    history, logged = retrieve_history(db_path=db_path)
 
     footage = dict(compact)
     music = footage.pop("music")
@@ -468,7 +469,8 @@ def cmd_prompt(args: argparse.Namespace) -> int:
 
     keyframes = select_keyframes(profile, args.keyframes)
     prompt, history, logged = build_prompt(
-        profile, variants=args.variants, notes=args.notes, keyframes=keyframes
+        profile, variants=args.variants, notes=args.notes, keyframes=keyframes,
+        db_path=args.db,
     )
 
     prompt_path = config.PLANS_DIR / f"{stamp}-prompt.md"
@@ -569,6 +571,8 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--notes", default=None, help="free-text trend notes: a format you want to try")
     p.add_argument("--variants", type=int, default=config.PLAN_VARIANTS)
     p.add_argument("--keyframes", type=int, default=config.PLAN_KEYFRAME_BUDGET)
+    p.add_argument("--db", type=Path, default=None,
+                   help=f"performance history to draw on (default: {rel(config.DB_PATH)})")
     p.set_defaults(func=cmd_prompt)
 
     p = sub.add_parser("ingest", help="read Claude's reply back and write EDLs")
