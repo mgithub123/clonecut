@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>clonecut</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%277%27 fill=%27%23a8520a%27/%3E%3Cpath d=%27M32 0v32H16z%27 fill=%27%230d635d%27/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <div>
+      <h1>clonecut</h1>
+      <p class="sub">Lucky Dog · footage in, TikTok out</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span id="ffmpeg-pill" class="pill" title="ffmpeg status">checking…</span>
+    <button id="quit" class="ghost" type="button">Quit</button>
+  </div>
+</header>
+
+<nav class="steps" id="steprail">
+  <button class="step is-active" data-panel="p1"><b>1</b><span>Footage</span></button>
+  <button class="step" data-panel="p2"><b>2</b><span>Plan</span></button>
+  <button class="step" data-panel="p3"><b>3</b><span>Render</span></button>
+  <button class="step" data-panel="p4"><b>4</b><span>Track</span></button>
+</nav>
+
+<main>
+
+  <!-- ---------------------------------------------------------- 1 -->
+  <section id="p1" class="panel is-active">
+    <div class="head">
+      <h2>Add your footage and a song</h2>
+      <p>Drop files here, or use the buttons. Clips go to <code>raw/</code>, music to <code>music/</code>.</p>
+    </div>
+
+    <div class="drops">
+      <div class="drop" id="drop-raw" tabindex="0" role="button" aria-label="Add video clips">
+        <strong>Video clips</strong>
+        <span class="hint">drag &amp; drop · mp4, mov, mkv…</span>
+        <input type="file" id="file-raw" multiple accept="video/*" hidden>
+      </div>
+      <div class="drop" id="drop-music" tabindex="0" role="button" aria-label="Add a music track">
+        <strong>Music track</strong>
+        <span class="hint">drag &amp; drop · wav, mp3, m4a…</span>
+        <input type="file" id="file-music" multiple accept="audio/*" hidden>
+      </div>
+    </div>
+    <div id="uploads" class="uploads"></div>
+
+    <div class="cols">
+      <div class="col">
+        <h3>Clips <span class="count" id="clip-count"></span></h3>
+        <ul class="filelist" id="clips"></ul>
+      </div>
+      <div class="col">
+        <h3>Music <span class="count" id="track-count"></span></h3>
+        <ul class="filelist" id="tracks"></ul>
+      </div>
+    </div>
+
+    <div class="actionbar">
+      <label class="check"><input type="checkbox" id="no-transcript"> Skip transcription <span class="muted">(faster; needed if you're offline)</span></label>
+      <label class="check"><input type="checkbox" id="force"> Re-analyse from scratch</label>
+      <button id="btn-ingest" class="primary" type="button" disabled>Analyse footage</button>
+    </div>
+    <p class="note" id="ingest-note">Pick at least one clip and one track.</p>
+  </section>
+
+  <!-- ---------------------------------------------------------- 2 -->
+  <section id="p2" class="panel">
+    <div class="head">
+      <h2>Get the edit plan from Claude</h2>
+      <p>This app has no AI inside it. It writes a prompt, you paste it into Claude, you paste the answer back.</p>
+    </div>
+
+    <div class="field">
+      <label for="profile">Analysed footage</label>
+      <select id="profile"></select>
+      <p class="hint" id="profile-hint"></p>
+    </div>
+
+    <div class="field">
+      <label for="notes">What are you going for? <span class="muted">(optional, plain English)</span></label>
+      <textarea id="notes" rows="2" placeholder="punchy opening, cut fast on the chorus, keep the last shot long"></textarea>
+    </div>
+
+    <button id="btn-prompt" class="primary" type="button" disabled>Write the prompt</button>
+
+    <div id="handoff" class="handoff" hidden>
+      <div class="handoff-head">
+        <span class="tag">your turn</span>
+        <h3>Take these to Claude</h3>
+      </div>
+      <ol class="handoff-steps">
+        <li>
+          <div>
+            <strong>Copy the prompt</strong>
+            <p class="hint" id="prompt-size"></p>
+          </div>
+          <button id="btn-copy-prompt" class="secondary" type="button">Copy prompt</button>
+        </li>
+        <li>
+          <div>
+            <strong>Download the keyframes</strong>
+            <p class="hint" id="kf-size"></p>
+          </div>
+          <a id="btn-kf" class="secondary" download>Download images</a>
+        </li>
+        <li>
+          <div>
+            <strong>Paste both into a new Claude chat</strong>
+            <p class="hint">Attach every image to the same message as the prompt, then send.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="field">
+        <label for="reply">Paste Claude's whole reply here</label>
+        <textarea id="reply" rows="7" placeholder="Paste the entire reply — code block, prose and all. It sorts out the rest."></textarea>
+      </div>
+      <button id="btn-read" class="primary" type="button">Read the plans back in</button>
+    </div>
+  </section>
+
+  <!-- ---------------------------------------------------------- 3 -->
+  <section id="p3" class="panel">
+    <div class="head">
+      <h2>Render</h2>
+      <p>Tick the edits you want as videos. Each one becomes a 1080×1920 mp4 in <code>out/</code>.</p>
+    </div>
+    <ul class="plans" id="plans"></ul>
+    <div class="actionbar">
+      <button id="btn-render" class="primary" type="button" disabled>Render selected</button>
+    </div>
+
+    <h3 class="section-h">Finished videos</h3>
+    <div class="outputs" id="outputs"></div>
+  </section>
+
+  <!-- ---------------------------------------------------------- 4 -->
+  <section id="p4" class="panel">
+    <div class="head">
+      <h2>Track how they did</h2>
+      <p>Log what you post, then come back in a few days and type in the numbers. After <b id="minhist">8</b> videos the planner starts using this.</p>
+    </div>
+
+    <h3 class="section-h">Mark a video as posted</h3>
+    <div class="field-row">
+      <div class="field grow">
+        <label for="post-video">Video</label>
+        <select id="post-video"></select>
+      </div>
+      <div class="field">
+        <label for="post-date">Posted on</label>
+        <input type="date" id="post-date">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field grow">
+        <label for="post-caption">Caption</label>
+        <input type="text" id="post-caption" placeholder="why does this hit so hard?">
+      </div>
+      <div class="field grow">
+        <label for="post-tags">Hashtags</label>
+        <input type="text" id="post-tags" placeholder="#luckydog #newmusic">
+      </div>
+    </div>
+    <button id="btn-post" class="primary" type="button">Log this post</button>
+
+    <h3 class="section-h">Logged videos</h3>
+    <div class="tablewrap">
+      <table id="logged">
+        <thead><tr><th>#</th><th>Variant</th><th>Posted</th><th>Hook</th><th>Section</th><th>Views</th><th>Pulls</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="metrics-form" class="metrics" hidden>
+      <h3>Numbers for <span id="metrics-for"></span></h3>
+      <div class="metrics-grid">
+        <label>Views<input type="text" data-m="views" placeholder="12,400"></label>
+        <label>Watch-through<input type="text" data-m="watch_through_rate" placeholder="38%"></label>
+        <label>Likes<input type="text" data-m="likes" placeholder="890"></label>
+        <label>Shares<input type="text" data-m="shares" placeholder="41"></label>
+        <label>Comments<input type="text" data-m="comments" placeholder="23"></label>
+        <label>Follows<input type="text" data-m="follows" placeholder="12"></label>
+        <label>Saves<input type="text" data-m="saves" placeholder="60"></label>
+        <label>Pulled on<input type="date" data-m="pulled_at"></label>
+      </div>
+      <p class="hint">Blank skips a field. It takes <code>12,400</code>, <code>31k</code>, <code>1.2M</code>, <code>42%</code> — whatever TikTok shows you.</p>
+      <div class="actionbar">
+        <button id="btn-metrics-cancel" class="ghost" type="button">Cancel</button>
+        <button id="btn-metrics" class="primary" type="button">Save numbers</button>
+      </div>
+    </div>
+
+    <h3 class="section-h">Report</h3>
+    <button id="btn-report" class="secondary" type="button">Refresh report</button>
+    <pre id="report" class="report"></pre>
+  </section>
+
+</main>
+
+<aside class="console" id="console" data-state="idle">
+  <button class="console-head" id="console-toggle" type="button" aria-expanded="false">
+    <span class="dot" id="console-dot"></span>
+    <span id="console-title">Ready</span>
+    <span class="spacer"></span>
+    <span class="chev" aria-hidden="true">▾</span>
+  </button>
+  <pre id="console-body"></pre>
+</aside>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="/app.js"></script>
+</body>
+</html>
