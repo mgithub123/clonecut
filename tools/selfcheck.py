@@ -770,7 +770,143 @@ def _():
         text, n = log.history_for_prompt(5, db)
         assert n == config.MIN_HISTORY_FOR_RETRIEVAL
         assert "winner" in text, text
-        assert "hint, not a rule" in text, "must still frame a small sample as a hint"
+        low = text.lower()
+        assert "hint" in low and "not a rule" in low, \
+            "must still frame a small sample as a hint"
+
+
+# --- retrieval ---------------------------------------------------------------
+
+@check("similarity prefers the same track over a better-performing different one")
+def _():
+    here = {"audio_source": "music/a.wav", "bpm": 120.0,
+            "clips": ["raw/x.mp4"], "notes": None}
+    same = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"]}
+    other = {"audio_source": "music/b.wav", "bpm": 88.0, "clips": ["raw/y.mp4"]}
+    s_same, why = similarity_of(here, same)
+    s_other, _ = similarity_of(here, other)
+    assert s_same > s_other, (s_same, s_other)
+    assert s_same > 0.9, s_same
+    assert "same track" in why
+
+
+def similarity_of(a, b):
+    return log.similarity(a, b)
+
+
+@check("similarity drops a missing component instead of scoring it zero")
+def _():
+    here = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"], "notes": None}
+    full = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"]}
+    # an older row with no BPM recorded must not be punished for it
+    no_bpm = {"audio_source": "music/a.wav", "bpm": None, "clips": ["raw/x.mp4"]}
+    assert abs(log.similarity(here, full)[0] - log.similarity(here, no_bpm)[0]) < 1e-9
+    # nothing comparable at all scores zero and says so
+    score, why = log.similarity({"notes": None}, {})
+    assert score == 0.0 and "nothing comparable" in why[0]
+
+
+@check("typed notes pull matching past edits up the ranking")
+def _():
+    here = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"],
+            "notes": "fast cutting, no click track feel"}
+    plain = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"],
+             "strategy_notes": "long slow holds", "variant_name": "slow-one"}
+    matching = {"audio_source": "music/a.wav", "bpm": 120.0, "clips": ["raw/x.mp4"],
+                "strategy_notes": "fast cutting throughout", "hook_text": "no click track",
+                "variant_name": "fast-one"}
+    s_match, why = log.similarity(here, matching)
+    s_plain, _ = log.similarity(here, plain)
+    assert s_match > s_plain, (s_match, s_plain)
+    assert any("notes" in r for r in why), why
+
+
+@check("tempo similarity falls off with distance and ignores octave-far tracks")
+def _():
+    base = {"audio_source": "music/a.wav", "clips": [], "notes": None}
+    def score(bpm_here, bpm_there):
+        return log.similarity({**base, "bpm": bpm_here},
+                              {"audio_source": "music/b.wav", "bpm": bpm_there, "clips": []})[0]
+    assert score(120, 120) > score(120, 130) > score(120, 155)
+    assert score(120, 200) == 0.0, "far apart tempos contribute nothing"
+
+
+@check("retrieval degrades honestly when nothing is comparable")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        db = d / "t.db"
+        conn = log.connect(db)
+        for i in range(config.MIN_HISTORY_FOR_RETRIEVAL):
+            vid = _seed_video(conn, d, name=f"v{i}")
+            log.record_metrics(conn, vid, {"views": 100 * (i + 1),
+                                           "watch_through_rate": 0.2 + i * 0.01}, "2026-07-05")
+        conn.close()
+        # a track and footage the log has never seen
+        alien = {"audio": {"path": "music/never-seen.wav", "bpm": 150.0},
+                 "clips": [{"path": "raw/brand-new.mp4"}]}
+        text, n = log.history_for_prompt(3, db, profile=alien)
+        assert n == config.MIN_HISTORY_FOR_RETRIEVAL
+        assert "Nothing logged was made from material like this" in text, text
+        assert "closest past edits" not in text, "must not claim similarity it does not have"
+        # and with the matching material it does claim it
+        matching = {"audio": {"path": "music/goodbye-party.wav", "bpm": 120.19},
+                    "clips": [{"path": "raw/test-a.mp4"}]}
+        text, _ = log.history_for_prompt(3, db, profile=matching)
+        assert "closest past edits" in text, text
+        # a missing profile must not crash the planner
+        text, _ = log.history_for_prompt(3, db, profile=None)
+        assert text.strip()
+
+
+@check("a v1 database migrates in place and keeps its rows")
+def _():
+    import sqlite3, tempfile
+    V1 = """
+    CREATE TABLE videos (
+        id INTEGER PRIMARY KEY, video_path TEXT NOT NULL UNIQUE, variant_name TEXT NOT NULL,
+        edl_path TEXT, edl_json TEXT NOT NULL, features_json TEXT NOT NULL,
+        rendered_at TEXT, posted_at TEXT, caption TEXT, hashtags TEXT,
+        hook_type TEXT, hook_text TEXT, hook_position TEXT, cut_count INTEGER,
+        avg_segment_length REAL, cuts_per_second REAL, caption_count INTEGER,
+        caption_density REAL, duration REAL, audio_start REAL, song_section TEXT,
+        song_section_index INTEGER, beat_synced INTEGER, uses_speed_ramp INTEGER,
+        created_at TEXT NOT NULL);
+    CREATE TABLE metrics (
+        id INTEGER PRIMARY KEY, video_id INTEGER NOT NULL REFERENCES videos(id),
+        pulled_at TEXT NOT NULL, views INTEGER, watch_through_rate REAL, likes INTEGER,
+        shares INTEGER, comments INTEGER, follows INTEGER, saves INTEGER,
+        created_at TEXT NOT NULL);
+    """
+    edl = {"variant_name": "legacy", "strategy_notes": "old",
+           "audio": {"source": "music/goodbye-party.wav", "start": 9.0},
+           "segments": [{"clip": "raw/test-a.mp4", "in": 0, "out": 1, "speed": 1.0}],
+           "captions": []}
+    with tempfile.TemporaryDirectory() as d:
+        db = Path(d) / "old.db"
+        raw = sqlite3.connect(db)
+        raw.executescript(V1)
+        raw.execute("PRAGMA user_version = 1")
+        raw.execute("INSERT INTO videos (video_path, variant_name, edl_json, features_json,"
+                    " posted_at, created_at) VALUES (?,?,?,?,?,?)",
+                    ("out/legacy.mp4", "legacy", json.dumps(edl), "{}", "2026-07-01", "t"))
+        raw.execute("INSERT INTO metrics (video_id, pulled_at, views, watch_through_rate,"
+                    " created_at) VALUES (1,'2026-07-03',500,0.4,'t')")
+        raw.commit()
+        raw.close()
+
+        conn = log.connect(db)
+        assert conn.execute("PRAGMA user_version").fetchone()[0] == log.SCHEMA_VERSION
+        row = conn.execute("SELECT * FROM videos").fetchone()
+        assert row["variant_name"] == "legacy", "the existing row must survive"
+        assert row["audio_source"] == "music/goodbye-party.wav", "backfilled from the stored EDL"
+        assert json.loads(row["clips_json"]) == ["raw/test-a.mp4"]
+        assert len(log.build_rows(conn)) == 1, "the report must still see it"
+        conn.close()
+        # re-opening an already-migrated database is a no-op
+        for _ in range(2):
+            log.connect(db).close()
 
 
 def main() -> int:
