@@ -1,0 +1,107 @@
+{
+  "variant_name": "hand-written-reference",
+  "strategy_notes": "Written by hand, not by the model, to exercise the renderer before any AI is involved. Every cut length is a whole number of beats at 120 BPM and the music starts on a beat inside the loudest section, so a mistimed render is visible rather than subtle. Segment 5 runs at 2x to cover the speed path.",
+  "target_duration": 13.972,
+  "audio": {
+    "source": "music/goodbye-party.wav",
+    "start": 8.022,
+    "fade_in": 0.0,
+    "fade_out": 0.8
+  },
+  "segments": [
+    {
+      "clip": "raw/test-a.mp4",
+      "in": 12.0,
+      "out": 13.996,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "hardest motion spike in the whole reel; earns the first second"
+    },
+    {
+      "clip": "raw/test-b.mp4",
+      "in": 5.0,
+      "out": 5.998,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "hard cut to a different look, keeps the hook moving"
+    },
+    {
+      "clip": "raw/test-a.mp4",
+      "in": 6.0,
+      "out": 6.998,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "clean static frame as a breath between two busy shots"
+    },
+    {
+      "clip": "raw/test-b.mp4",
+      "in": 10.0,
+      "out": 11.996,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "second motion peak, lands on the bar line"
+    },
+    {
+      "clip": "raw/test-a.mp4",
+      "in": 3.0,
+      "out": 4.996,
+      "speed": 2.0,
+      "snap_to_beat": true,
+      "reason": "doubled up so a slow stretch still cuts on the beat"
+    },
+    {
+      "clip": "raw/test-b.mp4",
+      "in": 12.5,
+      "out": 14.496,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "sustained movement under the loudest part of the section"
+    },
+    {
+      "clip": "raw/test-a.mp4",
+      "in": 15.5,
+      "out": 17.496,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "late-clip texture, unused so far"
+    },
+    {
+      "clip": "raw/test-b.mp4",
+      "in": 1.0,
+      "out": 3.994,
+      "speed": 1.0,
+      "snap_to_beat": true,
+      "reason": "longest hold last, so the outro can breathe under the fade"
+    }
+  ],
+  "captions": [
+    {
+      "text": "we recorded this in one take",
+      "start": 0.15,
+      "end": 2.4,
+      "style": "hook",
+      "position": "upper-third"
+    },
+    {
+      "text": "no click track",
+      "start": 3.0,
+      "end": 5.0,
+      "style": "body",
+      "position": "lower-third"
+    },
+    {
+      "text": "listen to the bass",
+      "start": 6.2,
+      "end": 8.2,
+      "style": "emphasis",
+      "position": "center"
+    },
+    {
+      "text": "Lucky Dog - out friday",
+      "start": 10.5,
+      "end": 13.872,
+      "style": "body",
+      "position": "lower-third"
+    }
+  ]
+}
