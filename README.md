@@ -23,6 +23,7 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 | Stage | File | Status |
 |---|---|---|
 | 1. Ingest | `ingest.py` | done |
+| 2. EDL schema | `schema.py` | done |
 | 2. Plan | `plan.py` | not started |
 | 3. Render | `render.py` | not started |
 | 4. Learn | `log.py` | not started |
@@ -84,3 +85,48 @@ No footage needed to try the pipeline:
 uv run tools/make_test_media.py   # synthetic clips + a 120 BPM track
 uv run tools/selfcheck.py         # pure-logic assertions, no media or network
 ```
+
+
+---
+
+## The EDL
+
+`schema.py` defines the Edit Decision List — the only thing the AI produces and
+the only thing the renderer consumes. Validation is in two deliberately
+separate layers:
+
+* The **Pydantic models** check structure: field names, types, ranges,
+  ordering. They touch no media, so a model response can be validated before
+  any file is opened. Unknown fields are rejected — a model writing `duration`
+  where the schema says `out` should fail the retry, not silently render a
+  different edit. `variant_name` is constrained to kebab-case because it
+  becomes part of an output filename.
+* **`validate_media()`** checks the EDL against the actual files: that clips
+  exist, that no segment reaches past the end of one, and that the music is
+  long enough for the edit. It returns errors (the render would be wrong)
+  separately from warnings (it will render, but probably not as intended —
+  a caption starting after the video ends, say).
+
+`snap_to_beat` is a record, not an instruction. Snapping happens in code inside
+`plan.py` after the model responds; by the time an EDL is on disk its
+timestamps are already snapped.
+
+Validate any EDL from the command line:
+
+```bash
+uv run schema.py examples/*.json      # exit 1 if any file is invalid
+uv run schema.py --print-schema       # the JSON schema handed to the model
+```
+
+### Example EDLs
+
+`examples/hand-written-reference.json` was written by hand against the test
+fixtures, to drive `render.py` before any AI is involved. Every cut length is a
+whole number of beats at 120 BPM and the music starts on a beat inside the
+track's loudest section, so a mistimed render shows up as an obvious drift
+rather than something subtle. One segment runs at 2x to exercise the speed
+path.
+
+`examples/broken-out-of-range.json` is deliberately invalid — a segment reaching
+past the end of a clip, and a music start that leaves the track too short. It
+exists so the loud-failure path has something to fail on.
