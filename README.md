@@ -24,6 +24,10 @@ uv sync
 Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 `apt install ffmpeg`), and Python 3.11+.
 
+If you would rather not use a terminal at all, skip to
+[Stage 6](#stage-6--the-app): `uv run app.py` opens the whole pipeline in your
+browser, and there is a double-clickable launcher for Mac and Windows.
+
 ## Build status
 
 | Stage | File | Status |
@@ -34,6 +38,7 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 | 3. Render | `render.py` | done |
 | 4. Learn | `log.py` + SQLite | done |
 | 5. Retrieval | `log.py` -> `plan.py` | done |
+| 6. App | `app.py` + `webui/` | done |
 
 ---
 
@@ -379,6 +384,59 @@ a test that builds a real v1 database and opens it.
 
 ---
 
+## Stage 6 — The app
+
+```bash
+uv run app.py            # opens your browser at 127.0.0.1:8765
+uv run app.py --port 9000 --no-browser
+```
+
+Or double-click **Open Clonecut.command** (Mac) / **open-clonecut.bat**
+(Windows), which check for `ffmpeg` and `uv` and say what is missing before
+starting anything.
+
+Four tabs, matching the stages: drop in footage and a track and analyse it;
+write the prompt and paste Claude's reply back; tick the plans you want and
+render them; log what you posted and type in the numbers. Rendered videos play
+in the page, and the console at the bottom streams whatever the stage is
+printing, so a long ingest is visibly working rather than apparently hung.
+
+### It drives the CLI rather than reimplementing it
+
+Every button shells out to `ingest.py`, `plan.py`, `render.py` or `log.py` as a
+subprocess and streams stdout back. Nothing about the pipeline is reimplemented
+in the app, so the app cannot drift from what the commands actually do, and
+anything you can do in the UI you can still do in a terminal against the same
+files. `log.py metrics` prompts field by field, so the app feeds its seven
+answers in on stdin — the same parser, including the re-ask on a value it
+cannot read.
+
+**Stdlib only.** `http.server` and `sqlite3`, no framework and no build step:
+adding an app must not add an install step, and `uv sync` is unchanged.
+
+### Three things that had to be handled
+
+**A browser hanging up mid-video is not an error.** `<video>` fetches a byte
+range, gets what it needs and closes the socket, which surfaces as
+`ConnectionResetError` inside the write. The generic handler caught it and
+printed a traceback into the window the user was told to leave open, which
+reads as a crash. Client disconnects are now caught before the generic handler
+and dropped silently.
+
+**Media is streamed, never buffered.** Both directions originally read whole
+files into memory. Phone footage runs to hundreds of megabytes and every scrub
+of a preview re-read the file, so uploads now stream to a `.part` file that is
+renamed once the expected byte count arrives, and serving seeks to the
+requested range and writes it in chunks.
+
+**Paths from the browser are not trusted.** Every client-supplied path resolves
+under `raw/`, `music/`, `profiles/`, `plans/` or `out/` and is rejected if it
+escapes; uploads are re-based to a bare filename and checked against a suffix
+whitelist. The server binds `127.0.0.1` only.
+
+
+---
+
 ## The whole loop
 
 ```bash
@@ -392,7 +450,8 @@ uv run log.py metrics <id>          # again after a few days
 uv run log.py report
 ```
 
-Then the next `plan.py prompt` draws on everything logged so far.
+Then the next `plan.py prompt` draws on everything logged so far. Or run
+`uv run app.py` and do all of it in a browser.
 
 ```bash
 uv run tools/selfcheck.py           # 45 checks, no media or network needed
