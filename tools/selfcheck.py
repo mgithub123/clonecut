@@ -11,6 +11,7 @@ from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+import json  # noqa: E402
 import numpy as np  # noqa: E402
 
 import common  # noqa: E402
@@ -20,6 +21,7 @@ import schema  # noqa: E402
 import render  # noqa: E402
 import caption_styles as cs  # noqa: E402
 import plan  # noqa: E402
+import log  # noqa: E402
 
 CHECKS: list[tuple[str, callable]] = []
 
@@ -516,12 +518,18 @@ def _():
 
 @check("the prompt names the real clips, the beat grid and the missing history")
 def _():
+    import tempfile
     profile = _profile()
     keyframes = plan.select_keyframes(profile, 6)
-    prompt, history, logged = plan.build_prompt(
-        profile, variants=3, notes="try a slow burn", keyframes=keyframes)
+    with tempfile.TemporaryDirectory() as d:
+        # an empty database, so this does not depend on the real one
+        prompt, history, logged = plan.build_prompt(
+            profile, variants=3, notes="try a slow burn", keyframes=keyframes,
+            db_path=Path(d) / "empty.db")
     assert logged == 0
-    assert "No performance history yet" in prompt, "must not imply history it does not have"
+    low = prompt.lower()
+    assert "below the" in low and "no history" in low, "must not imply history it does not have"
+    assert "strongest" not in low, "must not rank anything with nothing logged"
     for clip in profile["clips"]:
         assert clip["path"] in prompt, clip["path"]
     assert "music/goodbye-party.wav" in prompt
@@ -543,6 +551,226 @@ def _():
     assert _json.loads(text) == data, "collapsing must not alter the JSON"
     assert "[0.035, 0.534, 1.033]" in text
     assert text.count("\n") < _json.dumps(data, indent=2).count("\n")
+
+
+# --- log --------------------------------------------------------------------
+
+def _tmp_db(fn):
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        return fn(log.connect(Path(d) / "t.db"))
+
+
+def _seed_video(conn, tmp: Path, name="v", hook="we recorded this in one take",
+                avg_len=1.0, cuts=8, synced=True, audio_start=9.0, posted="2026-07-01"):
+    import json as _json
+    segs = [{"clip": "raw/test-a.mp4", "in": 0.0, "out": avg_len, "speed": 1.0,
+             "snap_to_beat": synced, "reason": ""} for _ in range(cuts)]
+    caps = ([{"text": hook, "start": 0.1, "end": 2.0, "style": "hook",
+              "position": "upper-third"}] if hook else [])
+    duration = avg_len * cuts
+    video = tmp / f"{name}.mp4"
+    video.write_bytes(b"")
+    video.with_suffix(".json").write_text(_json.dumps({
+        "video": video.name, "rendered_at": "2026-07-01T00:00:00+00:00",
+        "edl_path": f"plans/{name}.json",
+        "edl": {"variant_name": name, "strategy_notes": "s", "target_duration": duration,
+                "audio": {"source": "music/goodbye-party.wav", "start": audio_start,
+                          "fade_in": 0.0, "fade_out": 0.0},
+                "segments": segs, "captions": caps},
+        "derived_features": {
+            "duration": duration, "cut_count": cuts, "avg_segment_length": avg_len,
+            "shortest_segment": avg_len, "longest_segment": avg_len,
+            "cuts_per_second": cuts / duration, "caption_count": len(caps),
+            "caption_density": len(caps) / duration, "beat_synced": synced,
+            "uses_speed_ramp": False, "hook_type": hook,
+            "hook_position": "upper-third" if hook else None,
+            "clips_used": ["raw/test-a.mp4"], "audio_start": audio_start},
+    }))
+    return log.record_video(conn, video, posted_at=posted, caption=None,
+                            hashtags=None, profile=None)
+
+
+@check("hook captions are classified into groupable types")
+def _():
+    cases = {
+        "why does this sound like that?": "question",
+        "How did we record this": "question",
+        "pov you found the band early": "pov",
+        "3 takes, one survived": "number",
+        "no click track": "negation",
+        "listen to the bass": "command",
+        "we recorded this in one take": "statement",
+        None: "none",
+        "": "none",
+        "   ": "none",
+    }
+    for text, expected in cases.items():
+        assert log.classify_hook(text) == expected, f"{text!r} -> {log.classify_hook(text)}"
+
+
+@check("metrics input accepts the shapes a person actually types")
+def _():
+    assert log.parse_count("12,400") == 12400
+    assert log.parse_count("31k") == 31000
+    assert log.parse_count("1.2M") == 1200000
+    assert log.parse_count("  980 ") == 980
+    assert log.parse_count("") is None
+    assert log.parse_rate("42%") == 0.42
+    assert log.parse_rate("0.42") == 0.42
+    assert log.parse_rate("42") == 0.42, "a bare number above 1 is a percentage"
+    assert log.parse_rate("0.9") == 0.9
+    assert log.parse_rate("") is None
+    for bad in ("twelve", "abc"):
+        try:
+            log.parse_count(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"{bad!r} should be rejected")
+    for bad in ("150%", "-5%"):
+        try:
+            log.parse_rate(bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"{bad!r} should be rejected as a rate")
+
+
+@check("posting a render stores its EDL and derived features")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        conn = log.connect(d / "t.db")
+        vid = _seed_video(conn, d, name="alpha", hook="why does this sound like that?",
+                          avg_len=0.8, cuts=10)
+        row = conn.execute("SELECT * FROM videos WHERE id = ?", (vid,)).fetchone()
+        assert row["variant_name"] == "alpha"
+        assert row["hook_type"] == "question"
+        assert row["hook_text"] == "why does this sound like that?"
+        assert row["cut_count"] == 10
+        assert abs(row["avg_segment_length"] - 0.8) < 1e-6
+        assert row["beat_synced"] == 1
+        assert row["posted_at"] == "2026-07-01"
+        assert json.loads(row["edl_json"])["variant_name"] == "alpha"
+        # song section comes from the real profile on disk
+        assert row["song_section"] == "high", row["song_section"]
+        # re-posting the same file updates rather than duplicating
+        again = _seed_video(conn, d, name="alpha", posted="2026-07-05")
+        assert again == vid
+        assert conn.execute("SELECT COUNT(*) FROM videos").fetchone()[0] == 1
+        assert conn.execute("SELECT posted_at FROM videos").fetchone()[0] == "2026-07-05"
+
+
+@check("posting a video with no render sidecar fails readably")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        conn = log.connect(d / "t.db")
+        orphan = d / "orphan.mp4"
+        orphan.write_bytes(b"")
+        try:
+            log.record_video(conn, orphan, posted_at="2026-07-01",
+                             caption=None, hashtags=None)
+        except common.ToolError as exc:
+            assert "sidecar" in str(exc).lower(), exc
+        else:
+            raise AssertionError("expected a ToolError about the missing sidecar")
+
+
+@check("the latest pull is used even when pulls are entered out of order")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        conn = log.connect(d / "t.db")
+        vid = _seed_video(conn, d, name="beta")
+        # entered newest-first, i.e. a backfill of an earlier date afterwards
+        log.record_metrics(conn, vid, {"views": 900, "watch_through_rate": 0.5}, "2026-07-10")
+        log.record_metrics(conn, vid, {"views": 100, "watch_through_rate": 0.2}, "2026-07-03")
+        latest = log.latest_metrics(conn)
+        assert vid in latest, "the video must not drop out when pulls are out of order"
+        assert latest[vid]["views"] == 900, latest[vid]["views"]
+        assert len(log.build_rows(conn)) == 1
+
+
+@check("metrics are rejected for a video that does not exist")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        conn = log.connect(Path(d) / "t.db")
+        try:
+            log.record_metrics(conn, 999, {"views": 1}, "2026-07-01")
+        except common.ToolError as exc:
+            assert "999" in str(exc)
+        else:
+            raise AssertionError("expected a ToolError for an unknown video id")
+
+
+@check("a video with no metrics is excluded from the report")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        conn = log.connect(d / "t.db")
+        _seed_video(conn, d, name="unmeasured")
+        assert log.build_rows(conn) == []
+
+
+@check("grouping averages per bucket and counts the members")
+def _():
+    rows = [
+        {"k": "a", "views": 100, "watch_through_rate": 0.4, "share_rate": 0.01, "like_rate": 0.05},
+        {"k": "a", "views": 300, "watch_through_rate": 0.2, "share_rate": 0.03, "like_rate": 0.07},
+        {"k": "b", "views": 200, "watch_through_rate": 0.5, "share_rate": None, "like_rate": None},
+    ]
+    groups = {g["group"]: g for g in log.summarise(rows, "k")}
+    assert groups["a"]["n"] == 2 and groups["b"]["n"] == 1
+    assert abs(groups["a"]["watch_through"] - 0.3) < 1e-9
+    assert abs(groups["a"]["share_rate"] - 0.02) < 1e-9
+    assert groups["a"]["median_views"] == 200
+    assert groups["b"]["share_rate"] is None, "missing values must not become zero"
+    # sorted best-first by watch-through
+    assert log.summarise(rows, "k")[0]["group"] == "b"
+
+
+@check("pace buckets split on the cut lengths the report claims")
+def _():
+    assert log.pace_bucket(0.5).startswith("fast")
+    assert log.pace_bucket(0.99).startswith("fast")
+    assert log.pace_bucket(1.0).startswith("medium")
+    assert log.pace_bucket(1.99).startswith("medium")
+    assert log.pace_bucket(2.0).startswith("slow")
+    assert log.pace_bucket(None) == "unknown"
+
+
+@check("history stays honest below the threshold and useful above it")
+def _():
+    import tempfile
+    with tempfile.TemporaryDirectory() as d:
+        d = Path(d)
+        db = d / "t.db"
+        conn = log.connect(db)
+        for i in range(config.MIN_HISTORY_FOR_RETRIEVAL - 1):
+            vid = _seed_video(conn, d, name=f"v{i}")
+            log.record_metrics(conn, vid, {"views": 100, "watch_through_rate": 0.3}, "2026-07-05")
+        conn.close()
+        text, n = log.history_for_prompt(5, db)
+        assert n == config.MIN_HISTORY_FOR_RETRIEVAL - 1
+        assert "below" in text.lower() and "no history" in text.lower(), text
+        assert "strongest" not in text.lower(), "must not rank anything below the threshold"
+
+        conn = log.connect(db)
+        vid = _seed_video(conn, d, name="winner", hook="no click track")
+        log.record_metrics(conn, vid, {"views": 5000, "watch_through_rate": 0.9,
+                                       "shares": 100}, "2026-07-05")
+        conn.close()
+        text, n = log.history_for_prompt(5, db)
+        assert n == config.MIN_HISTORY_FOR_RETRIEVAL
+        assert "winner" in text, text
+        assert "hint, not a rule" in text, "must still frame a small sample as a hint"
 
 
 def main() -> int:
