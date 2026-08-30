@@ -24,8 +24,8 @@ Requires `ffmpeg` and `ffprobe` on PATH (`brew install ffmpeg` /
 |---|---|---|
 | 1. Ingest | `ingest.py` | done |
 | 2. EDL schema | `schema.py` | done |
+| 3. Render | `render.py` | done |
 | 2. Plan | `plan.py` | not started |
-| 3. Render | `render.py` | not started |
 | 4. Learn | `log.py` | not started |
 
 ---
@@ -130,3 +130,66 @@ path.
 `examples/broken-out-of-range.json` is deliberately invalid — a segment reaching
 past the end of a clip, and a music start that leaves the track too short. It
 exists so the loud-failure path has something to fail on.
+
+
+---
+
+## Stage 3 — Render
+
+```bash
+uv run render.py examples/hand-written-reference.json
+uv run render.py plans/*.json --verbose
+uv run render.py some.json --dry-run     # print the ffmpeg command and stop
+```
+
+Writes `out/<variant_name>-<timestamp>.mp4` plus a sidecar `.json` recording the
+EDL that produced it, the derived features, the render settings, the SHA-256 of
+every source file, and the exact ffmpeg command.
+
+One ffmpeg invocation does the whole job: one input per segment (seeking with
+`-ss` *before* `-i`, so a two-second cut out of a ten-minute clip does not decode
+ten minutes), each scaled with `force_original_aspect_ratio=increase` and
+cropped back to 1080x1920 — crop-to-fill, no bars — then concatenated. The
+source audio is never mapped; only the music input reaches the output.
+
+Before encoding, `schema.validate_media()` runs and any error aborts the render
+with every problem listed at once. Afterwards the output is probed to confirm it
+is really 1080x1920 with both streams and the expected duration.
+
+### Restyling captions
+
+Everything about how captions look and where they sit is in `caption_styles.py`:
+the three styles (`hook`, `body`, `emphasis`), the three positions, and the safe
+area. Edit that file and re-render; `render.py` does not need touching.
+
+The safe area defaults to 220px off the top and 480px off the bottom, which is
+roughly what TikTok's own chrome covers. `lower-third` also insets 200px each
+side to clear the like/comment/share rail.
+
+### Three things that had to be handled
+
+**Captions are drawn one line at a time.** Handing `drawtext` a multi-line
+string centres the block but left-aligns the lines inside it, which reads as a
+mistake. ffmpeg only grew a `text_align` option in 7.0, so each line gets its own
+centred `drawtext` — that works on whatever ffmpeg is already installed.
+
+**`expansion=none` is not optional.** By default `drawtext` treats `%` as
+special: a caption reading "100% live" logs `Stray % near ''` and renders as
+*nothing at all*, silently. `%{n}` is worse — it expands to the frame number.
+Both are covered by a self-check that renders the text and asserts pixels
+changed.
+
+**Caption blocks are clamped to the safe area.** The anchor positions the middle
+of the block, so a hook that wraps onto three lines reaches 120px further up than
+a one-liner and would ride under the UI. The block is pulled back inside instead.
+
+## Checking a render
+
+```bash
+uv run tools/contact_sheet.py out/some-video.mp4                    # evenly spaced frames
+uv run tools/contact_sheet.py out/v.mp4 --from-edl plans/v.json     # one frame per caption
+uv run tools/contact_sheet.py out/v.mp4 --at 0.5 2.0 7.0
+```
+
+Red bands mark where TikTok's UI sits, so a caption that would be covered is
+obvious at a glance.
