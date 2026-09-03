@@ -20,7 +20,12 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-W, H, FPS = 1080, 1920, 30
+import caption_styles as cs
+import common
+import config
+from common import ToolError
+
+W, H, FPS = cs.CANVAS_W, cs.CANVAS_H, 30
 FONTP = "/System/Library/Fonts/HelveticaNeue.ttc"
 
 def font(sz):
@@ -33,7 +38,7 @@ def font(sz):
 
 def envelope(audio, start, dur, tmp):
     band = tmp / "sing_band.wav"
-    subprocess.run(["ffmpeg","-y","-loglevel","error","-ss",str(start),"-t",str(dur),"-i",audio,
+    subprocess.run([config.FFMPEG,"-y","-loglevel","error","-ss",str(start),"-t",str(dur),"-i",audio,
                     "-af","highpass=f=250,lowpass=f=3500","-ac","1","-ar","16000",str(band)], check=True)
     w = wave.open(str(band)); sr = w.getframerate()
     x = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16).astype(np.float32) / 32768
@@ -52,7 +57,7 @@ def auto_mouth(face: Image.Image):
     a = np.array(face); rgb = a[..., :3].astype(int); al = a[..., 3]
     white = (al > 200) & (rgb.min(axis=2) > 200)
     ys, xs = np.where(white)
-    if len(ys) < 100: raise SystemExit("auto-mouth: no white teeth region found; pass --lip-y etc.")
+    if len(ys) < 100: raise ToolError("auto-mouth: no white teeth region found; pass --lip-y etc.")
     # take the largest white cluster by rows around the median
     y0, y1 = int(np.percentile(ys, 2)), int(np.percentile(ys, 98))
     x0, x1 = int(np.percentile(xs, 2)), int(np.percentile(xs, 98))
@@ -108,17 +113,17 @@ def main(argv=None):
     p.add_argument("--text", default=""); p.add_argument("--text-y", type=int, default=1500)
     p.add_argument("--bg", default="#121214"); p.add_argument("--face-width", type=int, default=760)
     p.add_argument("--face-top", type=int, default=480)
-    p.add_argument("--name", default="sing"); p.add_argument("--out-dir", default="out")
+    p.add_argument("--name", default="sing"); p.add_argument("--out-dir", default=None)
     a = p.parse_args(argv)
 
-    root = Path(__file__).resolve().parent; out_dir = root / a.out_dir; out_dir.mkdir(exist_ok=True)
+    out_dir = Path(a.out_dir) if a.out_dir else config.OUT_DIR; out_dir.mkdir(parents=True, exist_ok=True)
     tmp = out_dir / ".sing_tmp"; tmp.mkdir(exist_ok=True)
     face = Image.open(a.face).convert("RGBA"); bb = face.getbbox(); face = face.crop(bb)
     fw, fh = face.size
     if a.auto_mouth:
         lip, chin, mx0, mx1 = auto_mouth(face)
     else:
-        if None in (a.lip_y, a.chin_y, a.mouth_x0, a.mouth_x1): raise SystemExit("pass --auto-mouth or all four mouth coords")
+        if None in (a.lip_y, a.chin_y, a.mouth_x0, a.mouth_x1): raise ToolError("pass --auto-mouth or all four mouth coords")
         lip, chin, mx0, mx1 = a.lip_y - bb[1], a.chin_y - bb[1], a.mouth_x0 - bb[0], a.mouth_x1 - bb[0]
     eyes = auto_eyes(face, lip)
     open_max = a.open_max or int(fh * 0.12)
@@ -131,7 +136,7 @@ def main(argv=None):
     rng = np.random.default_rng(3); blink = set(); t = 40
     while t < n: blink.update([t, t+1, t+2]); t += int(rng.integers(70, 130))
     out = out_dir / f"{a.name}-{datetime.datetime.now():%Y%m%d-%H%M%S}.mp4"
-    proc = subprocess.Popen(["ffmpeg","-y","-loglevel","error","-f","rawvideo","-pix_fmt","rgb24","-s",f"{W}x{H}","-r",str(FPS),"-i","-",
+    proc = subprocess.Popen([config.FFMPEG,"-y","-loglevel","error","-f","rawvideo","-pix_fmt","rgb24","-s",f"{W}x{H}","-r",str(FPS),"-i","-",
                              "-ss",str(a.start),"-t",str(a.duration),"-i",a.audio,"-map","0:v","-map","1:a",
                              "-c:v","libx264","-crf","20","-pix_fmt","yuv420p","-c:a","aac","-b:a","192k","-shortest",str(out)], stdin=subprocess.PIPE)
     for k in range(n):
@@ -155,7 +160,7 @@ def main(argv=None):
             "mouth": {"lip_y": lip + bb[1], "chin_y": chin + bb[1], "x0": mx0 + bb[0], "x1": mx1 + bb[0], "open_max": open_max},
             "eyes": [[e[0] + bb[0], e[1] + bb[1], e[2] + bb[0], e[3] + bb[1]] for e in eyes], "text": a.text,
             "env_mean": float(env.mean()), "frames": n}
-    out.with_suffix(".json").write_text(json.dumps(side, indent=2))
+    common.write_json(out.with_suffix(".json"), side)
     print("wrote", out, "| mouth", side["mouth"], "| eyes", len(eyes), "| env mean", round(side["env_mean"], 3))
     return 0
 
