@@ -240,7 +240,14 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
         sc = min(tw / shape.width, fa["max_mouth_height"] / shape.height)
         m = shape.resize((max(1, int(shape.width * sc)), max(1, int(shape.height * sc))),
                          Image.LANCZOS)
-        h.paste(m, (fa["centre_x"] - m.width // 2, fa["lip_line"]), m)
+        # Which edge of the mouth stays put as it opens. The doctor's mouth hangs
+        # from the upper lip and grows downward; the dog's sits on a fixed lower
+        # lip and grows upward. Top-anchoring the dog rides the mouth over its nose.
+        if fa.get("anchor", "top") == "bottom":
+            paste_y = fa["anchor_y"] - m.height
+        else:
+            paste_y = fa["lip_line"]
+        h.paste(m, (fa["centre_x"] - m.width // 2, paste_y), m)
 
         if bl[f] < 0.999:
             a = np.array(h)
