@@ -66,6 +66,20 @@ def load_rig(name: str) -> dict:
     return r
 
 
+def _matted(path) -> Image.Image:
+    """A plate as RGBA, however it was rendered.
+
+    Plates written as TGA4 already carry alpha and must be used as they are.
+    Older ones are 24-bit, composited onto the scene background, and need
+    face.unmul() to recover the matte. Telling them apart by looking is safer than
+    by filename: unmul on a plate that already has alpha turns it opaque.
+    """
+    im = Image.open(path).convert("RGBA")
+    if np.asarray(im)[..., 3].min() < 250:
+        return im
+    return face.unmul(im)
+
+
 def plates(r: dict) -> tuple[Image.Image, Image.Image]:
     """Head (no mouth) and body plates.
 
@@ -83,11 +97,11 @@ def plates(r: dict) -> tuple[Image.Image, Image.Image]:
     for part in ("head", "body"):
         tracked = r["_dir"] / "plates" / f"plate-{part}-{res[0]}.png"
         if tracked.exists():
-            out.append(face.unmul(Image.open(tracked)))
+            out.append(_matted(tracked))
             continue
         legacy = sorted(config.CACHE_DIR.glob(f"plate-{r['name']}-{part}-*-{res[0]}.png"))
         if legacy:
-            out.append(face.unmul(Image.open(legacy[0])))
+            out.append(_matted(legacy[0]))
             continue
         if os.environ.get("CLONECUT_NO_HARMONY"):
             raise ToolError(

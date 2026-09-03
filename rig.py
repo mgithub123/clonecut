@@ -6,7 +6,7 @@ means a character rig can be driven entirely from a script: no GUI, no clicking,
 216 frames at 4K in under twenty seconds.
 
     uv run rig.py info   ~/Desktop/LuckyDog-Harmony/LD_DOCTOR_RIG_MA
-    uv run rig.py plate  ~/Desktop/LuckyDog-Harmony/LD_DOCTOR_RIG_MA --out /tmp/head \\
+    uv run rig.py plate  ~/Desktop/LuckyDog-Harmony/LD_DOCTOR_RIG_MA --out cache/head \\
         --keep 16,18,19,21,22,23,24,26,27,28,30 --resolution 3840x2160
     uv run rig.py measure ~/Desktop/LuckyDog-Harmony/LD_DOCTOR_RIG_MA
 
@@ -26,6 +26,7 @@ Nothing here writes to the rig you point it at - the scene is copied first.
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import shutil
 import sys
@@ -391,7 +392,19 @@ def _emit(f2v: dict[int, str], eid: str, n: int) -> str:
 
 
 def render(scene: Path, timeout: int = 900) -> list[Path]:
-    """Run Harmony headless on a scene and return the frames it wrote."""
+    """Run Harmony headless on a scene and return the frames it wrote.
+
+    CLONECUT_NO_HARMONY=1 makes this raise instead of rendering. The licence is a
+    trial expiring 2026-10-03, so "does this still work without Harmony?" needs to
+    be answerable now, while there is still time to bake whatever the answer says
+    is missing - not discovered on the day it stops opening.
+    """
+    if os.environ.get("CLONECUT_NO_HARMONY"):
+        raise ToolError(
+            f"CLONECUT_NO_HARMONY is set and something asked Harmony to render "
+            f"{common.rel(scene)}.\n"
+            f"  Whatever this render was for is not baked yet - bake it while the "
+            f"licence lasts.")
     if not Path(HARMONY).exists():
         raise ToolError(f"Harmony not found at {HARMONY}")
     frames = scene.parent / "frames"
@@ -406,7 +419,7 @@ def render(scene: Path, timeout: int = 900) -> list[Path]:
 
 def plate(rig_dir: Path, out_dir: Path, *, keep: set[str] | None = None,
           resolution: tuple[int, int] | None = None, nframes: int = 1,
-          freeze: bool = True, hold: bool = True,
+          freeze: bool = True, hold: bool = True, alpha: bool = True,
           scene_name: str | None = None) -> list[Path]:
     """Copy a rig, prepare it, render, and return the frames.
 
@@ -433,6 +446,13 @@ def plate(rig_dir: Path, out_dir: Path, *, keep: set[str] | None = None,
     if resolution:
         scene.set_resolution(*resolution)
         print(f"  resolution {resolution[0]}x{resolution[1]}")
+    if alpha:
+        # Without this the Write node emits 24-bit TGA and the plate arrives
+        # composited onto the scene's background colour. That is survivable when
+        # the background is white - face.unmul() inverts the blend - but the robot's
+        # scene composites on black, where the same inversion makes every pixel
+        # opaque and the whole character disappears into it.
+        scene.set_write_format("TGA4")
     scene.set_write_prefix("frames/plate-")
     scene.save()
     made = render(scene.path)
@@ -494,7 +514,7 @@ def mouth_library(rig_dir: Path, out_dir: Path, element: str, mapping: dict[str,
     out_dir.mkdir(parents=True, exist_ok=True)
     wanted = sorted({int(v) for v in mapping.values()})
 
-    base_dir = Path("/tmp") / f"mouthlib-{rig_dir.name}-base"
+    base_dir = config.CACHE_DIR / f"mouthlib-{rig_dir.name}-base"
     plate(rig_dir, base_dir, keep=None, resolution=resolution, nframes=1,
           scene_name=scene_name)
     # blank the mouth element and re-render to get the face without it
@@ -514,7 +534,7 @@ def mouth_library(rig_dir: Path, out_dir: Path, element: str, mapping: dict[str,
     base = np.array(Image.open(nom).convert("RGB")).astype(int)
 
     # now one frame per wanted drawing
-    work = Path("/tmp") / f"mouthlib-{rig_dir.name}-shapes"
+    work = config.CACHE_DIR / f"mouthlib-{rig_dir.name}-shapes"
     plate(rig_dir, work, keep=None, resolution=resolution, nframes=len(wanted),
           scene_name=scene_name)
     sc2 = Scene(find_scene(work, scene_name))
@@ -827,7 +847,7 @@ def cmd_measure(a) -> int:
     if a.plate:
         src = Path(a.plate)
     else:
-        made = plate(Path(a.rig), Path(a.out or "/tmp/rig-measure"),
+        made = plate(Path(a.rig), Path(a.out or config.CACHE_DIR / "rig-measure"),
                      resolution=(3840, 2160), nframes=1)
         src = made[0]
     import json
