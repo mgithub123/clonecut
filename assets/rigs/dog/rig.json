@@ -22,13 +22,7 @@
       16,
       17,
       18,
-      29,
-      30,
-      31,
-      32,
-      33,
-      35,
-      38
+      29
     ],
     "body": [
       21,
@@ -45,7 +39,15 @@
       42
     ],
     "mouth": 34,
-    "note": "head excludes Mouth_NEW (34), which is composited on. Dog_Drawover (20), LD_dg_turn (2), sketch_roughs (5) and Pivot_Guide (6) are reference layers and belong in neither."
+    "note": "head is the head minus every mouth-family element. mouth (34, Mouth_NEW) and mouth_family (Mouth_POCKET 30, Teeth 31, Tongue 32, Tongue_OUT 33, tongue_NEW 35, Tongue_flapper 38) are composited on separately. An earlier version left the six mouth_family ids in head while claiming to exclude only Mouth_NEW, so the head plate carried a mouth the compositor then drew a second mouth over. Dog_Drawover (20), LD_dg_turn (2), sketch_roughs (5) and Pivot_Guide (6) are reference layers and belong in neither.",
+    "mouth_family": [
+      30,
+      31,
+      32,
+      33,
+      35,
+      38
+    ]
   },
   "face": {
     "width": 260,
