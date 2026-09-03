@@ -2,57 +2,148 @@
   "name": "doctor",
   "scene": "~/Desktop/LuckyDog-Harmony/LD_DOCTOR_RIG_MA",
   "render": {
-    "resolution": [3840, 2160],
+    "resolution": [
+      3840,
+      2160
+    ],
     "note": "the rig ships at 1920x1080; the post crops in hard so it is rendered at 4K"
   },
-
   "layers": {
-    "head": [16, 18, 19, 21, 22, 23, 24, 26, 27, 28, 30],
-    "body": [31, 32, 33, 35, 36, 38, 39, 40, 46, 48, 49, 50, 51, 52, 53, 54, 55, 56, 62, 67],
+    "head": [
+      16,
+      18,
+      19,
+      21,
+      22,
+      23,
+      24,
+      26,
+      27,
+      28,
+      30
+    ],
+    "body": [
+      31,
+      32,
+      33,
+      35,
+      36,
+      38,
+      39,
+      40,
+      46,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      62,
+      67
+    ],
     "mouth": 25,
     "note": "head excludes the mouth (25): mouth shapes are composited on and must travel with the head. Bangs (26) stay in the head plate - separating them exposes an outline the rig hides behind the main hair."
   },
-
   "face": {
     "width": 127,
     "lip_line": 568,
     "centre_x": 1920,
     "max_mouth_height": 74,
     "chin": 642,
-    "head_pivot": [1920, 640],
-    "note": "face width is measured at the lip line. Only 74px from lip to collar, so open mouths must fit inside that."
+    "head_pivot": [
+      1920,
+      640
+    ],
+    "note": "face width is measured at the lip line. Only 74px from lip to collar, so open mouths must fit inside that.",
+    "anchor": "top",
+    "anchor_note": "mouth hangs from the upper lip and opens downward"
   },
-
-  "eyes": [[1849, 454, 1902, 508], [1941, 454, 1994, 508]],
-  "eye_colour": [255, 215, 166],
+  "eyes": [
+    [
+      1849,
+      454,
+      1902,
+      508
+    ],
+    [
+      1941,
+      454,
+      1994,
+      508
+    ]
+  ],
+  "eye_colour": [
+    255,
+    215,
+    166
+  ],
   "eye_note": "flat cream discs on black, no pupils. Blinks squash them vertically and the black behind fills in. No gaze is possible.",
-
   "mouth_width_pct": {
-    "CLOSED": 0.45, "SMALL": 0.48, "OO": 0.30, "FV": 0.55,
-    "EE": 0.58, "OH": 0.55, "AH": 0.58, "WIDE": 0.62
+    "CLOSED": 0.45,
+    "SMALL": 0.48,
+    "OO": 0.3,
+    "FV": 0.55,
+    "EE": 0.58,
+    "OH": 0.55,
+    "AH": 0.58,
+    "WIDE": 0.62
   },
-  "mouth_ladder": ["CLOSED", "SMALL", "OO", "FV", "EE", "OH", "AH", "WIDE"],
+  "mouth_ladder": [
+    "CLOSED",
+    "SMALL",
+    "OO",
+    "FV",
+    "EE",
+    "OH",
+    "AH",
+    "WIDE"
+  ],
   "mouth_note": "as a fraction of face width. Sized larger than ~0.65 the mouth is wider than his face and touches the edges.",
-
-  "vowel_hold": ["OO"],
+  "vowel_hold": [
+    "OO"
+  ],
   "vowel_hold_note": "vowels whose shape is held while still audible, so a decaying note does not snap shut mid-word. Applied to every vowel it leaves the mouth open ~90% of the time.",
-
   "vowel_map": {
     "OO": "OO",
-    "AH": {"loud": "WIDE", "quiet": "AH", "at": 0.62},
-    "EE": {"loud": "EE", "quiet": "FV", "at": 0.35},
+    "AH": {
+      "loud": "WIDE",
+      "quiet": "AH",
+      "at": 0.62
+    },
+    "EE": {
+      "loud": "EE",
+      "quiet": "FV",
+      "at": 0.35
+    },
     "OH": "OH"
   },
-
   "tears": {
-    "paths": [[1868, 1857], [1972, 1984]],
-    "y": [516, 630],
+    "paths": [
+      [
+        1868,
+        1857
+      ],
+      [
+        1972,
+        1984
+      ]
+    ],
+    "y": [
+      516,
+      630
+    ],
     "note": "x pairs are start and end. Routed down the OUTER cheeks: straight down from either eye runs through the mouth, which spans x1881-1959."
   },
-
-  "crop": [1590, 100, 2250, 800],
+  "crop": [
+    1590,
+    100,
+    2250,
+    800
+  ],
   "crop_note": "generous enough that head movement never reaches the edge",
-
   "capabilities": {
     "lipsync": true,
     "blink": true,

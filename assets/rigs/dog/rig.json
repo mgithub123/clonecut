@@ -49,15 +49,17 @@
   },
   "face": {
     "width": 260,
-    "lip_line": 1542,
-    "centre_x": 1567,
+    "lip_line": 1569,
+    "centre_x": 1590,
     "max_mouth_height": 130,
-    "chin": 1685,
+    "chin": 1692,
     "head_pivot": [
       1567,
       1720
     ],
-    "note": "measured from a rendered plate, not by hand. Width is the muzzle's full skin extent where the mouth sits - the dog's snout is broken up by its nose and stitching, so a largest-contiguous-run measure reads far too narrow."
+    "note": "measured from the three head-on drawings (16, 1, 11) in the full-face render. Their bottoms barely move (1671-1692) while their tops move 85px, so this mouth opens upward from a fixed lower lip and must be bottom-anchored. An earlier version read the geometry off drawing 12 by mistake - the render frame index is a position in the sorted drawing map, not the drawing number.",
+    "anchor": "bottom",
+    "anchor_y": 1680
   },
   "eyes": [
     [
