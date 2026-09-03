@@ -22,12 +22,17 @@ import argparse, re, shutil, subprocess, sys, wave
 from pathlib import Path
 import numpy as np
 
+import common
+import config
+from common import ToolError
+
 LADDER = ["16", "17", "10", "1", "11"]   # closed -> wide, front-facing only
 
 
 def envelope(audio: str, start: float, dur: float, fps: float) -> np.ndarray:
-    tmp = "/tmp/_lipsync_band.wav"
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", str(start), "-t", str(dur),
+    config.ensure_dirs()
+    tmp = str(config.CACHE_DIR / "lipsync-band.wav")
+    subprocess.run([config.FFMPEG, "-y", "-loglevel", "error", "-ss", str(start), "-t", str(dur),
                     "-i", audio, "-af", "highpass=f=250,lowpass=f=3500",
                     "-ac", "1", "-ar", "16000", tmp], check=True)
     w = wave.open(tmp)
@@ -90,7 +95,7 @@ def main(argv=None):
     cols = re.findall(r'<column type="0"[^>]*>.*?</column>', s, re.S)
     col = next((c for c in cols if f'id="{a.element}"' in c), None)
     if col is None:
-        raise SystemExit(f"no type-0 column with element id {a.element}")
+        raise ToolError(f"no type-0 column with element id {a.element}")
     shutil.copy(scene, scene.with_suffix(".xstage.bak-lipsync"))
 
     body = "\n".join(f'     <elementSeq exposures="{x0}-{x1}" val="{v}" id="{a.element}"/>'
@@ -114,4 +119,8 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except ToolError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(1)

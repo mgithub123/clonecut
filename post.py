@@ -22,7 +22,12 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy import ndimage
 
-W, H = 1080, 1920
+import caption_styles as cs
+import common
+import config
+from common import ToolError
+
+W, H = cs.CANVAS_W, cs.CANVAS_H
 FONTP = "/System/Library/Fonts/HelveticaNeue.ttc"
 
 
@@ -93,15 +98,14 @@ def main(argv=None):
     p.add_argument("--erode", type=int, default=2, help="pixels to shave off the silhouette to kill the white fringe")
     p.add_argument("--feather", type=float, default=0.8)
     p.add_argument("--name", default="post")
-    p.add_argument("--out-dir", default="out")
+    p.add_argument("--out-dir", default=None, help=f"default: {common.rel(config.OUT_DIR)}")
     a = p.parse_args(argv)
 
-    root = Path(__file__).resolve().parent
-    out_dir = root / a.out_dir
-    out_dir.mkdir(exist_ok=True)
+    out_dir = Path(a.out_dir) if a.out_dir else config.OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
     files = sorted(Path(a.frames).glob(a.glob))
     if not files:
-        raise SystemExit(f"no frames matched {a.glob} in {a.frames}")
+        raise ToolError(f"no frames matched {a.glob} in {a.frames}")
 
     x0, y0, x1, y1 = char_bbox(files)
     cw, ch = x1 - x0, y1 - y0
@@ -112,7 +116,7 @@ def main(argv=None):
 
     out = out_dir / f"{a.name}-{datetime.datetime.now():%Y%m%d-%H%M%S}.mp4"
     proc = subprocess.Popen([
-        "ffmpeg", "-y", "-loglevel", "error",
+        config.FFMPEG, "-y", "-loglevel", "error",
         "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", f"{a.fps}", "-i", "-",
         "-ss", str(a.start), "-t", f"{dur:.3f}", "-i", a.audio,
         "-map", "0:v", "-map", "1:a",
@@ -141,10 +145,14 @@ def main(argv=None):
             "audio": a.audio, "start": a.start, "fps": a.fps, "text": a.text,
             "char_bbox": [x0, y0, x1, y1], "char_width": a.char_width, "bg": a.bg,
             "erode": a.erode, "feather": a.feather}
-    out.with_suffix(".json").write_text(json.dumps(side, indent=2))
+    common.write_json(out.with_suffix(".json"), side)
     print("wrote", out)
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except ToolError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        sys.exit(1)
