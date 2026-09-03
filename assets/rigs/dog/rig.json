@@ -1,0 +1,60 @@
+{
+  "name": "dog",
+  "scene": "~/Desktop/LuckyDog-Harmony/LuckyDog-Practice",
+  "scene_note": "a working copy. The master is ~/Desktop/LuckyDog-Harmony/_masters/LD_DOG_MA (read-only, extracted from LD_DOG_MA.7z in iCloud).",
+  "render": {
+    "resolution": [3840, 2160]
+  },
+
+  "layers": {
+    "head": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 29, 30, 31, 32, 33, 35, 38],
+    "body": [21, 22, 23, 24, 26, 27, 28, 37, 39, 40, 41, 42],
+    "mouth": 34,
+    "note": "head excludes Mouth_NEW (34), which is composited on. Dog_Drawover (20), LD_dg_turn (2), sketch_roughs (5) and Pivot_Guide (6) are reference layers and belong in neither."
+  },
+
+  "face": {
+    "width": 260,
+    "lip_line": 1542,
+    "centre_x": 1567,
+    "max_mouth_height": 130,
+    "chin": 1685,
+    "head_pivot": [1567, 1720],
+    "note": "measured from a rendered plate, not by hand. Width is the muzzle's full skin extent where the mouth sits - the dog's snout is broken up by its nose and stitching, so a largest-contiguous-run measure reads far too narrow."
+  },
+
+  "eyes": [[1507, 1478, 1568, 1511], [1610, 1478, 1671, 1511]],
+  "eye_colour": [255, 255, 255],
+  "eye_note": "white eyeballs with black pupils, unlike the doctor's flat discs. Found as enclosed white regions - white connected to the border is background.",
+
+  "mouth_width_pct": {
+    "CLOSED": 0.45, "SMALL": 0.48, "OO": 0.42, "FV": 0.55,
+    "EE": 0.58, "OH": 0.55, "AH": 0.58, "WIDE": 0.63
+  },
+  "mouth_ladder": ["CLOSED", "SMALL", "OO", "FV", "EE", "OH", "AH", "WIDE"],
+  "mouth_source": {
+    "from_rig": true,
+    "element": 34,
+    "map": {"CLOSED": 16, "SMALL": 17, "OO": 20, "FV": 1, "EE": 12, "OH": 10, "AH": 1, "WIDE": 11},
+    "note": "the dog is the one rig with a real mouth chart, so its library comes from its own drawings: uv run rig.py mouths <rig> --element 34 --out assets/rigs/dog/mouths --map ...  Only front-facing drawings are used; 2-8 and 13-15 are profile mouths and look sideways on a head-on shot."
+  },
+
+  "vowel_hold": ["OO"],
+  "vowel_map": {
+    "OO": "OO",
+    "AH": {"loud": "WIDE", "quiet": "AH", "at": 0.62},
+    "EE": {"loud": "EE", "quiet": "FV", "at": 0.35},
+    "OH": "OH"
+  },
+
+  "crop": [1250, 1300, 1930, 2010],
+
+  "capabilities": {
+    "lipsync": true,
+    "blink": true,
+    "tears": false,
+    "gaze": false,
+    "hands": 5
+  },
+  "capability_note": "tears is false because the cheek routing has not been measured for this face - straight down from either eye would cross the muzzle. The 20 mouth drawings cluster at two extremes (openness 8.5k-14k and 24k-28k) with nothing between, so this rig can be shut or gaping but has no true mid-range."
+}

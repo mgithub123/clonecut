@@ -333,9 +333,13 @@ def fit_background(path: Path) -> Image.Image:
 
 # ------------------------------------------------------------------ finish
 
-def finish(frames: list[Path], audio: str, start: float, dur: float, *,
-           bg: Image.Image | None, rain: bool, text: str, name: str,
-           char_width: int, char_top: int, out_dir: Path) -> Path:
+def composite(frames: list[Path], *, bg: Image.Image | None, rain: bool, text: str,
+              char_width: int, char_top: int, out_dir: Path) -> list[Path]:
+    """Character frames -> finished 1080x1920 RGB frames. No audio, no encode.
+
+    Split out from finish() so a montage can concatenate several shots and lay the
+    song over the result once, instead of muxing each shot separately.
+    """
     W, H = cs.CANVAS_W, cs.CANVAS_H
     x0 = y0 = 10 ** 9
     x1 = y1 = -1
@@ -362,15 +366,7 @@ def finish(frames: list[Path], audio: str, start: float, dur: float, *,
     fnt = _font(44)
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    out = out_dir / f"{name}-{datetime.datetime.now():%Y%m%d-%H%M%S}.mp4"
-    proc = subprocess.Popen(
-        [config.FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
-         "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
-         "-ss", str(start), "-t", f"{dur:.3f}", "-i", audio,
-         "-map", "0:v", "-map", "1:a",
-         "-af", f"afade=t=out:st={max(dur - 0.5, 0):.2f}:d=0.5",
-         "-c:v", "libx264", "-crf", "19", "-pix_fmt", "yuv420p",
-         "-c:a", "aac", "-b:a", "192k", "-shortest", str(out)], stdin=subprocess.PIPE)
+    written = []
     n = len(frames)
     for i, p in enumerate(frames):
         if bg is not None:
@@ -390,7 +386,26 @@ def finish(frames: list[Path], audio: str, start: float, dur: float, *,
             d = ImageDraw.Draw(rgbc)
             tw = d.textlength(text, font=fnt)
             d.text(((W - tw) / 2, text_y), text, font=fnt, fill=(235, 235, 235))
-        proc.stdin.write(rgbc.tobytes())
+        dest = out_dir / f"comp-{i + 1:05d}.png"
+        rgbc.save(dest)
+        written.append(dest)
+    return written
+
+
+def mux(frames: list[Path], audio: str, start: float, dur: float,
+        out: Path, *, fade: bool = True) -> Path:
+    """Finished frames + a slice of the song -> mp4."""
+    out.parent.mkdir(parents=True, exist_ok=True)
+    af = [] if not fade else ["-af", f"afade=t=out:st={max(dur - 0.5, 0):.2f}:d=0.5"]
+    proc = subprocess.Popen(
+        [config.FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+         "-s", f"{cs.CANVAS_W}x{cs.CANVAS_H}", "-r", str(FPS), "-i", "-",
+         "-ss", str(start), "-t", f"{dur:.3f}", "-i", audio,
+         "-map", "0:v", "-map", "1:a", *af,
+         "-c:v", "libx264", "-crf", "19", "-pix_fmt", "yuv420p",
+         "-c:a", "aac", "-b:a", "192k", "-shortest", str(out)], stdin=subprocess.PIPE)
+    for p in frames:
+        proc.stdin.write(Image.open(p).convert("RGB").tobytes())
     proc.stdin.close()
     proc.wait()
     return out
@@ -420,6 +435,8 @@ def main(argv=None) -> int:
     p.add_argument("--char-top", type=int, default=480)
     p.add_argument("--name", default="shot")
     p.add_argument("--out-dir", default=None)
+    p.add_argument("--frames-only", action="store_true",
+                   help="write finished frames and stop, for montage.py")
     a = p.parse_args(argv)
 
     r = load_rig(a.rig)
@@ -458,9 +475,14 @@ def main(argv=None) -> int:
         bg = fit_background(bp)
 
     out_dir = Path(a.out_dir) if a.out_dir else config.OUT_DIR
-    out = finish(frames, a.mix or a.audio, a.start, a.duration, bg=bg, rain=a.rain,
-                 text=a.text, name=a.name, char_width=a.char_width,
-                 char_top=a.char_top, out_dir=out_dir)
+    comp = composite(frames, bg=bg, rain=a.rain, text=a.text,
+                     char_width=a.char_width, char_top=a.char_top,
+                     out_dir=config.CACHE_DIR / f"comp-{a.rig}-{a.name}")
+    if a.frames_only:
+        print(f"wrote {len(comp)} frames to {common.rel(comp[0].parent)}")
+        return 0
+    out = mux(comp, a.mix or a.audio, a.start, a.duration,
+              out_dir / f"{a.name}-{datetime.datetime.now():%Y%m%d-%H%M%S}.mp4")
 
     common.write_json(out.with_suffix(".json"), {
         "video": out.name, "tool": "perform.py", "rig": a.rig,
