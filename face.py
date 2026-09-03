@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 from scipy import ndimage
 
 import common
@@ -205,6 +205,94 @@ def cmd_symmetry(a: argparse.Namespace) -> int:
     return 0
 
 
+BLACK=(0,0,0,255); TEETH=(241,241,239,255); TONGUE=(214,117,136,255); SS=4
+
+def _lens(d, box, pinch, fill=255):
+    """Opening outline: an ellipse blended toward a lens as `pinch` rises."""
+    x0,y0,x1,y1 = box; w,h = x1-x0, y1-y0
+    cy=(y0+y1)/2
+    pts_top, pts_bot = [], []
+    for i in range(65):
+        t=i/64
+        x=x0+w*t
+        # ellipse half-height at t, flattened toward straight lines at the corners
+        e=(1-(2*t-1)**2)**0.5
+        k=e**(1+2*pinch)
+        pts_top.append((x, cy-h/2*k)); pts_bot.append((x, cy+h/2*k))
+    d.polygon(pts_top+pts_bot[::-1], fill=fill)
+
+def mouth(w,h,*,pinch=0.35,teeth_top=True,teeth_bottom=False,tongue=True,
+          closed=False,stroke=None):
+    stroke=(stroke or max(3,int(h*0.13)))*SS
+    W,H=w*SS,h*SS; pad=stroke*2
+    canvas=(W+pad*2, H+pad*2)
+    if closed:                                  # a smile line, not an opening
+        im=Image.new("RGBA",canvas,(0,0,0,0)); d=ImageDraw.Draw(im)
+        d.arc([pad, pad-H, pad+W, pad+H], 20, 160, fill=BLACK, width=stroke)
+        return im.resize((im.width//SS,im.height//SS), Image.LANCZOS)
+
+    shape=Image.new("L",canvas,0); ds=ImageDraw.Draw(shape)
+    _lens(ds,[pad,pad,pad+W,pad+H],pinch)
+    inner=np.array(shape)>128
+    ys,xs=np.where(inner)
+    ix0,ix1,iy0,iy1=xs.min(),xs.max(),ys.min(),ys.max()
+    ih,iw=iy1-iy0,ix1-ix0
+
+    fill=Image.new("RGBA",canvas,(0,0,0,0)); df=ImageDraw.Draw(fill)
+    df.bitmap((0,0),shape,fill=BLACK)
+    if tongue and ih>16*SS:
+        tw,th=int(iw*0.66),int(ih*0.52)
+        cx=(ix0+ix1)//2
+        df.ellipse([cx-tw//2, iy1-th, cx+tw//2, iy1+th//3], fill=TONGUE)
+    def teeth(y0,y1,n):
+        span=int(iw*0.60); x0=(ix0+ix1)//2-span//2
+        gap=max(2*SS,span//34); tw=(span-gap*(n-1))//n
+        for k in range(n):
+            x=x0+k*(tw+gap)
+            df.rounded_rectangle([x,y0,x+tw,y1],radius=max(2,tw//7),fill=TEETH)
+    if teeth_top and ih>12*SS: teeth(iy0, iy0+int(ih*0.36), 4)
+    if teeth_bottom and ih>26*SS: teeth(iy1-int(ih*0.30), iy1, 4)
+
+    # clip every interior fill to the opening, then stroke the outline on top
+    from scipy import ndimage
+    keep=ndimage.binary_erosion(inner, iterations=max(1,stroke//2))
+    a=np.array(fill); a[...,3]=np.where(keep, a[...,3], 0)
+    out=Image.fromarray(a)
+    ring=ImageDraw.Draw(out)
+    edge=Image.new("L",canvas,0)
+    _lens(ImageDraw.Draw(edge),[pad,pad,pad+W,pad+H],pinch)
+    em=np.array(edge)>128
+    outline=em & ~ndimage.binary_erosion(em, iterations=stroke)
+    b=np.array(out); b[outline]=BLACK
+    return Image.fromarray(b).resize(((W+pad*2)//SS,(H+pad*2)//SS), Image.LANCZOS)
+
+
+DRAWN_SPEC = {
+    "CLOSED": dict(w=168, h=26, pinch=0.30, teeth_top=False, teeth_bottom=False, tongue=False, closed=True),
+    "SMALL":  dict(w=150, h=40, pinch=0.45, teeth_top=True,  teeth_bottom=False, tongue=True),
+    "OO":     dict(w= 86, h=76, pinch=0.05, teeth_top=False, teeth_bottom=False, tongue=True),
+    "FV":     dict(w=162, h=44, pinch=0.55, teeth_top=True,  teeth_bottom=False, tongue=False),
+    "EE":     dict(w=172, h=54, pinch=0.65, teeth_top=True,  teeth_bottom=True,  tongue=False),
+    "OH":     dict(w=118, h=94, pinch=0.10, teeth_top=True,  teeth_bottom=False, tongue=True),
+    "AH":     dict(w=160, h=92, pinch=0.30, teeth_top=True,  teeth_bottom=False, tongue=True),
+    "WIDE":   dict(w=176, h=112, pinch=0.40, teeth_top=True, teeth_bottom=True,  tongue=True),
+}
+
+
+def cmd_draw(a: argparse.Namespace) -> int:
+    """Draw a vowel set from scratch. For a rig with nothing to derive from."""
+    out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
+    for name, kw in DRAWN_SPEC.items():
+        im = mouth(**kw)
+        bb = im.getbbox()
+        if bb:
+            im = im.crop(bb)
+        im.save(out / f"{name}.png")
+        print(f"  {name:7s} {im.width}x{im.height}")
+    print(f"wrote {len(DRAWN_SPEC)} shapes to {common.rel(out)}")
+    return 0
+
+
 def cmd_sheet(a: argparse.Namespace) -> int:
     src = Path(a.sheet)
     if not src.exists():
@@ -231,6 +319,10 @@ def main(argv=None) -> int:
     d.add_argument("--spec", required=True,
                    help="NAME=drawing:xscale:yscale, comma separated")
     d.set_defaults(func=cmd_derive)
+
+    w = sub.add_parser("draw", help="draw a vowel set from scratch (no source art needed)")
+    w.add_argument("--out", required=True)
+    w.set_defaults(func=cmd_draw)
 
     y = sub.add_parser("symmetry", help="rank drawings by how head-on they are")
     y.add_argument("dir")
