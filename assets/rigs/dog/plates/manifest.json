@@ -1,0 +1,1490 @@
+{
+  "rig": "Luckydog_DOG",
+  "scene": "Luckydog_DOG_MA.xstage",
+  "resolution": [
+    7680,
+    4320
+  ],
+  "cropped": true,
+  "crop_note": "element plates, library drawings and turnaround poses are cropped to their bbox on the resolution-sized canvas; paste at bbox[:2] to restore. _ALL.png and _ALL_NOCUT.png are full-canvas.",
+  "scene_sha256": "dca76b47d462dbc4e9ead1923ef42d38d391ed777da16be84e22d0adfb21acfa",
+  "cutters_bypassed": 31,
+  "elements": {
+    "2": {
+      "name": "LD_dg_turn",
+      "drawings": 1,
+      "file": "2-LD_dg_turn.png",
+      "folder": "LD_dg_turn",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "3": {
+      "name": "wu64czhC",
+      "drawings": 1,
+      "file": "3-wu64czhC.png",
+      "folder": "wu64czhC",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "5": {
+      "name": "sketch_roughs",
+      "drawings": 1,
+      "file": "5-sketch_roughs.png",
+      "folder": "sketch_roughs",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "6": {
+      "name": "Pivot_Guide",
+      "drawings": 1,
+      "file": "6-Pivot_Guide.png",
+      "folder": "Pivot_Guide",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "7": {
+      "name": "Face",
+      "drawings": 1,
+      "file": "7-Face.png",
+      "folder": "Face",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "8": {
+      "name": "Jaw",
+      "drawings": 1,
+      "file": "8-Jaw.png",
+      "folder": "Jaw",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "9": {
+      "name": "Ear_01",
+      "drawings": 1,
+      "file": "9-Ear_01.png",
+      "folder": "Ear_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "10": {
+      "name": "Ear_flap_01",
+      "drawings": 2,
+      "file": "10-Ear_flap_01.png",
+      "folder": "Ear_flap_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "1": {
+          "file": "10-1.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "2": {
+          "file": "10-2.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "11": {
+      "name": "Brow_01",
+      "drawings": 1,
+      "file": "11-Brow_01.png",
+      "folder": "Brow_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "12": {
+      "name": "Pupil_01",
+      "drawings": 1,
+      "file": "12-Pupil_01.png",
+      "folder": "Pupil_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "13": {
+      "name": "Eye_01",
+      "drawings": 1,
+      "file": "13-Eye_01.png",
+      "folder": "Eye_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "14": {
+      "name": "Eyebag_01",
+      "drawings": 1,
+      "file": "14-Eyebag_01.png",
+      "folder": "Eyebag_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "15": {
+      "name": "T_Eyelid_01",
+      "drawings": 1,
+      "file": "15-T_Eyelid_01.png",
+      "folder": "T_Eyelid_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "16": {
+      "name": "B_Eyelid_01",
+      "drawings": 1,
+      "file": "16-B_Eyelid_01.png",
+      "folder": "B_Eyelid_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "17": {
+      "name": "Nose",
+      "drawings": 1,
+      "file": "17-Nose.png",
+      "folder": "Nose",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "18": {
+      "name": "Nose_SHINE",
+      "drawings": 1,
+      "file": "18-Nose_SHINE.png",
+      "folder": "Nose_SHINE",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "20": {
+      "name": "Dog_Drawover",
+      "drawings": 1,
+      "file": "20-Dog_Drawover.png",
+      "folder": "Dog_Drawover",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "21": {
+      "name": "Collar",
+      "drawings": 1,
+      "file": "21-Collar.png",
+      "folder": "Collar",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "22": {
+      "name": "Tag",
+      "drawings": 1,
+      "file": "22-Tag.png",
+      "folder": "Tag",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "23": {
+      "name": "Body",
+      "drawings": 1,
+      "file": "23-Body.png",
+      "folder": "Body",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "24": {
+      "name": "Stitches",
+      "drawings": 1,
+      "file": "24-Stitches.png",
+      "folder": "Stitches",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "26": {
+      "name": "Upper_arm_01",
+      "drawings": 1,
+      "file": "26-Upper_arm_01.png",
+      "folder": "Upper_arm_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "27": {
+      "name": "Lower_Arm_01",
+      "drawings": 1,
+      "file": "27-Lower_Arm_01.png",
+      "folder": "Lower_Arm_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "28": {
+      "name": "Hand_01",
+      "drawings": 5,
+      "file": "28-Hand_01.png",
+      "folder": "Hand_01",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "Drumstick_BACK": {
+          "file": "28-Drumstick_BACK.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "Drumstick_PALM": {
+          "file": "28-Drumstick_PALM.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "Fist": {
+          "file": "28-Fist.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "Open_BACK": {
+          "file": "28-Open_BACK.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "Open_PALM": {
+          "file": "28-Open_PALM.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "29": {
+      "name": "Nose_Stitches",
+      "drawings": 1,
+      "file": "29-Nose_Stitches.png",
+      "folder": "Nose_Stitches",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "30": {
+      "name": "Mouth_POCKET",
+      "drawings": 24,
+      "file": "30-Mouth_POCKET.png",
+      "folder": "Mouth_POCKET",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "1": {
+          "file": "30-1.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "10": {
+          "file": "30-10.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "11": {
+          "file": "30-11.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "12": {
+          "file": "30-12.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "13": {
+          "file": "30-13.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "14": {
+          "file": "30-14.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "15": {
+          "file": "30-15.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "16": {
+          "file": "30-16.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "17": {
+          "file": "30-17.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "18": {
+          "file": "30-18.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "19": {
+          "file": "30-19.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "2": {
+          "file": "30-2.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "20": {
+          "file": "30-20.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "21": {
+          "file": "30-21.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "22": {
+          "file": "30-22.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "23": {
+          "file": "30-23.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "24": {
+          "file": "30-24.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "3": {
+          "file": "30-3.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "4": {
+          "file": "30-4.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "5": {
+          "file": "30-5.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "6": {
+          "file": "30-6.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "7": {
+          "file": "30-7.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "8": {
+          "file": "30-8.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "9": {
+          "file": "30-9.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "31": {
+      "name": "Teeth",
+      "drawings": 9,
+      "file": "31-Teeth.png",
+      "folder": "Teeth",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "1": {
+          "file": "31-1.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "2": {
+          "file": "31-2.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "3": {
+          "file": "31-3.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "4": {
+          "file": "31-4.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "5": {
+          "file": "31-5.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "6": {
+          "file": "31-6.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "7": {
+          "file": "31-7.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "8": {
+          "file": "31-8.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "9": {
+          "file": "31-9.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "32": {
+      "name": "Tongue",
+      "drawings": 1,
+      "file": "32-Tongue.png",
+      "folder": "Tongue",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "33": {
+      "name": "Tongue_OUT",
+      "drawings": 1,
+      "file": "33-Tongue_OUT.png",
+      "folder": "Tongue_OUT",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "34": {
+      "name": "Mouth_NEW",
+      "drawings": 20,
+      "file": "34-Mouth_NEW.png",
+      "folder": "Mouth_NEW",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "1": {
+          "file": "34-1.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "10": {
+          "file": "34-10.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "11": {
+          "file": "34-11.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "12": {
+          "file": "34-12.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "13": {
+          "file": "34-13.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "14": {
+          "file": "34-14.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "15": {
+          "file": "34-15.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "16": {
+          "file": "34-16.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "17": {
+          "file": "34-17.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "18": {
+          "file": "34-18.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "19": {
+          "file": "34-19.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "2": {
+          "file": "34-2.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "20": {
+          "file": "34-20.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "3": {
+          "file": "34-3.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "4": {
+          "file": "34-4.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "5": {
+          "file": "34-5.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "6": {
+          "file": "34-6.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "7": {
+          "file": "34-7.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "8": {
+          "file": "34-8.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "9": {
+          "file": "34-9.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "35": {
+      "name": "tongue_NEW",
+      "drawings": 8,
+      "file": "35-tongue_NEW.png",
+      "folder": "tongue_NEW",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ],
+      "library": {
+        "1": {
+          "file": "35-1.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "2": {
+          "file": "35-2.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "3": {
+          "file": "35-3.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "4": {
+          "file": "35-4.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "5": {
+          "file": "35-5.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "6": {
+          "file": "35-6.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "7": {
+          "file": "35-7.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        },
+        "8": {
+          "file": "35-8.png",
+          "bbox": [
+            0,
+            0,
+            7679,
+            4319
+          ]
+        }
+      }
+    },
+    "37": {
+      "name": "Tail",
+      "drawings": 1,
+      "file": "37-Tail.png",
+      "folder": "Tail",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "38": {
+      "name": "Tongue_flapper",
+      "drawings": 1,
+      "file": "38-Tongue_flapper.png",
+      "folder": "Tongue_flapper",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "39": {
+      "name": "R_Upper_Leg",
+      "drawings": 1,
+      "file": "39-R_Upper_Leg.png",
+      "folder": "R_Upper_Leg",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "40": {
+      "name": "R_Lower_Leg",
+      "drawings": 1,
+      "file": "40-R_Lower_Leg.png",
+      "folder": "R_Lower_Leg",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "41": {
+      "name": "R_Foot",
+      "drawings": 1,
+      "file": "41-R_Foot.png",
+      "folder": "R_Foot",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    },
+    "42": {
+      "name": "Foot_Lines",
+      "drawings": 1,
+      "file": "42-Foot_Lines.png",
+      "folder": "Foot_Lines",
+      "bbox": [
+        0,
+        0,
+        7679,
+        4319
+      ]
+    }
+  },
+  "drawings_baked": 68,
+  "ground_truth": "_ALL.png",
+  "ground_truth_nocut": "_ALL_NOCUT.png",
+  "turnaround": {
+    "frames": 40,
+    "poses": [
+      {
+        "frame": 1,
+        "file": "pose-0001.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 2,
+        "file": "pose-0002.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 3,
+        "file": "pose-0003.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 4,
+        "file": "pose-0004.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 5,
+        "file": "pose-0005.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 6,
+        "file": "pose-0006.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 7,
+        "file": "pose-0007.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 8,
+        "file": "pose-0008.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 9,
+        "file": "pose-0009.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 10,
+        "file": "pose-0010.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 11,
+        "file": "pose-0011.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 12,
+        "file": "pose-0012.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 13,
+        "file": "pose-0013.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 14,
+        "file": "pose-0014.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 15,
+        "file": "pose-0015.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 16,
+        "file": "pose-0016.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 17,
+        "file": "pose-0017.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 18,
+        "file": "pose-0018.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 19,
+        "file": "pose-0019.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 20,
+        "file": "pose-0020.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 21,
+        "file": "pose-0021.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 22,
+        "file": "pose-0022.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 23,
+        "file": "pose-0023.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 24,
+        "file": "pose-0024.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 25,
+        "file": "pose-0025.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 26,
+        "file": "pose-0026.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 27,
+        "file": "pose-0027.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 28,
+        "file": "pose-0028.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 29,
+        "file": "pose-0029.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 30,
+        "file": "pose-0030.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 31,
+        "file": "pose-0031.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 32,
+        "file": "pose-0032.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 33,
+        "file": "pose-0033.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 34,
+        "file": "pose-0034.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 35,
+        "file": "pose-0035.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 36,
+        "file": "pose-0036.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 37,
+        "file": "pose-0037.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 38,
+        "file": "pose-0038.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 39,
+        "file": "pose-0039.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      },
+      {
+        "frame": 40,
+        "file": "pose-0040.png",
+        "bbox": [
+          0,
+          0,
+          7679,
+          4319
+        ]
+      }
+    ]
+  }
+}

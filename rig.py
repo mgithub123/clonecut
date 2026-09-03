@@ -89,8 +89,14 @@ class Scene:
             raise ToolError(f"no scene at {self.path}")
         self.xml = self.path.read_text(encoding="utf-8", errors="replace")
         table = self.path.parent / "scene.elementTable"
-        self.elements = dict(re.findall(r'<element id="(\d+)" elementName="([^"]*)"',
-                                        table.read_text())) if table.exists() else {}
+        txt = table.read_text() if table.exists() else ""
+        self.elements = dict(re.findall(r'<element id="(\d+)" elementName="([^"]*)"', txt))
+        # elementFolder, not elementName, is where the drawings actually live. The robot
+        # has two elements both named Hand: ids 35 and 44, folders Hand and Hand.44, with
+        # 10 and 9 poses. Reading by name gave element 44 the other hand's drawing list
+        # and asked Harmony for a pose it does not have.
+        self.folders = dict(re.findall(
+            r'<element id="(\d+)"[^>]*elementFolder="([^"]*)"', txt))
 
     # ---- inspection -------------------------------------------------------
     @property
@@ -112,8 +118,50 @@ class Scene:
         out = {}
         edir = self.path.parent / "elements"
         for eid, name in self.elements.items():
-            d = edir / name
+            d = edir / self.folders.get(eid, name)
             out[name] = len(list(d.glob("*.tvg"))) if d.is_dir() else 0
+        return out
+
+    def drawing_counts_by_id(self) -> dict[str, int]:
+        """Same as drawing_counts but keyed by element id.
+
+        drawing_counts() keys by name, and the robot has two elements both called
+        Hand (ids 35 and 44) - one silently overwrites the other, under-reporting
+        its hand poses by half.
+        """
+        out = {}
+        edir = self.path.parent / "elements"
+        for eid, name in self.elements.items():
+            d = edir / self.folders.get(eid, name)
+            out[eid] = len(list(d.glob("*.tvg"))) if d.is_dir() else 0
+        return out
+
+    def drawing_ids_by_id(self) -> dict[str, list[str]]:
+        """The actual drawing names each element has, e.g. ["1","2","D7"].
+
+        Taken from the .tvg filenames (Name-<drawing>.tvg) rather than assumed to
+        be 1..n: the dog's mouths are numbered with gaps, and an element's frame-1
+        exposure is often not drawing 1.
+        """
+        out = {}
+        edir = self.path.parent / "elements"
+        for eid, name in self.elements.items():
+            folder = self.folders.get(eid, name)
+            d = edir / folder
+            if not d.is_dir():
+                out[eid] = []
+                continue
+            vals = []
+            for f in sorted(d.glob("*.tvg")):
+                stem = f.stem
+                for pre in (name + "-", folder + "-"):
+                    if stem.startswith(pre):
+                        stem = stem[len(pre):]
+                        break
+                else:
+                    stem = stem.split("-", 1)[1] if "-" in stem else stem
+                vals.append(stem)
+            out[eid] = vals
         return out
 
     def exposure_gaps(self, nframes: int) -> dict[str, list[int]]:
@@ -248,8 +296,79 @@ class Scene:
         self.xml = re.sub(r'(nbframes=")\d+(")', rf'\g<1>{n}\g<2>', self.xml)
         self.xml = re.sub(r'(<scene [^>]*stopFrame=")\d+(")', rf'\g<1>{n}\g<2>', self.xml)
 
+    def set_write_format(self, fmt: str = "TGA4") -> None:
+        """TGA4 is 32-bit with alpha. The default TGA is 24-bit, so anything the
+        rig does not cover comes out black - which is invisible on a rig that
+        renders over a white colour card and fatal on one that does not."""
+        self.xml = re.sub(r'(<drawingType val=")[^"]*(")', rf'\g<1>{fmt}\g<2>', self.xml)
+
     def set_write_prefix(self, prefix: str) -> None:
         self.xml = re.sub(r'(<drawingName val=")[^"]*(")', rf'\g<1>{prefix}\g<2>', self.xml)
+
+    def bypass_cutters(self) -> int:
+        """Rewire every CUTTER out of the node graph, so each element renders its raw art.
+
+        A Cutter takes the image on port 0 and a matte on port 1. Baking one element
+        at a time blanks every other element, which empties those mattes - and a
+        Cutter with no matte outputs nothing, so ten of the robot's elements came
+        back blank: its eyelids, teeth, decals and shadows are all cut by a matte
+        drawn on a different element.
+
+        Bypassing is the right answer rather than a workaround. The point of baking
+        element-wise is to recompose in Python later, and the matte elements are
+        baked too, so the masking is reconstructible - whereas a Cutter applied
+        during the bake is one more decision frozen into the plate.
+
+        Names repeat between groups ("Cutter" appears in several), so each
+        <linkedlist> is resolved on its own.
+        """
+        cutters = set(re.findall(r'<module type="CUTTER" name="([^"]*)"', self.xml))
+        if not cutters:
+            return 0
+        removed = 0
+
+        def fix(block: re.Match) -> str:
+            nonlocal removed
+            body = block.group(0)
+            links = re.findall(r'<link\b[^/]*/>', body)
+            parsed = [{k: v for k, v in re.findall(r'(\w+)="([^"]*)"', l)} for l in links]
+            here = {l["in"] for l in parsed if l.get("in") in cutters}
+            if not here:
+                return body
+            # each cutter's image source, i.e. what it should be replaced by
+            image = {c: None for c in here}
+            for l in parsed:
+                if l.get("in") in here and l.get("inport", "0") == "0":
+                    image[l["in"]] = l.get("out")
+
+            def resolve(name, seen=()):
+                while name in here and name not in seen:
+                    seen = seen + (name,)
+                    name = image.get(name)
+                return name
+
+            out, indent = [], re.search(r"\n(\s*)<link", body)
+            pad = indent.group(1) if indent else "           "
+            for l in parsed:
+                if l.get("in") in here:
+                    continue                      # an input to a cutter: goes away with it
+                src = resolve(l.get("out"))
+                if src is None:
+                    continue                      # cutter had no image input; nothing to pass on
+                attrs = f'out="{src}" in="{l["in"]}"'
+                if "outport" in l and l["out"] not in here:
+                    attrs += f' outport="{l["outport"]}"'
+                if "inport" in l:
+                    attrs += f' inport="{l["inport"]}"'
+                out.append(f"{pad}<link {attrs}/>")
+            removed += len(here)
+            first = re.search(r"<link\s", body).start()   # not "<linkedlist>", which shares the prefix
+            head = body[:first]
+            tail = body[body.rindex("/>") + 2:]
+            return head + "\n".join(out).lstrip() + tail
+
+        self.xml = re.sub(r"<linkedlist>.*?</linkedlist>", fix, self.xml, flags=re.S)
+        return removed
 
     def save(self, path: Path | None = None) -> Path:
         dest = Path(path or self.path)
@@ -437,6 +556,220 @@ def mouth_library(rig_dir: Path, out_dir: Path, element: str, mapping: dict[str,
     return written
 
 
+def bake_drawings(work: Path, scene_name: str, out_dir: Path, targets: list[tuple[str, str]],
+                  resolution: tuple[int, int]) -> dict:
+    """Render every drawing of every multi-drawing element, one per frame.
+
+    The element pass captures whatever each element happens to expose on frame 1.
+    That loses the parts of a rig that are libraries rather than layers: the dog's
+    twenty mouths and twenty-four pockets, the robot's twenty hand poses. Those are
+    the only gesture and articulation vocabulary these rigs have, and once the
+    licence lapses they cannot be got back.
+
+    Drawings are saved tight-cropped with their offset recorded, so a pose can be
+    put back exactly where the rig had it without storing 33MP of transparency.
+    """
+    from PIL import Image
+    if not targets:
+        return {}
+    sc = Scene(work / scene_name)
+    p, c = sc.freeze_pegs()
+    cut = sc.bypass_cutters()
+
+    frame_of: dict[tuple[str, str], int] = {t: i for i, t in enumerate(targets, 1)}
+    by_el: dict[str, list[tuple[int, str]]] = {}
+    for (eid, val), fr in frame_of.items():
+        by_el.setdefault(eid, []).append((fr, val))
+
+    def expose(m):
+        col = m.group(0)
+        seqs = re.findall(_SEQ, col)
+        if not seqs:
+            return col
+        eid = seqs[0][2]
+        if eid not in by_el:
+            return re.sub(r"(\s*<elementSeq[^>]*/>)+", "\n    ", col, count=1)
+        body = "\n" + "".join(
+            '     <elementSeq exposures="%d" val="%s" id="%s"/>\n' % (fr, val, eid)
+            for fr, val in sorted(by_el[eid])) + "    "
+        return re.sub(r"(\s*<elementSeq[^>]*/>)+", body, col, count=1)
+
+    sc.xml = re.sub(_COL0, expose, sc.xml, flags=re.S)
+    sc.set_length(len(targets)); sc.set_resolution(*resolution)
+    sc.set_write_format("TGA4")
+    sc.set_write_prefix("frames/dw-")
+    sc.save()
+    print(f"  {len(targets)} drawings across {len(by_el)} elements, "
+          f"{cut} cutters bypassed, {resolution[0]}x{resolution[1]}")
+    render(sc.path)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    got: dict = {}
+    for (eid, val), fr in sorted(frame_of.items(), key=lambda kv: kv[1]):
+        src_f = work / "frames" / f"dw-{fr:04d}.tga"
+        if not src_f.exists():
+            continue
+        arr = np.array(Image.open(src_f).convert("RGBA"))
+        ys, xs = np.where(arr[..., 3] > 8)
+        rec = got.setdefault(eid, {})
+        if not len(ys):
+            rec[val] = None                    # a genuinely blank drawing; recorded, not silently dropped
+            continue
+        x0, y0, x1, y1 = int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())
+        safe = re.sub(r"[^A-Za-z0-9_.-]", "_", val)
+        dest = out_dir / f"{eid}-{safe}.png"
+        Image.fromarray(arr[y0:y1 + 1, x0:x1 + 1]).save(dest)
+        rec[val] = {"file": dest.name, "bbox": [x0, y0, x1, y1]}
+    return got
+
+
+def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
+         scene_name: str | None = None, include_all: bool = True,
+         turnaround: bool = True) -> dict:
+    """Render every element of a rig, alone, on the full registered canvas.
+
+    Elements rather than compositions. A head plate, a body plate, a mouth-in-head
+    plate and an eyelid state are all just subsets of the elements; bake the parts
+    and any of them can be recomposed in Python afterwards, at any z-order, with
+    any later fix. Bake a composition and you have banked whatever was wrong with
+    it at the time - which is exactly what happened to the dog's head plate, which
+    silently contained six mouth-family elements.
+
+    One Harmony invocation, not one per element: element i is exposed only on
+    frame i and everything else is blanked, so an N-frame render yields N plates.
+    """
+    from PIL import Image
+    rig_dir = Path(rig_dir); out_dir = Path(out_dir); out_dir.mkdir(parents=True, exist_ok=True)
+    chosen = find_scene(rig_dir, scene_name)
+    probe = Scene(chosen)
+    counts = probe.drawing_counts_by_id()
+    ids = [i for i, n in counts.items() if n]          # elements that actually draw
+    if not ids:
+        raise ToolError(f"no drawable elements in {common.rel(chosen)}")
+
+    work = config.CACHE_DIR / f"bake-{rig_dir.name}"
+    if work.exists(): shutil.rmtree(work)
+    shutil.copytree(rig_dir, work, ignore=shutil.ignore_patterns("frames","*.BACKUP*","*.bak-*"))
+    for p in work.rglob("*"):               # the masters are read-only; the working copy must not be
+        p.chmod(p.stat().st_mode | 0o200)
+    (work/"frames").mkdir(exist_ok=True)
+    sc = Scene(work / chosen.name)
+    p, c = sc.freeze_pegs()
+    cut = sc.bypass_cutters()
+    n = len(ids)
+
+    def one_per_frame(m):
+        col = m.group(0)
+        seqs = re.findall(_SEQ, col)
+        if not seqs: return col
+        eid = seqs[0][2]
+        if eid not in ids:
+            return re.sub(r"(\s*<elementSeq[^>]*/>)+", "\n    ", col, count=1)
+        f2v = {}
+        for e, v, _ in seqs:
+            for fr in frames_of(e): f2v[fr] = v
+        val = f2v.get(1, f2v[min(f2v)])
+        frame = ids.index(eid) + 1
+        body = '\n     <elementSeq exposures="%d" val="%s" id="%s"/>\n    ' % (frame, val, eid)
+        return re.sub(r"(\s*<elementSeq[^>]*/>)+", body, col, count=1)
+
+    sc.xml = re.sub(_COL0, one_per_frame, sc.xml, flags=re.S)
+    sc.set_length(n); sc.set_resolution(*resolution)
+    sc.set_write_format("TGA4")
+    sc.set_write_prefix("frames/el-")
+    sc.save()
+    print(f"  {n} elements, pegs frozen ({p} paths, {c} curves), "
+          f"{cut} cutters bypassed, {resolution[0]}x{resolution[1]}")
+    render(sc.path)
+
+    manifest = {"rig": rig_dir.name, "scene": chosen.name,
+                "resolution": list(resolution),
+                "cropped": True,
+                "crop_note": "element plates, library drawings and turnaround poses are cropped to their bbox on the resolution-sized canvas; paste at bbox[:2] to restore. _ALL.png and _ALL_NOCUT.png are full-canvas.",
+                "scene_sha256": common.file_hash(chosen),
+                "cutters_bypassed": cut,
+                "elements": {}}
+    for k, eid in enumerate(ids, 1):
+        src = work/"frames"/f"el-{k:04d}.tga"
+        if not src.exists(): continue
+        im = Image.open(src)
+        arr = np.array(im.convert("RGBA"))
+        solid = arr[..., 3] > 8 if arr.shape[2] == 4 else (arr[..., :3].sum(axis=2) < 720)
+        ys, xs = np.where(solid)
+        name = probe.elements.get(eid, f"id{eid}")
+        dest = out_dir / f"{eid}-{name}.png"
+        box = [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())] if len(ys) else None
+        # Saved cropped to its own art, with the offset recorded. A 7680x4320 canvas
+        # per element is 33MP of mostly nothing; the bbox makes the crop lossless for
+        # recompositing - paste at bbox[:2] and you have the original canvas back.
+        rgba = arr if arr.shape[2] == 4 else np.dstack([arr, np.full(arr.shape[:2], 255, np.uint8)])
+        Image.fromarray(rgba[box[1]:box[3] + 1, box[0]:box[2] + 1] if box else rgba).save(dest)
+        manifest["elements"][eid] = {
+            "name": name, "drawings": counts[eid], "file": dest.name,
+            "folder": probe.folders.get(eid, name), "bbox": box,
+        }
+    # every drawing of every element that has more than one - the rigs' pose and
+    # articulation libraries, which the frame-1 element pass above cannot see
+    multi = [(eid, v) for eid, vals in probe.drawing_ids_by_id().items()
+             if len(vals) > 1 for v in vals]
+    if multi:
+        got = bake_drawings(work, chosen.name, out_dir / "drawings", multi, resolution)
+        for eid, rec in got.items():
+            manifest["elements"].setdefault(eid, {"name": probe.elements.get(eid, f"id{eid}")})
+            manifest["elements"][eid]["library"] = rec
+        manifest["drawings_baked"] = sum(len(r) for r in got.values())
+
+    if include_all:
+        # Two ground truths. _ALL is the rig as authored - what a recomposite should
+        # look like. _ALL_NOCUT is the same with cutters bypassed, which is the one
+        # the element plates can actually be checked against, since they were baked
+        # that way too. Without it, every masked element reads as a mismatch.
+        for tag, bypass in (("all", False), ("allnc", True)):
+            sc2 = Scene(work / chosen.name)
+            sc2.xml = Scene(chosen).xml
+            sc2.freeze_pegs()
+            if bypass:
+                sc2.bypass_cutters()
+            sc2.hold_frame_one(1); sc2.set_length(1)
+            sc2.set_resolution(*resolution); sc2.set_write_format("TGA4")
+            sc2.set_write_prefix(f"frames/{tag}-")
+            sc2.save(); render(sc2.path)
+            got_p = sorted((work/"frames").glob(f"{tag}-*.tga"))
+            if got_p:
+                dest = out_dir / ("_ALL.png" if not bypass else "_ALL_NOCUT.png")
+                Image.open(got_p[0]).convert("RGBA").save(dest)
+                manifest["ground_truth" if not bypass else "ground_truth_nocut"] = dest.name
+
+    if turnaround:
+        # The view angles. Every one of these rigs is a turnaround first and a
+        # character second, and the poses are the only way to cut to a three-quarter
+        # view later. freeze_pegs() has been throwing them away all session.
+        sc3 = Scene(work / chosen.name)
+        sc3.xml = Scene(chosen).xml
+        nposes = sc3.length
+        sc3.set_resolution(*resolution); sc3.set_write_format("TGA4")
+        sc3.set_write_prefix("frames/turn-")
+        sc3.save(); render(sc3.path)
+        tdir = out_dir / "turnaround"; tdir.mkdir(parents=True, exist_ok=True)
+        poses = []
+        for f in sorted((work/"frames").glob("turn-*.tga")):
+            arr = np.array(Image.open(f).convert("RGBA"))
+            ys, xs = np.where(arr[..., 3] > 8)
+            if not len(ys):
+                continue                       # held/blank frames at the tail
+            k = int(f.stem.split("-")[-1])
+            d = tdir / f"pose-{k:04d}.png"
+            x0, y0, x1, y1 = int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())
+            Image.fromarray(arr[y0:y1 + 1, x0:x1 + 1]).save(d)
+            poses.append({"frame": k, "file": d.name, "bbox": [x0, y0, x1, y1]})
+        manifest["turnaround"] = {"frames": nposes, "poses": poses}
+        print(f"  {len(poses)} turnaround poses")
+
+    common.write_json(out_dir/"manifest.json", manifest)
+    shutil.rmtree(work, ignore_errors=True)
+    return manifest
+
+
 # ------------------------------------------------------------------- CLI
 
 def cmd_info(a) -> int:
@@ -483,6 +816,13 @@ def cmd_mouths(a) -> int:
     return 0
 
 
+def cmd_bake(a) -> int:
+    w, h = a.resolution.lower().split("x")
+    m = bake(Path(a.rig), Path(a.out), resolution=(int(w), int(h)), scene_name=a.scene)
+    print(f"baked {len(m['elements'])} elements -> {common.rel(Path(a.out))}")
+    return 0
+
+
 def cmd_measure(a) -> int:
     if a.plate:
         src = Path(a.plate)
@@ -523,6 +863,13 @@ def main(argv=None) -> int:
     ml.add_argument("--resolution", default="3840x2160")
     ml.add_argument("--scene")
     ml.set_defaults(func=cmd_mouths)
+
+    bk = sub.add_parser("bake", help="render every element alone (survives losing Harmony)")
+    bk.add_argument("rig")
+    bk.add_argument("--out", required=True)
+    bk.add_argument("--resolution", default="3840x2160")
+    bk.add_argument("--scene")
+    bk.set_defaults(func=cmd_bake)
 
     me = sub.add_parser("measure", help="derive geometry from a rendered plate")
     me.add_argument("rig", nargs="?")

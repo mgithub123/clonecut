@@ -2,6 +2,12 @@
 __pycache__/
 *.py[cod]
 
+.DS_Store
+
+# secrets
+.pexels-key
+.gemini-key
+
 # media and generated artefacts - regenerable, never committed
 raw/
 music/
@@ -10,3 +16,8 @@ out/
 profiles/
 plans/
 *.db
+
+# assets/rigs/*/plates/ is deliberately NOT here. Those PNGs look like generated
+# artefacts and were treated as such, but Harmony is on a trial licence expiring
+# 2026-10-03 and it is the only thing that can produce them. After that date they
+# are the rigs - unreproducible, and a `rm -rf cache/` away from being lost.

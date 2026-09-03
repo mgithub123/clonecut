@@ -25,6 +25,7 @@ import argparse
 import datetime
 import itertools
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -66,19 +67,40 @@ def load_rig(name: str) -> dict:
 
 
 def plates(r: dict) -> tuple[Image.Image, Image.Image]:
-    """Head (no mouth) and body plates, rendered once and cached on disk."""
+    """Head (no mouth) and body plates.
+
+    Tracked plates under assets/rigs/<name>/plates/ come first, and are keyed on
+    nothing but the rig, the part and the width. Harmony is on a trial licence, so
+    these files outlive the ability to make them: once baked they are the rig.
+
+    The previous version hashed the scene file to build its cache key, which meant
+    every render located and read the .xstage even on a cache hit - a hard
+    dependency on Harmony's scene being present for work that needed none of it.
+    """
     config.ensure_dirs()
     res = tuple(r["render"]["resolution"])
-    key = common.file_hash(rigmod.find_scene(r["scene"]))[:12]
     out = []
     for part in ("head", "body"):
-        cached = config.CACHE_DIR / f"plate-{r['name']}-{part}-{key}-{res[0]}.png"
-        if not cached.exists():
-            ids = {str(i) for i in r["layers"][part]}
-            work = config.CACHE_DIR / f"rigwork-{r['name']}-{part}"
-            made = rigmod.plate(r["scene"], work, keep=ids, resolution=res, nframes=1)
-            Image.open(made[0]).convert("RGBA").save(cached)
-        out.append(face.unmul(Image.open(cached)))
+        tracked = r["_dir"] / "plates" / f"plate-{part}-{res[0]}.png"
+        if tracked.exists():
+            out.append(face.unmul(Image.open(tracked)))
+            continue
+        legacy = sorted(config.CACHE_DIR.glob(f"plate-{r['name']}-{part}-*-{res[0]}.png"))
+        if legacy:
+            out.append(face.unmul(Image.open(legacy[0])))
+            continue
+        if os.environ.get("CLONECUT_NO_HARMONY"):
+            raise ToolError(
+                f"no tracked {part} plate for rig {r['name']} at {res[0]}px "
+                f"({common.rel(tracked)}), and CLONECUT_NO_HARMONY is set.\n"
+                f"  bake it while the licence lasts: uv run rig.py plate <scene> "
+                f"--out {common.rel(tracked.parent)}")
+        ids = {str(i) for i in r["layers"][part]}
+        work = config.CACHE_DIR / f"rigwork-{r['name']}-{part}"
+        made = rigmod.plate(r["scene"], work, keep=ids, resolution=res, nframes=1)
+        tracked.parent.mkdir(parents=True, exist_ok=True)
+        Image.open(made[0]).convert("RGBA").save(tracked)
+        out.append(face.unmul(Image.open(tracked)))
     return out[0], out[1]
 
 
