@@ -3,52 +3,178 @@
   "scene": "~/Desktop/LuckyDog-Harmony/LuckyDog-Practice",
   "scene_note": "a working copy. The master is ~/Desktop/LuckyDog-Harmony/_masters/LD_DOG_MA (read-only, extracted from LD_DOG_MA.7z in iCloud).",
   "render": {
-    "resolution": [3840, 2160]
+    "resolution": [
+      3840,
+      2160
+    ]
   },
-
   "layers": {
-    "head": [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 29, 30, 31, 32, 33, 35, 38],
-    "body": [21, 22, 23, 24, 26, 27, 28, 37, 39, 40, 41, 42],
+    "head": [
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      29,
+      30,
+      31,
+      32,
+      33,
+      35,
+      38
+    ],
+    "body": [
+      21,
+      22,
+      23,
+      24,
+      26,
+      27,
+      28,
+      37,
+      39,
+      40,
+      41,
+      42
+    ],
     "mouth": 34,
     "note": "head excludes Mouth_NEW (34), which is composited on. Dog_Drawover (20), LD_dg_turn (2), sketch_roughs (5) and Pivot_Guide (6) are reference layers and belong in neither."
   },
-
   "face": {
     "width": 260,
     "lip_line": 1542,
     "centre_x": 1567,
     "max_mouth_height": 130,
     "chin": 1685,
-    "head_pivot": [1567, 1720],
+    "head_pivot": [
+      1567,
+      1720
+    ],
     "note": "measured from a rendered plate, not by hand. Width is the muzzle's full skin extent where the mouth sits - the dog's snout is broken up by its nose and stitching, so a largest-contiguous-run measure reads far too narrow."
   },
-
-  "eyes": [[1507, 1478, 1568, 1511], [1610, 1478, 1671, 1511]],
-  "eye_colour": [255, 255, 255],
+  "eyes": [
+    [
+      1507,
+      1478,
+      1568,
+      1511
+    ],
+    [
+      1610,
+      1478,
+      1671,
+      1511
+    ]
+  ],
+  "eye_colour": [
+    255,
+    255,
+    255
+  ],
   "eye_note": "white eyeballs with black pupils, unlike the doctor's flat discs. Found as enclosed white regions - white connected to the border is background.",
-
   "mouth_width_pct": {
-    "CLOSED": 0.45, "SMALL": 0.48, "OO": 0.42, "FV": 0.55,
-    "EE": 0.58, "OH": 0.55, "AH": 0.58, "WIDE": 0.63
+    "CLOSED": 0.63,
+    "SMALL": 0.57,
+    "OO": 0.34,
+    "FV": 0.62,
+    "EE": 0.66,
+    "OH": 0.49,
+    "AH": 0.63,
+    "WIDE": 0.66
   },
-  "mouth_ladder": ["CLOSED", "SMALL", "OO", "FV", "EE", "OH", "AH", "WIDE"],
+  "mouth_ladder": [
+    "CLOSED",
+    "SMALL",
+    "OO",
+    "FV",
+    "EE",
+    "OH",
+    "AH",
+    "WIDE"
+  ],
   "mouth_source": {
-    "from_rig": true,
+    "derived": true,
     "element": 34,
-    "map": {"CLOSED": 16, "SMALL": 17, "OO": 20, "FV": 1, "EE": 12, "OH": 10, "AH": 1, "WIDE": 11},
-    "note": "the dog is the one rig with a real mouth chart, so its library comes from its own drawings: uv run rig.py mouths <rig> --element 34 --out assets/rigs/dog/mouths --map ...  Only front-facing drawings are used; 2-8 and 13-15 are profile mouths and look sideways on a head-on shot."
+    "base": {
+      "16": "closed",
+      "1": "medium open",
+      "11": "wide open"
+    },
+    "spec": {
+      "CLOSED": [
+        16,
+        1.0,
+        1.0
+      ],
+      "SMALL": [
+        1,
+        0.92,
+        0.6
+      ],
+      "OO": [
+        1,
+        0.55,
+        0.95
+      ],
+      "FV": [
+        1,
+        1.0,
+        0.8
+      ],
+      "EE": [
+        1,
+        1.06,
+        0.72
+      ],
+      "OH": [
+        11,
+        0.78,
+        1.0
+      ],
+      "AH": [
+        11,
+        1.0,
+        1.0
+      ],
+      "WIDE": [
+        11,
+        1.06,
+        1.18
+      ]
+    },
+    "command": "uv run rig.py mouths <rig> --element 34 --out /tmp/dogall --map D1=1,...,D20=20  then  uv run face.py derive /tmp/dogall --out assets/rigs/dog/mouths --spec ...",
+    "note": "Of the dog's 20 drawings only 16, 1 and 11 are drawn head-on (symmetry 0.96-0.97). The rest lean, and cutting between leaning mouths makes it appear to swing side to side. Scaling a symmetric mouth keeps it symmetric, so the vowel set is derived from those three: OO is drawing 1 at 55% width (a pucker), EE the same drawing stretched wide and flat."
   },
-
-  "vowel_hold": ["OO"],
+  "vowel_hold": [
+    "OO"
+  ],
   "vowel_map": {
     "OO": "OO",
-    "AH": {"loud": "WIDE", "quiet": "AH", "at": 0.62},
-    "EE": {"loud": "EE", "quiet": "FV", "at": 0.35},
+    "AH": {
+      "loud": "WIDE",
+      "quiet": "AH",
+      "at": 0.62
+    },
+    "EE": {
+      "loud": "EE",
+      "quiet": "FV",
+      "at": 0.35
+    },
     "OH": "OH"
   },
-
-  "crop": [1250, 1300, 1930, 2010],
-
+  "crop": [
+    1250,
+    1300,
+    1930,
+    2010
+  ],
   "capabilities": {
     "lipsync": true,
     "blink": true,
@@ -56,5 +182,5 @@
     "gaze": false,
     "hands": 5
   },
-  "capability_note": "tears is false because the cheek routing has not been measured for this face - straight down from either eye would cross the muzzle. The 20 mouth drawings cluster at two extremes (openness 8.5k-14k and 24k-28k) with nothing between, so this rig can be shut or gaping but has no true mid-range."
+  "capability_note": "Only 3 of the 20 drawings are head-on; the vowel set is derived from those by non-uniform scaling. The lips do not change shape, only the proportions of the opening - it moves convincingly but does not form words. Real drawn vowels would still be better. tears is false because the cheek routing has not been measured for this face."
 }

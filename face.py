@@ -139,6 +139,72 @@ def unmul(im: Image.Image, *, thresh: int = 736, ring: int = 3) -> Image.Image:
     return Image.fromarray(out)
 
 
+def derive(src_dir: Path, out_dir: Path, spec: dict[str, tuple[int, float, float]]) -> list[Path]:
+    """Build a vowel set by scaling a few base drawings non-uniformly.
+
+    For a rig whose mouth chart is mostly drawn at an angle, only the head-on
+    drawings are usable, and there are rarely more than three. Scaling a symmetric
+    mouth keeps it symmetric, so a narrow tall version of the open mouth reads as
+    OO and a wide flat one reads as EE - without any new artwork.
+
+    Not a substitute for drawn vowels: the lips do not change shape, only the
+    proportions of the opening. It is the difference between a mouth that moves
+    and a mouth that appears to form words.
+    """
+    out_dir.mkdir(parents=True, exist_ok=True)
+    written = []
+    for name, (src, sx, sy) in spec.items():
+        p = Path(src_dir) / f"D{src}.png"
+        if not p.exists():
+            raise ToolError(f"no source drawing {src} at {common.rel(p)} - extract with rig.py mouths")
+        im = Image.open(p).convert("RGBA")
+        w, h = max(1, int(im.width * sx)), max(1, int(im.height * sy))
+        dest = Path(out_dir) / f"{name}.png"
+        im.resize((w, h), Image.LANCZOS).save(dest)
+        print(f"  {name:7s} <- drawing {src:<3} {im.width}x{im.height} -> {w}x{h}")
+        written.append(dest)
+    return written
+
+
+def symmetry(png: Path) -> float:
+    """How head-on a mouth is drawn: 1.0 is perfectly symmetric.
+
+    The deciding measurement when picking base shapes - a mouth drawn with a lean
+    reads as the head being turned, and cutting between several leaning mouths
+    makes it appear to swing side to side.
+    """
+    a = np.array(Image.open(png).convert("RGBA"))
+    al = a[..., 3] > 128
+    rgb = a[..., :3].astype(int)
+    opening = ((rgb.sum(axis=2) < 200) |
+               ((rgb[:, :, 0] > 150) & (rgb[:, :, 1] < 150) & (rgb[:, :, 2] > 100))) & al
+    ys, xs = np.where(opening)
+    if not len(xs):
+        return 0.0
+    cx = (xs.min() + xs.max()) / 2
+    left, right = int((xs < cx).sum()), int((xs >= cx).sum())
+    return round(min(left, right) / max(left, right), 3) if max(left, right) else 0.0
+
+
+def cmd_derive(a: argparse.Namespace) -> int:
+    spec = {}
+    for part in a.spec.split(","):
+        name, rest = part.split("=")
+        src, sx, sy = rest.split(":")
+        spec[name.strip()] = (int(src), float(sx), float(sy))
+    made = derive(Path(a.src), Path(a.out), spec)
+    print(f"wrote {len(made)} shapes to {common.rel(Path(a.out))}")
+    return 0
+
+
+def cmd_symmetry(a: argparse.Namespace) -> int:
+    rows = [(symmetry(p), p.stem) for p in sorted(Path(a.dir).glob("*.png"))]
+    print(f"{'symm':>6}  drawing      (1.0 = head-on; below ~0.9 the mouth leans)")
+    for v, n in sorted(rows, reverse=True):
+        print(f"{v:>6.2f}  {n}")
+    return 0
+
+
 def cmd_sheet(a: argparse.Namespace) -> int:
     src = Path(a.sheet)
     if not src.exists():
@@ -158,6 +224,18 @@ def main(argv=None) -> int:
     s.add_argument("--out", help=f"default: {common.rel(config.ROOT / 'assets/mouths')}")
     s.add_argument("--names", help=f"comma-separated, in sheet order (default: {','.join(SHEET_ORDER)})")
     s.set_defaults(func=cmd_sheet)
+
+    d = sub.add_parser("derive", help="build a vowel set by scaling a few base drawings")
+    d.add_argument("src", help="directory of extracted drawings (D1.png, D11.png, ...)")
+    d.add_argument("--out", required=True)
+    d.add_argument("--spec", required=True,
+                   help="NAME=drawing:xscale:yscale, comma separated")
+    d.set_defaults(func=cmd_derive)
+
+    y = sub.add_parser("symmetry", help="rank drawings by how head-on they are")
+    y.add_argument("dir")
+    y.set_defaults(func=cmd_symmetry)
+
     a = p.parse_args(argv)
     return a.func(a)
 
