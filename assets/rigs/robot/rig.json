@@ -1,0 +1,144 @@
+{
+  "name": "robot",
+  "scene": "~/Desktop/LuckyDog-Harmony/LD_ROBOT_RIG_MA",
+  "scene_note": "a turnaround, 54 frames at 1920x1080. All 33 elements, 25 library drawings and 54 poses are baked to plates/ - the scene is only needed to bake more.",
+  "render": {
+    "resolution": [
+      3840,
+      2160
+    ],
+    "note": "the rig ships at 1920x1080; rendered at 4K so the crop can push in"
+  },
+  "layers": {
+    "head": [
+      4,
+      5,
+      6,
+      7,
+      9,
+      10,
+      15,
+      16,
+      22,
+      24
+    ],
+    "body": [
+      17,
+      18,
+      19,
+      20,
+      21,
+      25,
+      26,
+      27,
+      28,
+      29,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      39,
+      44,
+      45,
+      46
+    ],
+    "mouth": 13,
+    "mouth_family": [
+      14
+    ],
+    "note": "head is the dome, face plate, ears, eyes, lids and shine. Mouth_ (13) and Teeth (14) are left out and replaced by the drawn grille set - the rig has exactly one mouth drawing, so there is nothing to animate with. Neckpiece (20) and Drawing (21) sit in the collar and stay with the body."
+  },
+  "face": {
+    "width": 231,
+    "lip_line": 674,
+    "centre_x": 1919,
+    "max_mouth_height": 80,
+    "chin": 757,
+    "head_pivot": [
+      1919,
+      800
+    ],
+    "anchor": "top",
+    "note": "measured from the baked element plates, not by hand: face width is Robot_HEAD's bbox, centre_x and lip_line are the Mouth_ slot's. 83px from the slot to the bottom of the face plate, so max_mouth_height is 80."
+  },
+  "eyes": [
+    [
+      1844,
+      537,
+      1899,
+      606
+    ],
+    [
+      1940,
+      537,
+      1994,
+      606
+    ]
+  ],
+  "eye_colour": [
+    164,
+    199,
+    173
+  ],
+  "eye_note": "two blobs of one element (Eye_01), split by connected components on its plate. Flat green ovals with a black outline and no pupils, so gaze is impossible. Blinking squashes the eye inside its own box, which on a black-outlined eye reads as a shutter.",
+  "mouth_width_pct": {
+    "CLOSED": 0.502,
+    "SMALL": 0.494,
+    "OO": 0.312,
+    "FV": 0.511,
+    "EE": 0.537,
+    "OH": 0.407,
+    "AH": 0.502,
+    "WIDE": 0.545
+  },
+  "mouth_ladder": [
+    "CLOSED",
+    "SMALL",
+    "OO",
+    "FV",
+    "EE",
+    "OH",
+    "AH",
+    "WIDE"
+  ],
+  "mouth_source": {
+    "drawn": true,
+    "style": "grille",
+    "command": "uv run face.py draw --style grille --out assets/rigs/robot/mouths",
+    "note": "The robot has one mouth drawing, so nothing can be derived. Its mouth is not lips but a grille: an outlined slot holding pale-green bars the colour of its eyes. face.grille() opens the aperture and shrinks the teeth band, which is what a rigid jaw would do; the organic DRAWN_SPEC lips would read as a different character. Widths are set so each shape renders at the size it was drawn."
+  },
+  "vowel_hold": [
+    "OO"
+  ],
+  "vowel_map": {
+    "OO": "OO",
+    "AH": {
+      "loud": "WIDE",
+      "quiet": "AH",
+      "at": 0.62
+    },
+    "EE": {
+      "loud": "EE",
+      "quiet": "FV",
+      "at": 0.35
+    },
+    "OH": "OH"
+  },
+  "crop": [
+    1440,
+    230,
+    2400,
+    1420
+  ],
+  "capabilities": {
+    "lipsync": true,
+    "blink": true,
+    "tears": false,
+    "gaze": false,
+    "hands": 19
+  },
+  "capability_note": "19 hand poses across two Hand elements (10 + 9) - the only real gesture library of the three rigs; all baked to plates/drawings. gaze is impossible: the eyes have no pupils. tears is false because a robot crying is a choice, not a default, and the cheek routing has not been measured."
+}

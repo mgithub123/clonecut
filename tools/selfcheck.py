@@ -909,6 +909,70 @@ def _():
             log.connect(db).close()
 
 
+
+# ---- Harmony is on a trial licence expiring 2026-10-03 -------------------------
+# It is the only thing that can turn these rigs into images, so the pipeline has to
+# be able to run without it, and the baked plates have to be right. Both are easy
+# to break silently and neither shows up in a render that happens to still work.
+
+@check("every rig is renderable with Harmony absent")
+def _():
+    import json as _json
+    root = config.ROOT / "assets" / "rigs"
+    rigs = sorted(p.name for p in root.iterdir() if (p / "rig.json").exists())
+    assert rigs, "no configured rigs"
+    for name in rigs:
+        cfg = _json.loads((root / name / "rig.json").read_text())
+        w = cfg["render"]["resolution"][0]
+        for part in ("head", "body"):
+            p = root / name / "plates" / f"plate-{part}-{w}.png"
+            assert p.exists(), (
+                f"{name} has no tracked {part} plate at {w}px. Harmony's licence "
+                f"expires 2026-10-03; bake it before then or the rig is unusable.")
+        for shape in cfg["mouth_ladder"]:
+            m = root / name / "mouths" / f"{shape}.png"
+            assert m.exists(), f"{name} is missing mouth shape {shape}"
+
+
+@check("no rig lists a mouth element among its head layers")
+def _():
+    import json as _json
+    root = config.ROOT / "assets" / "rigs"
+    for p in sorted(root.glob("*/rig.json")):
+        cfg = _json.loads(p.read_text())
+        layers = cfg["layers"]
+        head = set(layers["head"])
+        mouthy = {layers["mouth"]} | set(layers.get("mouth_family", []))
+        clash = head & mouthy
+        assert not clash, (
+            f"{p.parent.name}: head layers {sorted(clash)} are mouth elements. "
+            f"The head plate would carry a mouth that the compositor then draws "
+            f"another mouth over.")
+        assert not (head & set(layers["body"])), (
+            f"{p.parent.name}: an element is in both head and body")
+
+
+@check("a plate that already has alpha is not un-premultiplied again")
+def _():
+    import perform as _perform
+    from PIL import Image as _Image
+    tmp = config.CACHE_DIR / "selfcheck-plate.png"
+    tmp.parent.mkdir(parents=True, exist_ok=True)
+    # a dark shape on transparency, as TGA4 plates arrive
+    a = np.zeros((8, 8, 4), np.uint8)
+    a[2:6, 2:6] = (20, 20, 20, 255)
+    _Image.fromarray(a).save(tmp)
+    got = np.asarray(_perform._matted(tmp))
+    assert got[0, 0, 3] == 0, "transparent corner became opaque"
+    assert got[3, 3, 3] == 255 and got[3, 3, 0] == 20, "the art was altered"
+    # and a white-background plate still gets its matte recovered
+    b = np.full((8, 8, 4), 255, np.uint8)
+    b[2:6, 2:6] = (0, 0, 0, 255)
+    _Image.fromarray(b).save(tmp)
+    got = np.asarray(_perform._matted(tmp))
+    assert got[0, 0, 3] < 8, "white background stayed opaque"
+    assert got[3, 3, 3] > 200, "the art was matted away"
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

@@ -267,6 +267,71 @@ def mouth(w,h,*,pinch=0.35,teeth_top=True,teeth_bottom=False,tongue=True,
     return Image.fromarray(b).resize(((W+pad*2)//SS,(H+pad*2)//SS), Image.LANCZOS)
 
 
+# The robot's mouth is not a pair of lips. It is a grille: a rounded slot outlined
+# in black, holding a row of pale-green bars the same colour as its eyes. Drawing
+# organic lips with a tongue on it - which is what DRAWN_SPEC makes, correctly, for
+# the dog - would read as a different character. So it gets its own generator, and
+# articulates the way a rigid face can: the aperture opens, the teeth stay put, and
+# a dark cavity appears behind them.
+ROBOT_OUTLINE = (12, 12, 12, 255)
+ROBOT_TEETH   = (167, 201, 176, 255)
+ROBOT_CAVITY  = (26, 28, 30, 255)
+
+
+def grille(w, h, *, segments=4, teeth_frac=1.0, corner=0.30, stroke=None):
+    """A robot mouth: outlined slot, teeth bars at the top, cavity below.
+
+    teeth_frac is how much of the opening the teeth fill. At 1.0 the mouth is shut
+    and is all teeth, which is the rig's own drawing; below that the jaw has dropped
+    and the gap under the bars is the inside of its head.
+    """
+    stroke = (stroke or max(2, int(min(w, h) * 0.16))) * SS
+    W, H = w * SS, h * SS
+    pad = stroke * 2
+    canvas = (W + pad * 2, H + pad * 2)
+    im = Image.new("RGBA", canvas, (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    box = [pad, pad, pad + W, pad + H]
+    rad = int(min(W, H) * corner)
+    d.rounded_rectangle(box, radius=rad, fill=ROBOT_CAVITY,
+                        outline=ROBOT_OUTLINE, width=stroke)
+
+    ix0, iy0 = pad + stroke, pad + stroke
+    ix1, iy1 = pad + W - stroke, pad + H - stroke
+    iw, ih = ix1 - ix0, iy1 - iy0
+    if iw > 0 and ih > 0:
+        band = max(stroke, int(ih * teeth_frac))
+        gap = max(SS, stroke // 2)
+        seg = (iw - gap * (segments - 1)) // segments
+        if seg > 0:
+            for k in range(segments):
+                x = ix0 + k * (seg + gap)
+                d.rectangle([x, iy0, x + seg, iy0 + band], fill=ROBOT_TEETH)
+            # the bars are separated by the same black as the outline
+            for k in range(1, segments):
+                x = ix0 + k * (seg + gap) - gap
+                d.rectangle([x, iy0, x + gap, iy0 + band], fill=ROBOT_OUTLINE)
+        # re-stroke so the bars cannot spill over the rounded corners
+        d.rounded_rectangle(box, radius=rad, outline=ROBOT_OUTLINE, width=stroke)
+    return im.resize((canvas[0] // SS, canvas[1] // SS), Image.LANCZOS)
+
+
+# Width barely moves: a rigid face cannot purse. Height and how much of the opening
+# is teeth do the work, which is what a jaw hinge would actually produce.
+# Heights are chosen so that at the robot's face width nothing hits the
+# lip-to-chin limit: perform.py scales by min(width fit, height fit), and a capped
+# WIDE comes out narrower than AH, which inverts the ladder.
+ROBOT_SPEC = {
+    "CLOSED": dict(w=110, h=34, teeth_frac=1.00, segments=4),
+    "SMALL":  dict(w=108, h=42, teeth_frac=0.72, segments=4),
+    "OO":     dict(w= 66, h=48, teeth_frac=0.55, segments=2, corner=0.42),
+    "FV":     dict(w=112, h=38, teeth_frac=0.86, segments=4),
+    "EE":     dict(w=118, h=40, teeth_frac=0.94, segments=5),
+    "OH":     dict(w= 88, h=54, teeth_frac=0.38, segments=3, corner=0.38),
+    "AH":     dict(w=110, h=62, teeth_frac=0.34, segments=4),
+    "WIDE":   dict(w=120, h=72, teeth_frac=0.28, segments=5),
+}
+
 DRAWN_SPEC = {
     "CLOSED": dict(w=168, h=26, pinch=0.30, teeth_top=False, teeth_bottom=False, tongue=False, closed=True),
     "SMALL":  dict(w=150, h=40, pinch=0.45, teeth_top=True,  teeth_bottom=False, tongue=True),
@@ -282,8 +347,10 @@ DRAWN_SPEC = {
 def cmd_draw(a: argparse.Namespace) -> int:
     """Draw a vowel set from scratch. For a rig with nothing to derive from."""
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
-    for name, kw in DRAWN_SPEC.items():
-        im = mouth(**kw)
+    spec, maker = ((ROBOT_SPEC, grille) if getattr(a, "style", "lips") == "grille"
+                   else (DRAWN_SPEC, mouth))
+    for name, kw in spec.items():
+        im = maker(**kw)
         bb = im.getbbox()
         if bb:
             im = im.crop(bb)
@@ -322,6 +389,8 @@ def main(argv=None) -> int:
 
     w = sub.add_parser("draw", help="draw a vowel set from scratch (no source art needed)")
     w.add_argument("--out", required=True)
+    w.add_argument("--style", choices=("lips", "grille"), default="lips",
+                   help="lips for a drawn face, grille for the robot's rigid one")
     w.set_defaults(func=cmd_draw)
 
     y = sub.add_parser("symmetry", help="rank drawings by how head-on they are")

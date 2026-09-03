@@ -29,12 +29,24 @@ uv run montage.py examples/shots-two-rigs.json
 | `perform.py` | 7. One shot, end to end |
 | `montage.py` | 7d. Several shots, cut to the beat |
 | `assets/rigs/<name>/rig.json` | Per-rig geometry and capabilities |
+| `assets/rigs/<name>/plates/` | **The baked rigs.** Element plates, drawing libraries, turnaround poses |
 | `prototype/` | The original working code, kept as the reference |
 
 ## What makes it work
 
 **Harmony renders headless.** `Harmony Premium -batch scene.xstage` — 216 frames at
 4K in under twenty seconds, no GUI. This is what makes the whole thing scriptable.
+
+**And nothing downstream needs it.** Harmony's only job is turning rigs into PNGs.
+Voice analysis, mouth tracks, compositing, motion, rain, montage and the mux are all
+our own Python. Everything has been baked, so a shot renders with the binary gone:
+
+```bash
+CLONECUT_NO_HARMONY=1 uv run perform.py --rig robot ...
+```
+
+That variable makes `rig.render()` raise instead of rendering, so anything that still
+reaches for Harmony fails loudly rather than silently working on this machine only.
 
 **The scene file is XML.** Everything the GUI did unreliably is done by rewriting
 it: freezing the turnaround pegs, filling exposure gaps, setting resolution,
@@ -56,25 +68,52 @@ one performance is stable.
 2. Get a mouth library:
    - the rig has a real mouth chart (the dog):
      `uv run rig.py mouths <rig-dir> --element 34 --out assets/rigs/<name>/mouths --map CLOSED=16,SMALL=17,...`
-   - it does not (the doctor, the robot): generate eight shapes and
-     `uv run face.py sheet <sheet.png> --out assets/rigs/<name>/mouths`.
-     The prompt that produces correctly-styled shapes, and the reference stills to
-     go with it, are in `assets/rigs/doctor/reference/`.
+   - it does not (the doctor, the robot): either generate eight shapes and
+     `uv run face.py sheet <sheet.png> --out assets/rigs/<name>/mouths` — the prompt
+     and reference stills are in `assets/rigs/doctor/reference/` — or draw them:
+     `uv run face.py draw --style grille --out assets/rigs/robot/mouths`.
+     Match the style to the face. The robot's mouth is not lips but an outlined slot
+     holding pale-green bars; `grille()` opens the aperture and shrinks the teeth
+     band, the way a rigid jaw would, and the organic `DRAWN_SPEC` lips would read as
+     a different character.
 3. Write `assets/rigs/<name>/rig.json`. Measure geometry from a rendered plate
    rather than by hand — `rig.py measure` derives some of it.
 4. Fill in `capabilities` honestly. It is what stops a shot rendering wrong.
+
+## The trial, and why everything is baked
+
+The licence is a **trial expiring 2026-10-03**. Harmony is the only thing that can
+produce these images, so all three rigs are baked to `assets/rigs/<name>/plates/`
+and committed — 364 images at 7680×4320:
+
+| | per rig |
+|---|---|
+| Element plates | every element, alone, cropped to its own art with the offset recorded |
+| `drawings/` | every drawing of every multi-drawing element — the pose libraries |
+| `turnaround/` | the view angles, which `freeze_pegs()` otherwise throws away |
+| `_ALL.png` | the rig as authored: what a recomposite should look like |
+| `_ALL_NOCUT.png` | the same with cutters bypassed: what it can be checked against |
+| `plate-head-<w>.png`, `plate-body-<w>.png` | what `perform.py` actually composites |
+
+```bash
+uv run rig.py bake ~/Desktop/LuckyDog-Harmony/LD_ROBOT_RIG_MA \
+    --out assets/rigs/robot/plates --resolution 7680x4320
+```
+
+`.gitignore` calls generated media "regenerable, never committed". Plates are the
+exception and are called out there by name — after expiry they *are* the rigs.
 
 ## The rigs, and what they can actually do
 
 | | Dog | Doctor | Robot |
 |---|---|---|---|
-| Mouth drawings | **20** (only 5 usable) | 3 (= its view angles) | **1** |
-| Mouth library | from its own art | generated | **none yet** |
-| Blink | yes | yes | untested |
-| Tears | not measured | yes | untested |
-| Gaze | no mechanism | impossible — no pupils | untested |
+| Mouth drawings | **20** (only 3 head-on) | 3 (= its view angles) | **1** |
+| Mouth library | derived from its own art | generated | drawn (`--style grille`) |
+| Blink | yes | yes | yes |
+| Tears | not measured | yes | not measured |
+| Gaze | no mechanism | impossible — no pupils | impossible — no pupils |
 | Hands | 5 poses | 5 poses | **19 poses** |
-| Palettes | complete | 4 of 8 missing | **16 of 20 missing** |
+| Palettes | complete | 4 of 8 missing | 16 of 20 missing — **but it renders in full colour** |
 
 **None of these rigs was built to lip-sync.** All three are turnarounds — model
 sheets where the character rotates through view angles and then holds. The dog's
@@ -90,9 +129,26 @@ rather than a workaround.
 **Use the vocal stem, never the full mix.** On a mix the envelope reads drums and
 guitar as singing: the mouth is shut 6% of the time instead of 34%.
 
+**Cutters make element-wise baking lie.** A Cutter takes an image on port 0 and a
+matte on port 1. Baking one element at a time blanks every other element, which
+empties those mattes, and a Cutter with no matte outputs *nothing* — ten of the
+robot's elements baked blank before `Scene.bypass_cutters()` rewired all 31 out of
+the graph. Bypassing is right rather than a workaround: the mattes are baked too,
+so the masking is reconstructible.
+
+**The Write node defaults to 24-bit TGA.** Transparent renders as the scene's
+background colour. The doctor's scene composites on white, which `face.unmul()` can
+invert; the robot's composites on **black**, where the same inversion makes every
+pixel opaque and the character vanishes. Plates are written `TGA4` now, and
+`perform._matted()` decides by looking at the alpha rather than by filename.
+
+**Element drawings live in `elementFolder`, not `elementName`.** The robot has two
+elements both called `Hand` — ids 35 and 44, folders `Hand` and `Hand.44`, with 10
+and 9 poses.
+
 **The robot is missing 16 of its 20 palettes** and the doctor 4 of 8 — every
 `PALETTE_LIST` points at `C:/Users/sophb/…` from the machine the rigs were built
-on. Render a test frame before planning shots around either.
+on. In practice all three render in full colour; the missing palettes are unused.
 
 **Art drawn on white needs un-premultiplying, not thresholding.** Composited onto
 a dark scene, a threshold leaves a pale halo tracing the whole silhouette and
