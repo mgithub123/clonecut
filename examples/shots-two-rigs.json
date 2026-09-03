@@ -1,0 +1,24 @@
+{
+  "song": "goodbyparty 1.4",
+  "mix": "music/goodbyparty 1.4.wav",
+  "vox": "~/Desktop/LuckyDog-Harmony/goodbyparty 1.4 vox.wav",
+  "shots": [
+    {
+      "rig": "doctor",
+      "start": 41.2,
+      "duration": 5.0,
+      "background": "rainy-window",
+      "rain": true,
+      "tears": 3,
+      "text": "this is our song. it's called goodbye party"
+    },
+    {
+      "rig": "dog",
+      "start": 46.2,
+      "duration": 4.0,
+      "char_width": 620,
+      "char_top": 560,
+      "note": "the dog is wider and shorter than the doctor, so he needs his own framing"
+    }
+  ]
+}

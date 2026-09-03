@@ -357,6 +357,86 @@ def measure(plate_path: Path) -> dict:
     return out
 
 
+def mouth_library(rig_dir: Path, out_dir: Path, element: str, mapping: dict[str, int],
+                  *, resolution: tuple[int, int] = (3840, 2160),
+                  scene_name: str | None = None) -> list[Path]:
+    """Extract named mouth shapes from a rig that already has a mouth chart.
+
+    Renders the character once with the mouth element blanked, then once per
+    wanted drawing, and keeps the difference. That isolates the mouth without
+    needing to know where on the face it sits - the same trick that found the
+    mouth box in the first place.
+
+    A rig with a real chart does not need generated mouths; this is the path for
+    the dog, which has twenty.
+    """
+    from PIL import Image
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    wanted = sorted({int(v) for v in mapping.values()})
+
+    base_dir = Path("/tmp") / f"mouthlib-{rig_dir.name}-base"
+    plate(rig_dir, base_dir, keep=None, resolution=resolution, nframes=1,
+          scene_name=scene_name)
+    # blank the mouth element and re-render to get the face without it
+    chosen = find_scene(base_dir, scene_name)
+    sc = Scene(chosen)
+    def blank(m):
+        col = m.group(0)
+        seqs = re.findall(_SEQ, col)
+        if seqs and seqs[0][2] == element:
+            return re.sub(r"(\s*<elementSeq[^>]*/>)+", "\n    ", col, count=1)
+        return col
+    sc.xml = re.sub(_COL0, blank, sc.xml, flags=re.S)
+    sc.set_write_prefix("frames/nomouth-")
+    sc.save()
+    render(sc.path)
+    nom = sorted(base_dir.glob("frames/nomouth-*.tga"))[0]
+    base = np.array(Image.open(nom).convert("RGB")).astype(int)
+
+    # now one frame per wanted drawing
+    work = Path("/tmp") / f"mouthlib-{rig_dir.name}-shapes"
+    plate(rig_dir, work, keep=None, resolution=resolution, nframes=len(wanted),
+          scene_name=scene_name)
+    sc2 = Scene(find_scene(work, scene_name))
+    body = "\n" + "".join(
+        '     <elementSeq exposures="%d" val="%d" id="%s"/>\n' % (i, d, element)
+        for i, d in enumerate(wanted, 1)) + "    "
+    def setmouth(m):
+        col = m.group(0)
+        seqs = re.findall(_SEQ, col)
+        if seqs and seqs[0][2] == element:
+            return re.sub(r"(\s*<elementSeq[^>]*/>)+", body, col, count=1)
+        return col
+    sc2.xml = re.sub(_COL0, setmouth, sc2.xml, flags=re.S)
+    sc2.set_write_prefix("frames/shape-")
+    sc2.save()
+    render(sc2.path)
+
+    by_drawing = {}
+    for i, d in enumerate(wanted, 1):
+        f = work / "frames" / f"shape-{i:04d}.tga"
+        if not f.exists():
+            raise ToolError(f"expected {common.rel(f)}")
+        rgb = np.array(Image.open(f).convert("RGB")).astype(int)
+        mask = np.abs(rgb - base).sum(axis=2) > 18
+        ys, xs = np.where(mask)
+        if not len(ys):
+            raise ToolError(f"drawing {d} of element {element} looks identical to no mouth")
+        sub = rgb[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+        km = mask[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
+        by_drawing[d] = np.dstack([sub.astype(np.uint8), (km * 255).astype(np.uint8)])
+
+    written = []
+    for name, d in mapping.items():
+        dest = out_dir / f"{name}.png"
+        Image.fromarray(by_drawing[int(d)]).save(dest)
+        h, w = by_drawing[int(d)].shape[:2]
+        print(f"  {name:7s} <- drawing {d:<3} {w}x{h}")
+        written.append(dest)
+    return written
+
+
 # ------------------------------------------------------------------- CLI
 
 def cmd_info(a) -> int:
@@ -391,6 +471,18 @@ def cmd_plate(a) -> int:
     return 0
 
 
+def cmd_mouths(a) -> int:
+    mapping = {}
+    for pair in a.map.split(","):
+        k, v = pair.split("=")
+        mapping[k.strip()] = int(v)
+    w, h = a.resolution.lower().split("x")
+    made = mouth_library(Path(a.rig), Path(a.out), a.element, mapping,
+                         resolution=(int(w), int(h)), scene_name=a.scene)
+    print(f"wrote {len(made)} shapes to {common.rel(Path(a.out))}")
+    return 0
+
+
 def cmd_measure(a) -> int:
     if a.plate:
         src = Path(a.plate)
@@ -421,6 +513,16 @@ def main(argv=None) -> int:
     pl.add_argument("--no-freeze", action="store_true", help="keep the turnaround animation")
     pl.add_argument("--scene", help="scene stem, when a rig holds several")
     pl.set_defaults(func=cmd_plate)
+
+    ml = sub.add_parser("mouths", help="extract a mouth library from a rig that has one")
+    ml.add_argument("rig")
+    ml.add_argument("--element", required=True, help="element id of the mouth layer")
+    ml.add_argument("--out", required=True)
+    ml.add_argument("--map", required=True,
+                    help="SHAPE=drawing pairs, e.g. CLOSED=16,SMALL=17,WIDE=11")
+    ml.add_argument("--resolution", default="3840x2160")
+    ml.add_argument("--scene")
+    ml.set_defaults(func=cmd_mouths)
 
     me = sub.add_parser("measure", help="derive geometry from a rendered plate")
     me.add_argument("rig", nargs="?")
