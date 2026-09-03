@@ -8,6 +8,7 @@ dependencies = [
     "librosa>=0.10",
     "numpy>=1.26",
     "opencv-python-headless>=4.9",
+    "pillow>=10.0",
     "pydantic>=2.6",
     "scenedetect>=0.6.4",
     "soundfile>=0.12",
