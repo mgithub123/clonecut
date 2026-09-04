@@ -306,6 +306,42 @@ class Scene:
     def set_write_prefix(self, prefix: str) -> None:
         self.xml = re.sub(r'(<drawingName val=")[^"]*(")', rf'\g<1>{prefix}\g<2>', self.xml)
 
+    def drop_colour_cards(self) -> int:
+        """Unwire every COLOR_CARD, so what the rig does not cover is transparent.
+
+        The dog's and doctor's scenes each hold a white Colour-Card filling the
+        frame; the robot's does not. That single difference is why only the robot
+        baked with a usable matte: TGA4 gives the render an alpha channel, but a
+        colour card fills it, so every element came back opaque with a full-canvas
+        bounding box and nothing to crop to.
+
+        A colour card is a source, not a pass-through, so unlike a cutter it only
+        needs its outgoing links dropped - there is nothing to rewire in its place.
+        """
+        cards = set(re.findall(r'<module type="COLOR_CARD" name="([^"]*)"', self.xml))
+        if not cards:
+            return 0
+        dropped = 0
+
+        def fix(block: re.Match) -> str:
+            nonlocal dropped
+            body = block.group(0)
+            links = re.findall(r'<link\s[^/]*/>', body)
+            keep = [l for l in links
+                    if re.search(r'out="([^"]*)"', l).group(1) not in cards]
+            if len(keep) == len(links):
+                return body
+            dropped += len(links) - len(keep)
+            first = re.search(r"<link\s", body).start()
+            head = body[:first]
+            tail = body[body.rindex("/>") + 2:]
+            pad = re.search(r"\n(\s*)<link\s", body)
+            joiner = "\n" + (pad.group(1) if pad else "           ")
+            return head + joiner.join(l.strip() for l in keep).lstrip() + tail
+
+        self.xml = re.sub(r"<linkedlist>.*?</linkedlist>", fix, self.xml, flags=re.S)
+        return dropped
+
     def bypass_cutters(self) -> int:
         """Rewire every CUTTER out of the node graph, so each element renders its raw art.
 
@@ -420,7 +456,7 @@ def render(scene: Path, timeout: int = 900) -> list[Path]:
 def plate(rig_dir: Path, out_dir: Path, *, keep: set[str] | None = None,
           resolution: tuple[int, int] | None = None, nframes: int = 1,
           freeze: bool = True, hold: bool = True, alpha: bool = True,
-          scene_name: str | None = None) -> list[Path]:
+          colour_card: bool = False, scene_name: str | None = None) -> list[Path]:
     """Copy a rig, prepare it, render, and return the frames.
 
     The copy matters: these edits are destructive and the rigs are irreplaceable.
@@ -431,6 +467,8 @@ def plate(rig_dir: Path, out_dir: Path, *, keep: set[str] | None = None,
     if out_dir.exists():
         shutil.rmtree(out_dir)
     shutil.copytree(rig_dir, out_dir, ignore=shutil.ignore_patterns("frames", "*.BACKUP*"))
+    for p in out_dir.rglob("*"):            # masters are read-only; the copy must not be
+        p.chmod(p.stat().st_mode | 0o200)
     (out_dir / "frames").mkdir(exist_ok=True)
 
     scene = Scene(out_dir / chosen.name)
@@ -446,6 +484,13 @@ def plate(rig_dir: Path, out_dir: Path, *, keep: set[str] | None = None,
     if resolution:
         scene.set_resolution(*resolution)
         print(f"  resolution {resolution[0]}x{resolution[1]}")
+    if not colour_card and scene.drop_colour_cards():
+        # A white card behind the rig fills the alpha channel, so the plate comes
+        # back opaque and only face.unmul() can recover a matte from it. Dropping
+        # it gives a true one. The already-tracked dog and doctor plates were made
+        # with the card in place; they still load correctly, because
+        # perform._matted() decides by looking at the alpha rather than assuming.
+        print("  dropped the colour card")
     if alpha:
         # Without this the Write node emits 24-bit TGA and the plate arrives
         # composited onto the scene's background colour. That is survivable when
@@ -595,6 +640,7 @@ def bake_drawings(work: Path, scene_name: str, out_dir: Path, targets: list[tupl
     sc = Scene(work / scene_name)
     p, c = sc.freeze_pegs()
     cut = sc.bypass_cutters()
+    card = sc.drop_colour_cards()
 
     frame_of: dict[tuple[str, str], int] = {t: i for i, t in enumerate(targets, 1)}
     by_el: dict[str, list[tuple[int, str]]] = {}
@@ -620,7 +666,8 @@ def bake_drawings(work: Path, scene_name: str, out_dir: Path, targets: list[tupl
     sc.set_write_prefix("frames/dw-")
     sc.save()
     print(f"  {len(targets)} drawings across {len(by_el)} elements, "
-          f"{cut} cutters bypassed, {resolution[0]}x{resolution[1]}")
+          f"{cut} cutters bypassed, {card} colour cards dropped, "
+          f"{resolution[0]}x{resolution[1]}")
     render(sc.path)
 
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -676,6 +723,7 @@ def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
     sc = Scene(work / chosen.name)
     p, c = sc.freeze_pegs()
     cut = sc.bypass_cutters()
+    card = sc.drop_colour_cards()
     n = len(ids)
 
     def one_per_frame(m):
@@ -699,7 +747,8 @@ def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
     sc.set_write_prefix("frames/el-")
     sc.save()
     print(f"  {n} elements, pegs frozen ({p} paths, {c} curves), "
-          f"{cut} cutters bypassed, {resolution[0]}x{resolution[1]}")
+          f"{cut} cutters bypassed, {card} colour cards dropped, "
+          f"{resolution[0]}x{resolution[1]}")
     render(sc.path)
 
     manifest = {"rig": rig_dir.name, "scene": chosen.name,
@@ -708,6 +757,7 @@ def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
                 "crop_note": "element plates, library drawings and turnaround poses are cropped to their bbox on the resolution-sized canvas; paste at bbox[:2] to restore. _ALL.png and _ALL_NOCUT.png are full-canvas.",
                 "scene_sha256": common.file_hash(chosen),
                 "cutters_bypassed": cut,
+                "colour_cards_dropped": card,
                 "elements": {}}
     for k, eid in enumerate(ids, 1):
         src = work/"frames"/f"el-{k:04d}.tga"
@@ -748,6 +798,7 @@ def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
             sc2 = Scene(work / chosen.name)
             sc2.xml = Scene(chosen).xml
             sc2.freeze_pegs()
+            sc2.drop_colour_cards()
             if bypass:
                 sc2.bypass_cutters()
             sc2.hold_frame_one(1); sc2.set_length(1)
@@ -766,6 +817,7 @@ def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
         # view later. freeze_pegs() has been throwing them away all session.
         sc3 = Scene(work / chosen.name)
         sc3.xml = Scene(chosen).xml
+        sc3.drop_colour_cards()
         nposes = sc3.length
         sc3.set_resolution(*resolution); sc3.set_write_format("TGA4")
         sc3.set_write_prefix("frames/turn-")
