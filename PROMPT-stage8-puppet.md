@@ -219,9 +219,11 @@ rig having come from Harmony.
   `common.write_json` for sidecars. Never a literal `/tmp`, `ffmpeg`, or
   `1080x1920` in a module.
 - `tools/selfcheck.py` is the test suite: pure logic, no media, no network. Add
-  checks for anything that can be checked without media. It currently reports
-  41/48 with 7 pre-existing failures. Do not make that number worse; if you fix
-  any of the 7, say which.
+  checks for anything that can be checked without media. The seven failures
+  that used to need a real ingest were fixed on `main`; on this Mac, with the
+  plates and ffmpeg present, it should report 48/48 before you start. If it
+  does not, say which check fails and why before touching anything else, and
+  do not make that number worse.
 - Every render writes a JSON sidecar with the inputs, settings and source hashes.
 - Generated media stays out of git. `assets/` is the one exception and only for
   what cannot be regenerated.
