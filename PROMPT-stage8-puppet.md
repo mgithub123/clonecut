@@ -1,5 +1,8 @@
 # Stage 8 — Puppet: make the character performances better without new art
 
+Plan revision 3. Adds 8z, a one-hour Blender test that decides whether the
+puppet engine is written in Pillow or built in Blender.
+
 Paste everything below this line into a Claude Code session running locally in
 `~/Desktop/clonecut` on the Mac that has the baked rigs.
 
@@ -37,9 +40,61 @@ this repo. GitHub has only the manifests. If they are not backed up, zip
 ## The goal
 
 A nine-second `perform.py` shot should look like a character giving a
-performance rather than a sticker bobbing to a metronome. Four sub-stages, in
-this order: 8a, 8g, 8b, 8c. Commit each one separately, and stop after each to render a shot and
-look at it before going on.
+performance rather than a sticker bobbing to a metronome. A one-hour test
+first (8z), then four sub-stages in this order: 8a, 8g, 8b, 8c. Commit each one
+separately, and stop after each to render a shot and look at it before going on.
+
+### 8z — The Blender test. One hour, time-boxed, before anything else
+
+The open decision is what moves the pieces of the puppet: code written from
+scratch in Pillow and numpy (what `build_frames()` does today), or Blender,
+which is free, has no licence to expire, and can be driven from a script the way
+Harmony was. Blender would give us a real bone hierarchy, proper easing curves,
+smooth deformation of flat art, lighting and shadows, and a file the user can
+open and nudge by hand. The cost is a large install, a harder debugging story,
+and the risk that it will not render headless on this Mac. Settle it with a
+test, not an argument.
+
+Do this, and nothing more:
+
+1. Install Blender (`brew install --cask blender`, or the download). Note the
+   version. Also try `uv add bpy` and say whether it installs on this Python;
+   if it does, prefer it, since `uv sync` then stays the only setup step. If it
+   does not, the CLI binary is fine and goes in `config.py` as `BLENDER`, next
+   to `FFMPEG`, found on PATH or under `/Applications`.
+2. Write `tools/blender_spike.py`. From the doctor's baked plates, load the head
+   plate and the body plate as image planes with alpha, at the offsets in
+   `manifest.json`. Build an armature with two bones, body and head, head
+   parented to body, pivots at `face.head_pivot` and the bottom-centre of the
+   body bbox. Keyframe a one-second beat bob on the body bone and a slight
+   counter-tilt on the head bone, using Blender's own easing. Set an orthographic
+   camera so the output matches the `crop` box in `rig.json`, 1080x1920.
+3. Render 24 frames headless (`blender -b ... -P tools/blender_spike.py`, or via
+   `bpy`), Eevee, PNG with alpha, into `cache/spike/`. No window may open.
+4. Run those frames through the existing `perform.composite()` and
+   `perform.mux()` with the rainy-window background and one second of the vocal
+   stem, so the output is a real 1080x1920 mp4 from the real finishing path.
+5. Report: wall time for the render, whether the first frame is pixel-close to
+   the doctor's existing two-plate composite at rest (measure it), and anything
+   that had to be worked around. Show the contact sheet.
+
+**Pass** means: renders headless with alpha on this Mac, the rest frame matches
+the current output closely, and 24 frames took under two minutes. If it passes,
+stop and tell the user. The plan then changes as follows, and the user will
+confirm before you continue: 8a still builds and documents the rig format, but
+its compositor is a Blender scene builder rather than a Pillow layer stack; 8b
+becomes "build the armature from `rig.json` and animate it with Blender's
+curves", and the mouth swap, blink and phrase-end settle are keyframed onto
+that armature; 8c writes its capture track as bone keyframes. 8g is unchanged.
+`perform.py` keeps the same command line and sidecar either way.
+
+**Fail** means any of: it cannot render without a window, `bpy` and the binary
+both fail to install cleanly, or the hour runs out with no frames. If it fails,
+say exactly what failed, leave the spike script in place for the record, and
+continue with 8a as written below. Do not spend a second hour on it.
+
+Whichever way it goes, commit the spike as `Stage 8z: ...` with the numbers in
+the body.
 
 ### 8a — A layered puppet built from the baked plates
 
@@ -170,8 +225,8 @@ rig having come from Harmony.
 - Every render writes a JSON sidecar with the inputs, settings and source hashes.
 - Generated media stays out of git. `assets/` is the one exception and only for
   what cannot be regenerated.
-- One commit per sub-stage, titled `Stage 8a: ...`, `Stage 8g: ...`, `Stage 8b:
-  ...`, `Stage 8c: ...`. The commit body says what was built, what was measured, what went wrong
+- One commit per sub-stage, titled `Stage 8z: ...`, `Stage 8a: ...`, `Stage 8g:
+  ...`, `Stage 8b: ...`, `Stage 8c: ...`. The commit body says what was built, what was measured, what went wrong
   and was fixed, and what still does not work. The existing log is the model for
   tone. No model names in commits.
 - Do not touch anything under `~/Desktop/LuckyDog-Harmony/` or the rig masters.
@@ -196,5 +251,6 @@ describe what you see honestly. If something looks wrong, say so and fix it or
 record it in the commit body as a known limit. Do not report a sub-stage done on
 the strength of the selfcheck alone.
 
-Start with 8a. When it is committed and a shot has been rendered and inspected,
+Start with 8z and stop when it is done, pass or fail, so the user can decide.
+Then 8a. When it is committed and a shot has been rendered and inspected,
 summarise what changed and what you saw, then continue to 8g, then 8b, then 8c.
