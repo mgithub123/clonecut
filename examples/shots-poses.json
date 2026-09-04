@@ -1,0 +1,16 @@
+{
+  "song": "goodbyparty 1.4",
+  "mix": "music/goodbyparty 1.4.wav",
+  "vox": "~/Desktop/LuckyDog-Harmony/goodbyparty 1.4 vox.wav",
+  "shots": [
+    {"rig": "doctor", "start": 41.2, "duration": 3,
+     "background": "rainy-window", "rain": true,
+     "text": "this is our song. it's called goodbye party"},
+    {"rig": "dog", "start": 44.2, "duration": 3, "pose": 13, "gesture": true,
+     "background": "rainy-window", "rain": true},
+    {"rig": "dog", "start": 47.2, "duration": 3, "pose": 4,
+     "background": "rainy-window", "rain": true},
+    {"rig": "robot", "start": 50.2, "duration": 3, "pose": 2, "gesture": true,
+     "background": "rainy-window", "rain": true}
+  ]
+}

@@ -111,13 +111,19 @@ def pose_geometry(r: dict, pose: int) -> dict:
             f"rig {r['name']!r} pose {pose} is not usable - the turnaround had "
             f"come apart by that frame and it has no head or no body.")
     base = tab["poses"][str(tab.get("default", 1))]
-    ratio = (rec["mouth_width"] / base["mouth_width"]) if base.get("mouth_width") else 1.0
+    # Some angles show no mouth at all - the dog in full profile hides it behind
+    # its own muzzle. That is not a measurement failure, it is the pose, and the
+    # honest response is to draw no mouth rather than guess a position for one.
+    has_mouth = bool(rec.get("mouth_bbox"))
+    ratio = ((rec["mouth_width"] / base["mouth_width"])
+             if has_mouth and base.get("mouth_width") else 1.0)
 
     fa = dict(r["face"])
-    fa["centre_x"] = rec["centre_x"]
-    fa["lip_line"] = rec["lip_line"]
-    fa["anchor_y"] = rec["anchor_y"]
-    fa["width"] = max(8.0, r["face"]["width"] * ratio)
+    if has_mouth:
+        fa["centre_x"] = rec["centre_x"]
+        fa["lip_line"] = rec["lip_line"]
+        fa["anchor_y"] = rec["anchor_y"]
+        fa["width"] = max(8.0, r["face"]["width"] * ratio)
 
     crop = list(r["crop"])
     cw, ch = crop[2] - crop[0], crop[3] - crop[1]
@@ -128,7 +134,8 @@ def pose_geometry(r: dict, pose: int) -> dict:
     y0 = hb[1] - off_y
     return {"face": fa, "eyes": rec["eyes"], "head_pivot": rec["head_pivot"],
             "crop": (x0, y0, x0 + cw, y0 + ch), "record": rec,
-            "foreshortening": ratio, "lipsync": rec["lipsync"]}
+            "foreshortening": ratio, "lipsync": rec["lipsync"],
+            "has_mouth": has_mouth}
 
 
 def plates(r: dict, pose: int | None = None) -> tuple[Image.Image, Image.Image]:
@@ -323,6 +330,7 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
     # below is untouched; with one, every value comes from that angle's own
     # measurement instead. Same compositing either way - which is the whole reason
     # poses were baked as head/body plates rather than as flat figures.
+    draw_mouth = True
     if pose is None:
         fa = r["face"]
         pivot = tuple(fa["head_pivot"])
@@ -336,7 +344,10 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
         eyes = [tuple(e) for e in g["eyes"]]
         crop = g["crop"]
         prec = g["record"]
-        if not g["lipsync"] and any(s != "CLOSED" for s in track):
+        draw_mouth = g["has_mouth"]
+        if not draw_mouth:
+            print(f"  note: pose {pose} shows no mouth at this angle; none is drawn.")
+        elif not g["lipsync"] and any(s != "CLOSED" for s in track):
             print(f"  note: pose {pose} has the mouth at {g['foreshortening']:.0%} of "
                   f"head-on width, too foreshortened to animate; holding it shut.")
             track = ["CLOSED"] * n
@@ -386,19 +397,21 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
         canvas.alpha_composite(frame_body, (0, int(round(body_dy))))
 
         h = head.copy()
-        shape = lib[track[f]]
-        tw = int(fa["width"] * pct.get(track[f], 0.5))
-        sc = min(tw / shape.width, fa["max_mouth_height"] / shape.height)
-        m = shape.resize((max(1, int(shape.width * sc)), max(1, int(shape.height * sc))),
-                         Image.LANCZOS)
-        # Which edge of the mouth stays put as it opens. The doctor's mouth hangs
-        # from the upper lip and grows downward; the dog's sits on a fixed lower
-        # lip and grows upward. Top-anchoring the dog rides the mouth over its nose.
-        if fa.get("anchor", "top") == "bottom":
-            paste_y = fa["anchor_y"] - m.height
-        else:
-            paste_y = fa["lip_line"]
-        h.paste(m, (fa["centre_x"] - m.width // 2, paste_y), m)
+        if draw_mouth:
+            shape = lib[track[f]]
+            tw = int(fa["width"] * pct.get(track[f], 0.5))
+            sc = min(tw / shape.width, fa["max_mouth_height"] / shape.height)
+            m = shape.resize((max(1, int(shape.width * sc)), max(1, int(shape.height * sc))),
+                             Image.LANCZOS)
+            # Which edge of the mouth stays put as it opens. The doctor's mouth
+            # hangs from the upper lip and grows downward; the dog's sits on a fixed
+            # lower lip and grows upward. Top-anchoring the dog rides the mouth over
+            # its nose.
+            if fa.get("anchor", "top") == "bottom":
+                paste_y = fa["anchor_y"] - m.height
+            else:
+                paste_y = fa["lip_line"]
+            h.paste(m, (fa["centre_x"] - m.width // 2, paste_y), m)
 
         if bl[f] < 0.999:
             a = np.array(h)

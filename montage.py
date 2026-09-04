@@ -109,7 +109,10 @@ def validate(doc: dict) -> list[dict]:
             # missing, or present but unusable, or usable but too foreshortened to
             # sing - three different answers, so say which.
             g = perform.pose_geometry(r, int(sh["pose"]))
-            if not g["lipsync"]:
+            if not g["has_mouth"]:
+                print(f"  shot {i}: pose {sh['pose']} shows no mouth at this angle, "
+                      f"so none is drawn - a silent cutaway")
+            elif not g["lipsync"]:
                 print(f"  shot {i}: pose {sh['pose']} has the mouth at "
                       f"{g['foreshortening']:.0%} of head-on width - it will be held shut")
         if sh.get("gesture"):
