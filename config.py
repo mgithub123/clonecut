@@ -5,6 +5,7 @@ Everything tunable lives here so the pipeline stages stay boring.
 from __future__ import annotations
 
 import os
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -20,6 +21,11 @@ DB_PATH = ROOT / "luckydog.db"
 
 FFMPEG = os.environ.get("FFMPEG_BIN", "ffmpeg")
 FFPROBE = os.environ.get("FFPROBE_BIN", "ffprobe")
+
+# Blender, for the Stage 8 puppet. The bpy module is preferred when it is
+# installed; the binary is the fallback, on PATH or in the usual Mac location.
+BLENDER = (os.environ.get("BLENDER_BIN") or shutil.which("blender")
+           or "/Applications/Blender.app/Contents/MacOS/Blender")
 
 # Bump when the shape of a cached analysis changes; invalidates every cache entry.
 INGEST_VERSION = 2

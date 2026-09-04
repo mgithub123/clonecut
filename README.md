@@ -39,6 +39,8 @@ browser, and there is a double-clickable launcher for Mac and Windows.
 | 4. Learn | `log.py` + SQLite | done |
 | 5. Retrieval | `log.py` -> `plan.py` | done |
 | 6. App | `app.py` + `webui/` | done |
+| 7. Perform | `perform.py` + `montage.py` + `rig.py` — see [HARMONY.md](HARMONY.md) | done |
+| 8. Puppet | `tools/blender_spike.py` first, then a layered rig format | 8z done: Blender passed |
 
 ---
 
@@ -456,3 +458,55 @@ Then the next `plan.py prompt` draws on everything logged so far. Or run
 ```bash
 uv run tools/selfcheck.py           # 45 checks, no media or network needed
 ```
+
+
+---
+
+## Stage 7 — Character performance
+
+A Toon Boom Harmony rig and a vocal stem become a vertical music-video shot, and
+several shots cut together on the beat. Everything about it, including why the
+three rigs are baked to PNG plates and committed, is in [HARMONY.md](HARMONY.md).
+
+---
+
+## Stage 8 — Puppet
+
+Stage 7's character is a head plate over a body plate with a mouth swapped in each
+frame: a talking sticker. Stage 8 makes it a performance without any new art.
+
+The first question was what should move the pieces: code in Pillow, which is what
+`perform.build_frames()` is today, or Blender, which is free with no licence to
+expire, has a real bone hierarchy and easing curves, and produces a file that can
+be opened and nudged by hand. It was settled with a one-hour test rather than an
+argument:
+
+```bash
+uv run tools/blender_spike.py          # doctor, 24 frames, Eevee, headless
+```
+
+The spike loads the doctor's baked head and body plates as image planes at their
+recorded offsets, builds a two-bone armature (head parented to body, pivots at the
+rig's measured head pivot and the bottom-centre of the body), keyframes a
+one-second beat bob and counter-tilt with Blender's own easing, renders headless
+with alpha through an orthographic camera framed on the rig's crop box, and pushes
+the frames through the real finishing path (`perform.composite()`, `perform.mux()`).
+It also measures its own rest frame against the two-plate composite `perform.py`
+draws from the same plates, and reports the number.
+
+**It passed.** Blender 5.2.1 rendered 24 frames in about 8 seconds with no window,
+and the rest frame differs from the Pillow composite by about one 8-bit level on
+average, with the only visible difference a one-pixel softening along outlines
+from the render's pixel filter. So the puppet engine will be built in Blender:
+8a builds and documents the rig format with a Blender scene builder as its
+compositor, 8b builds the armature from `rig.json` and animates it with Blender's
+curves, 8c writes performance capture as bone keyframes. `perform.py` keeps the
+same command line and sidecar either way.
+
+Blender is the one binary this project needs beyond ffmpeg (`brew install --cask
+blender`). `config.BLENDER` finds it on PATH or under `/Applications`, and
+`BLENDER_BIN` overrides that. The `bpy` module from PyPI was tried so that
+`uv sync` could stay the only setup step: it installs and imports on this
+Python, but its Eevee renders on this Mac come out with magenta textures on an
+opaque white ground, and it pins numpy back to 1.26 for the whole project, so
+the spike uses the binary and the dependency was not kept.

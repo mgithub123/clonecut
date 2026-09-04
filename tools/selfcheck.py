@@ -1139,6 +1139,32 @@ def _():
         except common.ToolError:
             pass
 
+
+@check("the Blender spike measures a rest frame against perform's composite honestly")
+def _():
+    import importlib.util
+    from PIL import Image
+    spec = importlib.util.spec_from_file_location(
+        "blender_spike", config.ROOT / "tools" / "blender_spike.py")
+    spike = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(spike)
+    assert isinstance(config.BLENDER, str) and config.BLENDER, "config.BLENDER is unset"
+    head = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
+    body = Image.new("RGBA", (60, 60), (0, 0, 0, 0))
+    head.paste((200, 40, 40, 255), (20, 10, 40, 30))
+    body.paste((40, 40, 200, 255), (15, 25, 45, 55))
+    ref = spike._rest_reference(head, body, (10, 5, 50, 58))
+    assert ref.size == (40, 53), ref.size
+    assert ref.getpixel((15, 10))[:3] == (200, 40, 40), "head is not drawn over the body"
+    assert ref.getpixel((15, 40))[:3] == (40, 40, 200), "body is missing"
+    same = spike._compare(ref, ref)
+    assert same["coverage_mismatch_px"] == 0 and same["rgb_mean_abs_diff_solid"] == 0.0, same
+    shifted = Image.new("RGBA", ref.size, (0, 0, 0, 0))
+    shifted.alpha_composite(ref, (3, 0))
+    moved = spike._compare(shifted, ref)
+    assert moved["coverage_mismatch_px"] > 0, "a 3px shift went unnoticed"
+    assert spike._alpha_bbox(head) == [20, 10, 40, 30], spike._alpha_bbox(head)
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:
