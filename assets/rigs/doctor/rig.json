@@ -45,7 +45,16 @@
       67
     ],
     "mouth": 25,
-    "note": "head excludes the mouth (25): mouth shapes are composited on and must travel with the head. Bangs (26) stay in the head plate - separating them exposes an outline the rig hides behind the main hair."
+    "note": "head excludes the mouth (25): mouth shapes are composited on and must travel with the head. Bangs (26) stay in the head plate - separating them exposes an outline the rig hides behind the main hair.",
+    "eyes": 19,
+    "hands": [
+      [
+        39,
+        38,
+        40
+      ]
+    ],
+    "hands_note": "Hand_01 (39) carries the five poses; Gloves (38) and Glove_Back (40) are the glove art drawn over it and must move with it. One group, so both hands change together."
   },
   "face": {
     "width": 127,
@@ -150,7 +159,16 @@
     "tears": true,
     "gaze": false,
     "hair_lag": false,
-    "hands": 5
+    "hands": 5,
+    "poses": 11,
+    "gesture": true
   },
-  "capability_note": "gaze needs pupils, which this rig has none of. hair_lag is impossible: the 4 bangs drawings are view angles, not sway, and offsetting them exposes an outline."
+  "capability_note": "gaze needs pupils, which this rig has none of. hair_lag is impossible: the 4 bangs drawings are view angles, not sway, and offsetting them exposes an outline.",
+  "poses": {
+    "source": "poses/manifest.json",
+    "default": 1,
+    "count": 11,
+    "lipsync_count": 9,
+    "note": "View angles baked from the turnaround as head/body plate pairs, with the mouth and eye geometry measured per pose by difference against the head plate. A pose marked lipsync:false has its mouth too foreshortened to animate - the rigs have no profile mouth."
+  }
 }

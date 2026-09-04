@@ -49,7 +49,19 @@
     "mouth_family": [
       14
     ],
-    "note": "head is the dome, face plate, ears, eyes, lids and shine. Mouth_ (13) and Teeth (14) are left out and replaced by the drawn grille set - the rig has exactly one mouth drawing, so there is nothing to animate with. Neckpiece (20) and Drawing (21) sit in the collar and stay with the body."
+    "note": "head is the dome, face plate, ears, eyes, lids and shine. Mouth_ (13) and Teeth (14) are left out and replaced by the drawn grille set - the rig has exactly one mouth drawing, so there is nothing to animate with. Neckpiece (20) and Drawing (21) sit in the collar and stay with the body.",
+    "eyes": 6,
+    "hands": [
+      [
+        35,
+        37
+      ],
+      [
+        44,
+        45
+      ]
+    ],
+    "hands_note": "Two independent Hand elements - 35 (10 poses) with Glove_Shadow 37, and 44 (9 poses) with Glove_Shadow 45. The only rig of the three that can gesture with one hand and not the other."
   },
   "face": {
     "width": 231,
@@ -138,7 +150,16 @@
     "blink": true,
     "tears": false,
     "gaze": false,
-    "hands": 19
+    "hands": 19,
+    "poses": 8,
+    "gesture": true
   },
-  "capability_note": "19 hand poses across two Hand elements (10 + 9) - the only real gesture library of the three rigs; all baked to plates/drawings. gaze is impossible: the eyes have no pupils. tears is false because a robot crying is a choice, not a default, and the cheek routing has not been measured."
+  "capability_note": "19 hand poses across two Hand elements (10 + 9) - the only real gesture library of the three rigs; all baked to plates/drawings. gaze is impossible: the eyes have no pupils. tears is false because a robot crying is a choice, not a default, and the cheek routing has not been measured.",
+  "poses": {
+    "source": "poses/manifest.json",
+    "default": 1,
+    "count": 8,
+    "lipsync_count": 6,
+    "note": "View angles baked from the turnaround as head/body plate pairs, with the mouth and eye geometry measured per pose by difference against the head plate. A pose marked lipsync:false has its mouth too foreshortened to animate - the rigs have no profile mouth."
+  }
 }

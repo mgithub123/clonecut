@@ -1,0 +1,1193 @@
+{
+  "rig": "LD_DOCTOR_RIG_MA",
+  "scene": "LD_DOCTOR_RIG_MA.xstage",
+  "resolution": [
+    3840,
+    2160
+  ],
+  "frames": 55,
+  "frame_pose": {
+    "1": 1,
+    "2": 2,
+    "3": 3,
+    "4": 4,
+    "5": 5,
+    "6": 6,
+    "7": 7,
+    "8": 1,
+    "9": 8,
+    "10": 9,
+    "11": 10,
+    "12": 11,
+    "13": 11,
+    "14": 11,
+    "15": 11,
+    "16": 11,
+    "17": 11,
+    "18": 11,
+    "19": 11,
+    "20": 11,
+    "21": 11,
+    "22": 11,
+    "23": 11,
+    "24": 11,
+    "25": 11,
+    "26": 11,
+    "27": 11,
+    "28": 11,
+    "29": 11,
+    "30": 11,
+    "31": 11,
+    "32": 11,
+    "33": 11,
+    "34": 11,
+    "35": 11,
+    "36": 11,
+    "37": 11,
+    "38": 11,
+    "39": 11,
+    "40": 11,
+    "41": 11,
+    "42": 11,
+    "43": 11,
+    "44": 11,
+    "45": 11,
+    "46": 11,
+    "47": 11,
+    "48": 11,
+    "49": 11,
+    "50": 11,
+    "51": 12,
+    "52": 12,
+    "53": 13,
+    "54": 13,
+    "55": 14
+  },
+  "poses": {
+    "1": {
+      "pose": 1,
+      "frame": 1,
+      "head": "head-01.png",
+      "head_bbox": [
+        1683,
+        207,
+        2157,
+        658
+      ],
+      "body": "body-01.png",
+      "body_bbox": [
+        1539,
+        565,
+        2294,
+        2056
+      ],
+      "mouth_bbox": [
+        1864,
+        560,
+        1977,
+        618
+      ],
+      "centre_x": 1920,
+      "lip_line": 560,
+      "anchor_y": 618,
+      "mouth_width": 114,
+      "max_mouth_height": 98,
+      "eyes": [
+        [
+          1827,
+          489,
+          1858,
+          528
+        ],
+        [
+          1848,
+          453,
+          1914,
+          532
+        ]
+      ],
+      "head_pivot": [
+        1920,
+        658
+      ],
+      "body_nohands": "nohand-01.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-01.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-01.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-01.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-01.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-01.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 1.0,
+      "lipsync": true
+    },
+    "2": {
+      "pose": 2,
+      "frame": 2,
+      "head": "head-02.png",
+      "head_bbox": [
+        1707,
+        207,
+        2163,
+        658
+      ],
+      "body": "body-02.png",
+      "body_bbox": [
+        1645,
+        565,
+        2189,
+        2072
+      ],
+      "mouth_bbox": [
+        1818,
+        557,
+        1914,
+        620
+      ],
+      "centre_x": 1866,
+      "lip_line": 557,
+      "anchor_y": 620,
+      "mouth_width": 97,
+      "max_mouth_height": 101,
+      "eyes": [
+        [
+          1799,
+          493,
+          1812,
+          525
+        ],
+        [
+          1813,
+          462,
+          1848,
+          535
+        ]
+      ],
+      "head_pivot": [
+        1935,
+        658
+      ],
+      "body_nohands": "nohand-02.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-02.png",
+            "at": [
+              1693,
+              1117
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-02.png",
+            "at": [
+              1701,
+              1117
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-02.png",
+            "at": [
+              1633,
+              1117
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-02.png",
+            "at": [
+              1698,
+              1117
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-02.png",
+            "at": [
+              1629,
+              1117
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.851,
+      "lipsync": true
+    },
+    "3": {
+      "pose": 3,
+      "frame": 3,
+      "head": "head-03.png",
+      "head_bbox": [
+        1714,
+        207,
+        2174,
+        668
+      ],
+      "body": "body-03.png",
+      "body_bbox": [
+        1671,
+        566,
+        2135,
+        2059
+      ],
+      "mouth_bbox": [
+        1762,
+        549,
+        1823,
+        612
+      ],
+      "centre_x": 1792,
+      "lip_line": 549,
+      "anchor_y": 612,
+      "mouth_width": 62,
+      "max_mouth_height": 119,
+      "eyes": [
+        [
+          1782,
+          521,
+          1801,
+          536
+        ],
+        [
+          1786,
+          457,
+          1819,
+          514
+        ]
+      ],
+      "head_pivot": [
+        1944,
+        668
+      ],
+      "body_nohands": "nohand-03.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-03.png",
+            "at": [
+              1753,
+              1134
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-03.png",
+            "at": [
+              1753,
+              1134
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-03.png",
+            "at": [
+              1718,
+              1134
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-03.png",
+            "at": [
+              1753,
+              1134
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-03.png",
+            "at": [
+              1695,
+              1134
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.544,
+      "lipsync": true
+    },
+    "4": {
+      "pose": 4,
+      "frame": 4,
+      "head": "head-04.png",
+      "head_bbox": [
+        1675,
+        208,
+        2137,
+        681
+      ],
+      "body": "body-04.png",
+      "body_bbox": [
+        1613,
+        566,
+        2099,
+        2067
+      ],
+      "mouth_bbox": [
+        1736,
+        557,
+        1737,
+        610
+      ],
+      "centre_x": 1736,
+      "lip_line": 557,
+      "anchor_y": 610,
+      "mouth_width": 2,
+      "max_mouth_height": 124,
+      "eyes": [],
+      "head_pivot": [
+        1906,
+        681
+      ],
+      "body_nohands": "nohand-04.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-04.png",
+            "at": [
+              1571,
+              1130
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-04.png",
+            "at": [
+              1613,
+              1130
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-04.png",
+            "at": [
+              1643,
+              1130
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-04.png",
+            "at": [
+              1617,
+              1130
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-04.png",
+            "at": [
+              1643,
+              1130
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.018,
+      "lipsync": false
+    },
+    "5": {
+      "pose": 5,
+      "frame": 5,
+      "head": "head-05.png",
+      "head_bbox": [
+        1565,
+        208,
+        2054,
+        679
+      ],
+      "body": "body-05.png",
+      "body_bbox": [
+        1645,
+        567,
+        2119,
+        2067
+      ],
+      "mouth_bbox": null,
+      "eyes": [],
+      "head_pivot": [
+        1809,
+        679
+      ],
+      "body_nohands": "nohand-05.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-05.png",
+            "at": [
+              1570,
+              1128
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-05.png",
+            "at": [
+              1591,
+              1128
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-05.png",
+            "at": [
+              1663,
+              1128
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-05.png",
+            "at": [
+              1636,
+              1128
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-05.png",
+            "at": [
+              1666,
+              1128
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.0,
+      "lipsync": false
+    },
+    "6": {
+      "pose": 6,
+      "frame": 6,
+      "head": "head-06.png",
+      "head_bbox": [
+        1587,
+        208,
+        2054,
+        676
+      ],
+      "body": "body-06.png",
+      "body_bbox": [
+        1645,
+        567,
+        2116,
+        2052
+      ],
+      "mouth_bbox": [
+        1950,
+        544,
+        2008,
+        610
+      ],
+      "centre_x": 1979,
+      "lip_line": 544,
+      "anchor_y": 610,
+      "mouth_width": 59,
+      "max_mouth_height": 132,
+      "eyes": [
+        [
+          1951,
+          454,
+          1986,
+          510
+        ]
+      ],
+      "head_pivot": [
+        1820,
+        676
+      ],
+      "body_nohands": "nohand-06.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-06.png",
+            "at": [
+              1688,
+              1101
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-06.png",
+            "at": [
+              1709,
+              1101
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-06.png",
+            "at": [
+              1704,
+              1101
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-06.png",
+            "at": [
+              1754,
+              1101
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-06.png",
+            "at": [
+              1702,
+              1101
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.518,
+      "lipsync": true
+    },
+    "7": {
+      "pose": 7,
+      "frame": 7,
+      "head": "head-07.png",
+      "head_bbox": [
+        1644,
+        207,
+        2117,
+        659
+      ],
+      "body": "body-07.png",
+      "body_bbox": [
+        1637,
+        565,
+        2190,
+        2076
+      ],
+      "mouth_bbox": [
+        1915,
+        556,
+        2017,
+        618
+      ],
+      "centre_x": 1966,
+      "lip_line": 556,
+      "anchor_y": 618,
+      "mouth_width": 103,
+      "max_mouth_height": 103,
+      "eyes": [
+        [
+          1892,
+          454,
+          1971,
+          533
+        ],
+        [
+          1985,
+          455,
+          2024,
+          533
+        ]
+      ],
+      "head_pivot": [
+        1880,
+        659
+      ],
+      "body_nohands": "nohand-07.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-07.png",
+            "at": [
+              1637,
+              1112
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-07.png",
+            "at": [
+              1662,
+              1112
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-07.png",
+            "at": [
+              1573,
+              1112
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-07.png",
+            "at": [
+              1637,
+              1112
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-07.png",
+            "at": [
+              1565,
+              1112
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 0.904,
+      "lipsync": true
+    },
+    "8": {
+      "pose": 8,
+      "frame": 9,
+      "head": "head-08.png",
+      "head_bbox": [
+        1683,
+        207,
+        2157,
+        658
+      ],
+      "body": "body-08.png",
+      "body_bbox": [
+        1563,
+        565,
+        2270,
+        2056
+      ],
+      "mouth_bbox": [
+        1864,
+        560,
+        1977,
+        618
+      ],
+      "centre_x": 1920,
+      "lip_line": 560,
+      "anchor_y": 618,
+      "mouth_width": 114,
+      "max_mouth_height": 98,
+      "eyes": [
+        [
+          1827,
+          489,
+          1858,
+          528
+        ],
+        [
+          1848,
+          453,
+          1914,
+          532
+        ]
+      ],
+      "head_pivot": [
+        1920,
+        658
+      ],
+      "body_nohands": "nohand-08.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-08.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-08.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-08.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-08.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-08.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 1.0,
+      "lipsync": true
+    },
+    "9": {
+      "pose": 9,
+      "frame": 10,
+      "head": "head-09.png",
+      "head_bbox": [
+        1683,
+        207,
+        2157,
+        658
+      ],
+      "body": "body-09.png",
+      "body_bbox": [
+        1467,
+        565,
+        2366,
+        2056
+      ],
+      "mouth_bbox": [
+        1864,
+        560,
+        1977,
+        618
+      ],
+      "centre_x": 1920,
+      "lip_line": 560,
+      "anchor_y": 618,
+      "mouth_width": 114,
+      "max_mouth_height": 98,
+      "eyes": [
+        [
+          1827,
+          489,
+          1858,
+          528
+        ],
+        [
+          1848,
+          453,
+          1914,
+          532
+        ]
+      ],
+      "head_pivot": [
+        1920,
+        658
+      ],
+      "body_nohands": "nohand-09.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-09.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-09.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-09.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-09.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-09.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 1.0,
+      "lipsync": true
+    },
+    "10": {
+      "pose": 10,
+      "frame": 11,
+      "head": "head-10.png",
+      "head_bbox": [
+        1683,
+        207,
+        2157,
+        658
+      ],
+      "body": "body-10.png",
+      "body_bbox": [
+        1529,
+        565,
+        2378,
+        2056
+      ],
+      "mouth_bbox": [
+        1864,
+        560,
+        1977,
+        618
+      ],
+      "centre_x": 1920,
+      "lip_line": 560,
+      "anchor_y": 618,
+      "mouth_width": 114,
+      "max_mouth_height": 98,
+      "eyes": [
+        [
+          1827,
+          489,
+          1858,
+          528
+        ],
+        [
+          1848,
+          453,
+          1914,
+          532
+        ]
+      ],
+      "head_pivot": [
+        1920,
+        658
+      ],
+      "body_nohands": "nohand-10.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-10.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-10.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-10.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-10.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-10.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 1.0,
+      "lipsync": true
+    },
+    "11": {
+      "pose": 11,
+      "frame": 12,
+      "head": "head-11.png",
+      "head_bbox": [
+        1683,
+        207,
+        2157,
+        658
+      ],
+      "body": "body-11.png",
+      "body_bbox": [
+        1529,
+        565,
+        2258,
+        2056
+      ],
+      "mouth_bbox": [
+        1864,
+        560,
+        1977,
+        618
+      ],
+      "centre_x": 1920,
+      "lip_line": 560,
+      "anchor_y": 618,
+      "mouth_width": 114,
+      "max_mouth_height": 98,
+      "eyes": [
+        [
+          1827,
+          489,
+          1858,
+          528
+        ],
+        [
+          1848,
+          453,
+          1914,
+          532
+        ]
+      ],
+      "head_pivot": [
+        1920,
+        658
+      ],
+      "body_nohands": "nohand-11.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-11.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-11.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-11.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-11.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-11.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": true,
+      "mouth_foreshortening": 1.0,
+      "lipsync": true
+    },
+    "12": {
+      "pose": 12,
+      "frame": 51,
+      "head": "head-12.png",
+      "head_bbox": null,
+      "body": "body-12.png",
+      "body_bbox": [
+        1529,
+        565,
+        2258,
+        2056
+      ],
+      "mouth_bbox": null,
+      "eyes": [],
+      "head_pivot": null,
+      "body_nohands": "nohand-12.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-12.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-12.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-12.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-12.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-12.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": false,
+      "mouth_foreshortening": 0.0,
+      "lipsync": false
+    },
+    "13": {
+      "pose": 13,
+      "frame": 53,
+      "head": "head-13.png",
+      "head_bbox": null,
+      "body": "body-13.png",
+      "body_bbox": [
+        1529,
+        565,
+        2258,
+        2056
+      ],
+      "mouth_bbox": null,
+      "eyes": [],
+      "head_pivot": null,
+      "body_nohands": "nohand-13.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-13.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-13.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-13.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-13.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-13.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": false,
+      "mouth_foreshortening": 0.0,
+      "lipsync": false
+    },
+    "14": {
+      "pose": 14,
+      "frame": 55,
+      "head": "head-14.png",
+      "head_bbox": null,
+      "body": "body-14.png",
+      "body_bbox": [
+        1529,
+        699,
+        2258,
+        2056
+      ],
+      "mouth_bbox": null,
+      "eyes": [],
+      "head_pivot": null,
+      "body_nohands": "nohand-14.png",
+      "hands": {
+        "0": {
+          "Hand_1": {
+            "file": "hand0-Hand_1-14.png",
+            "at": [
+              1539,
+              1097
+            ]
+          },
+          "Hand_2": {
+            "file": "hand0-Hand_2-14.png",
+            "at": [
+              1563,
+              1097
+            ]
+          },
+          "Hand_3": {
+            "file": "hand0-Hand_3-14.png",
+            "at": [
+              1467,
+              1097
+            ]
+          },
+          "Hand_Pick": {
+            "file": "hand0-Hand_Pick-14.png",
+            "at": [
+              1529,
+              1097
+            ]
+          },
+          "Hand_nofingers": {
+            "file": "hand0-Hand_nofingers-14.png",
+            "at": [
+              1456,
+              1097
+            ]
+          }
+        }
+      },
+      "usable": false,
+      "mouth_foreshortening": 0.0,
+      "lipsync": false
+    }
+  }
+}

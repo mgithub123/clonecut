@@ -47,7 +47,14 @@
       33,
       35,
       38
-    ]
+    ],
+    "eyes": 13,
+    "hands": [
+      [
+        28
+      ]
+    ],
+    "hands_note": "Hand_01 (28) is a single element the rig draws twice through different pegs, so a gesture changes both of the dog's hands together. Its body list has one arm and one leg for the same reason."
   },
   "face": {
     "width": 260,
@@ -184,7 +191,16 @@
     "blink": true,
     "tears": false,
     "gaze": false,
-    "hands": 5
+    "hands": 5,
+    "poses": 22,
+    "gesture": true
   },
-  "capability_note": "Only 3 of the 20 drawings are head-on; the vowel set is derived from those by non-uniform scaling. The lips do not change shape, only the proportions of the opening - it moves convincingly but does not form words. Real drawn vowels would still be better. tears is false because the cheek routing has not been measured for this face."
+  "capability_note": "Only 3 of the 20 drawings are head-on; the vowel set is derived from those by non-uniform scaling. The lips do not change shape, only the proportions of the opening - it moves convincingly but does not form words. Real drawn vowels would still be better. tears is false because the cheek routing has not been measured for this face.",
+  "poses": {
+    "source": "poses/manifest.json",
+    "default": 1,
+    "count": 22,
+    "lipsync_count": 16,
+    "note": "View angles baked from the turnaround as head/body plate pairs, with the mouth and eye geometry measured per pose by difference against the head plate. A pose marked lipsync:false has its mouth too foreshortened to animate - the rigs have no profile mouth."
+  }
 }

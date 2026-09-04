@@ -289,6 +289,22 @@ class Scene:
             return re.sub(r"(\s*<elementSeq[^>]*/>)+", body, col, count=1)
         self.xml = re.sub(_COL0, repl, self.xml, flags=re.S)
 
+    def expose_drawing(self, eid: str, val: str, nframes: int) -> None:
+        """Hold one named drawing of one element for the whole scene.
+
+        hold_frame_one() pins whatever an element happens to show on frame 1. To
+        bake a hand library the drawing has to be chosen, not inherited.
+        """
+        def repl(m):
+            col = m.group(0)
+            seqs = re.findall(_SEQ, col)
+            if not seqs or seqs[0][2] != eid:
+                return col
+            body = '\n     <elementSeq exposures="1-%d" val="%s" id="%s"/>\n    ' % (
+                nframes, val, eid)
+            return re.sub(r"(\s*<elementSeq[^>]*/>)+", body, col, count=1)
+        self.xml = re.sub(_COL0, repl, self.xml, flags=re.S)
+
     def set_resolution(self, w: int, h: int) -> None:
         self.xml = re.sub(r'(<resolution name=")[^"]*(" size=")\d+,\d+(")',
                           rf'\g<1>clonecut_{w}x{h}\g<2>{w},{h}\g<3>', self.xml, count=1)
@@ -690,6 +706,202 @@ def bake_drawings(work: Path, scene_name: str, out_dir: Path, targets: list[tupl
     return got
 
 
+def bake_poses(rig_dir: Path, out_dir: Path, cfg: dict, *,
+               resolution: tuple[int, int] = (3840, 2160),
+               scene_name: str | None = None, hands: bool = True) -> dict:
+    """Render every turnaround view angle as the head/body plate pair the
+    front-on path already uses, plus the geometry needed to drive it.
+
+    The point is that a pose is not a special kind of picture. build_frames()
+    wants a head plate, a body plate and absolute coordinates for the mouth and
+    eyes; give it those for a three-quarter view and a turned character sings
+    through exactly the same code. Treating a pose as a flat full-figure image
+    would have meant a second compositing path and hand-measured geometry per
+    angle - which is what put the dog's mouth on its nose the first time.
+
+    Pegs animate over time, so pose p only exists on frame p and a subset cannot
+    be moved onto frame 1. But rendering the turnaround *unfrozen* with a chosen
+    subset yields that subset at every pose in one pass, so four passes cover a
+    whole rig.
+
+    Geometry is measured, never typed in: the mouth pass is the mouth element
+    alone, so its bounding box at each pose gives centre_x, lip_line and width
+    directly, and the eye pass gives the eye boxes the same way.
+    """
+    from PIL import Image
+    from scipy import ndimage
+
+    rig_dir = Path(rig_dir); out_dir = Path(out_dir)
+    chosen = find_scene(rig_dir, scene_name)
+    probe = Scene(chosen)
+    nframes = probe.length
+    if not probe.animated_pegs():
+        raise ToolError(
+            f"{common.rel(chosen)} has no animated pegs, so it holds no view "
+            f"angles - its turnaround was frozen away. Bake poses from the "
+            f"master scene instead.")
+
+    work = config.CACHE_DIR / f"poses-{rig_dir.name}"
+    if work.exists():
+        shutil.rmtree(work)
+    shutil.copytree(rig_dir, work, ignore=shutil.ignore_patterns("frames", "*.BACKUP*", "*.bak-*"))
+    for p in work.rglob("*"):
+        p.chmod(p.stat().st_mode | 0o200)
+    (work / "frames").mkdir(exist_ok=True)
+    pristine = Scene(chosen).xml
+    layers = cfg["layers"]
+
+    def run(keep: set[str], tag: str, drawing: tuple[str, str] | None = None) -> list[Path]:
+        sc = Scene(work / chosen.name)
+        sc.xml = pristine
+        sc.drop_colour_cards()
+        sc.keep_only(keep)
+        if drawing:
+            sc.expose_drawing(drawing[0], drawing[1], nframes)
+        sc.set_length(nframes)
+        sc.set_resolution(*resolution)
+        sc.set_write_format("TGA4")
+        sc.set_write_prefix(f"frames/{tag}-")
+        sc.save()
+        for old in (work / "frames").glob(f"{tag}-*.tga"):
+            old.unlink()
+        render(sc.path)
+        return sorted((work / "frames").glob(f"{tag}-*.tga"))
+
+    def solid(path: Path):
+        a = np.array(Image.open(path).convert("RGBA"))
+        return a, a[..., 3] > 8
+
+    def box(mask):
+        ys, xs = np.where(mask)
+        if not len(ys):
+            return None
+        return [int(xs.min()), int(ys.min()), int(xs.max()), int(ys.max())]
+
+    ids = lambda key: {str(i) for i in layers[key]}
+    print(f"  {nframes} turnaround frames, {resolution[0]}x{resolution[1]}")
+
+    head_f = run(ids("head"), "head")
+    body_f = run(ids("body"), "body")
+
+    # A view angle, not a frame: the turnaround rotates and then holds, so most
+    # frames repeat. Identity is the head and body together - the head alone is
+    # equal on frames where only an arm moved.
+    seen: dict[tuple[str, str], int] = {}
+    frame_pose: dict[int, int] = {}
+    for k, (hf, bf) in enumerate(zip(head_f, body_f), 1):
+        key = (common.file_hash(hf), common.file_hash(bf))
+        if key not in seen:
+            seen[key] = len(seen) + 1
+        frame_pose[k] = seen[key]
+    first_frame = {}
+    for fr, pose in frame_pose.items():
+        first_frame.setdefault(pose, fr)
+    print(f"  {nframes} frames -> {len(first_frame)} distinct poses")
+
+    # Measure by difference against the head plate, never by rendering a part on
+    # its own. Alone, the mouth is cut to nothing - its Cutter's matte lives on an
+    # element that a subset render blanks - and bypassing the cutter instead would
+    # hand back the raw art, which for the robot is a 591px strip of teeth behind a
+    # 221px slot. head-plus-mouth minus head is exactly the pixels the rig shows.
+    mouth_ids = {str(layers["mouth"])} | {str(i) for i in layers.get("mouth_family", [])}
+    withmouth_f = run(ids("head") | mouth_ids, "withmouth")
+    noeye_f = run(ids("head") - {str(layers["eyes"])}, "noeye")
+
+    def diff(a_path: Path, b_path: Path):
+        a = np.array(Image.open(a_path).convert("RGBA")).astype(int)
+        b = np.array(Image.open(b_path).convert("RGBA")).astype(int)
+        d = np.abs(a - b)
+        return (d[..., :3].sum(axis=2) > 18) | (d[..., 3] > 8)
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    poses: dict[str, dict] = {}
+    for pose, fr in sorted(first_frame.items()):
+        rec: dict = {"pose": pose, "frame": fr}
+        for tag, files in (("head", head_f), ("body", body_f)):
+            arr, m = solid(files[fr - 1])
+            dest = out_dir / f"{tag}-{pose:02d}.png"
+            Image.fromarray(arr).save(dest)              # full canvas: build_frames composites absolutely
+            rec[tag] = dest.name
+            rec[f"{tag}_bbox"] = box(m)
+
+        mm = diff(withmouth_f[fr - 1], head_f[fr - 1])
+        mb = box(mm)
+        rec["mouth_bbox"] = mb
+        if mb:
+            rec["centre_x"] = (mb[0] + mb[2]) // 2
+            rec["lip_line"] = mb[1]
+            rec["anchor_y"] = mb[3]
+            rec["mouth_width"] = mb[2] - mb[0] + 1
+            hb = rec["head_bbox"]
+            rec["max_mouth_height"] = max(8, (hb[3] - mb[1]) if hb else mb[3] - mb[1])
+
+        em = diff(head_f[fr - 1], noeye_f[fr - 1])
+        lab, n = ndimage.label(em)
+        boxes = []
+        for i in range(1, n + 1):
+            b = box(lab == i)
+            if b and (b[2] - b[0]) * (b[3] - b[1]) > 200:
+                boxes.append(b)
+        rec["eyes"] = sorted(boxes)[:2]
+
+        hb = rec["head_bbox"]
+        rec["head_pivot"] = [(hb[0] + hb[2]) // 2, hb[3]] if hb else None
+        poses[str(pose)] = rec
+
+    if hands and layers.get("hands"):
+        counts = probe.drawing_ids_by_id()
+        nh = run(ids("body") - {str(i) for g in layers["hands"] for i in g}, "nohand")
+        for pose, fr in sorted(first_frame.items()):
+            arr, _ = solid(nh[fr - 1])
+            d = out_dir / f"nohand-{pose:02d}.png"
+            Image.fromarray(arr).save(d)
+            poses[str(pose)]["body_nohands"] = d.name
+        for gi, group in enumerate(layers["hands"]):
+            lead = str(group[0])
+            for val in counts.get(lead, []):
+                safe = re.sub(r"[^A-Za-z0-9_.-]", "_", val)
+                fs = run({str(i) for i in group}, f"h{gi}x{safe}", drawing=(lead, val))
+                for pose, fr in sorted(first_frame.items()):
+                    arr, m = solid(fs[fr - 1])
+                    b = box(m)
+                    ent = poses[str(pose)].setdefault("hands", {}).setdefault(str(gi), {})
+                    if not b:
+                        ent[val] = None
+                        continue
+                    dest = out_dir / f"hand{gi}-{safe}-{pose:02d}.png"
+                    Image.fromarray(arr[b[1]:b[3] + 1, b[0]:b[2] + 1]).save(dest)
+                    ent[val] = {"file": dest.name, "at": [b[0], b[1]]}
+            print(f"  hand group {gi}: {len(counts.get(lead, []))} poses")
+
+    # A rig has no profile mouth. As the head turns the visible mouth narrows to a
+    # sliver - the robot's goes from 112px head-on to 10px in profile - and scaling
+    # a front-drawn shape into that reads as a smudge, not singing. Record it per
+    # pose rather than let a shot silently produce one.
+    # The tail of a turnaround is not always a pose. The doctor's last frames render
+    # a collar, a skirt and boots with no head at all - the rig part-disassembled
+    # after the rotation ends. A pose with no head or no body is not a view angle.
+    for p in poses.values():
+        p["usable"] = bool(p.get("head_bbox") and p.get("body_bbox"))
+    widest = max((p.get("mouth_width") or 0) for p in poses.values() if p["usable"]) or 1
+    for p in poses.values():
+        w = p.get("mouth_width") or 0
+        p["mouth_foreshortening"] = round(w / widest, 3)
+        p["lipsync"] = bool(p["usable"] and w >= 0.35 * widest)
+    good = [p for p in poses.values() if p["usable"]]
+    can = sum(1 for p in good if p["lipsync"])
+    print(f"  {len(good)}/{len(poses)} poses usable, {can} of those can lip-sync "
+          f"(mouth >= 35% of head-on width)")
+
+    manifest = {"rig": rig_dir.name, "scene": chosen.name,
+                "resolution": list(resolution), "frames": nframes,
+                "frame_pose": {str(k): v for k, v in frame_pose.items()},
+                "poses": poses}
+    common.write_json(out_dir / "manifest.json", manifest)
+    shutil.rmtree(work, ignore_errors=True)
+    return manifest
+
+
 def bake(rig_dir: Path, out_dir: Path, *, resolution=(3840,2160),
          scene_name: str | None = None, include_all: bool = True,
          turnaround: bool = True) -> dict:
@@ -895,6 +1107,16 @@ def cmd_bake(a) -> int:
     return 0
 
 
+def cmd_poses(a) -> int:
+    import json as _json
+    w, h = a.resolution.lower().split("x")
+    cfg = _json.loads((config.ROOT / "assets" / "rigs" / a.name / "rig.json").read_text())
+    m = bake_poses(Path(a.rig), Path(a.out), cfg, resolution=(int(w), int(h)),
+                   scene_name=a.scene, hands=not a.no_hands)
+    print(f"baked {len(m['poses'])} poses -> {common.rel(Path(a.out))}")
+    return 0
+
+
 def cmd_measure(a) -> int:
     if a.plate:
         src = Path(a.plate)
@@ -942,6 +1164,15 @@ def main(argv=None) -> int:
     bk.add_argument("--resolution", default="3840x2160")
     bk.add_argument("--scene")
     bk.set_defaults(func=cmd_bake)
+
+    q = sub.add_parser("poses", help="bake every turnaround view angle as head/body plates")
+    q.add_argument("rig", help="rig directory holding the scene with the turnaround")
+    q.add_argument("--name", required=True, help="rig name under assets/rigs")
+    q.add_argument("--out", required=True)
+    q.add_argument("--scene", default=None)
+    q.add_argument("--resolution", default="3840x2160")
+    q.add_argument("--no-hands", action="store_true", help="skip the hand library passes")
+    q.set_defaults(func=cmd_poses)
 
     me = sub.add_parser("measure", help="derive geometry from a rendered plate")
     me.add_argument("rig", nargs="?")
