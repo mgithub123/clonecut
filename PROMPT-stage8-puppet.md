@@ -21,12 +21,13 @@ sine, a slow head drift, and a camera push. Nothing else moves. The result reads
 as a talking sticker.
 
 Harmony is out of the picture. `CLONECUT_NO_HARMONY=1` must stay honoured, and
-nothing you write may need the Harmony binary. All the art there will ever be is
+nothing you write may need the Harmony binary. All the art the rigs have is
 already baked under `assets/rigs/<name>/plates/`: every element as its own
 cropped plate with its offset recorded in `manifest.json`, every drawing of every
 multi-drawing element under `drawings/`, and every turnaround pose under
 `turnaround/`. The robot has 19 baked hand poses. Nobody is drawing anything new
-and no image model is being paid for.
+by hand and no image model is being paid for; the only new art comes from the
+Gemini app by copy-paste, in 8g.
 
 **Before anything else:** confirm the plates actually exist on this machine
 (`ls assets/rigs/*/plates | head`) and that they are backed up somewhere outside
