@@ -386,8 +386,103 @@ def _():
 
 # --- plan -------------------------------------------------------------------
 
+_FIXTURE: dict | None = None
+
+
+def _fixture() -> dict:
+    """A synthetic ingest profile, built once in a temp dir.
+
+    These checks used to read ``profiles/goodbye-party.json``, which only exists
+    after ``make_test_media.py`` and ``ingest.py`` have been run - so seven of
+    them failed on any checkout that had not, despite the file's promise of "no
+    media". The shapes here mirror what ``ingest.py`` writes, and the durations
+    mirror ``tools/make_test_media.py`` (test-a 18s, test-b 15s, a 32s track at
+    120 BPM) so the same EDLs stay valid against the real fixtures when those do
+    exist. The media files are empty: enough for ``resolve_media`` to find them,
+    and a failed probe is a warning, not an error.
+    """
+    global _FIXTURE
+    if _FIXTURE is not None:
+        return _FIXTURE
+    import atexit
+    import shutil
+    import tempfile
+    from PIL import Image
+
+    root = Path(tempfile.mkdtemp(prefix="clonecut-selfcheck-"))
+    atexit.register(shutil.rmtree, root, ignore_errors=True)
+    for d in ("raw", "music", "keyframes", "profiles"):
+        (root / d).mkdir()
+    for name in ("raw/test-a.mp4", "raw/test-b.mp4", "music/goodbye-party.wav"):
+        (root / name).write_bytes(b"")
+
+    def clip(stem: str, duration: float, scene_len: int) -> dict:
+        scenes = [{"start": float(s), "end": float(min(s + scene_len, duration))}
+                  for s in range(0, int(duration), scene_len)]
+        motion = [{"t": float(t), "energy": round(((t * 7) % 10) / 10, 3),
+                   "energy_norm": round(((t * 7) % 10) / 10, 3)}
+                  for t in range(int(duration))]
+        keyframes = []
+        for t in range(0, int(duration), 2):
+            p = root / "keyframes" / f"{stem}-{t:04d}.png"
+            Image.new("RGB", (8, 8), (t * 10 % 255, 40, 40)).save(p)
+            keyframes.append({"t": float(t), "path": str(p)})
+        silence = [{"start": 2.4, "end": 3.6}, {"start": 5.9, "end": 8.0}]
+        return {
+            "path": f"raw/{stem}.mp4", "hash": "0" * 64, "duration": duration,
+            "width": 1280, "height": 720, "fps": 30.0, "rotation": 0, "has_audio": True,
+            "scene_cuts": [s["start"] for s in scenes[1:]], "scenes": scenes,
+            "motion": motion, "silence": silence,
+            "speech": ingest.invert_regions(silence, duration),
+            "transcript": {"text": "", "segments": [], "words": []},
+            "keyframes": keyframes,
+        }
+
+    duration, beat = 32.0, 0.5
+    beats = [round(0.035 + beat * i, 3) for i in range(int(duration / beat))]
+    times = [round(i * 0.1, 3) for i in range(int(duration * 10))]
+    sections = [
+        {"start": 0.0, "end": 8.0, "energy": 0.35, "index": 0, "energy_rel": 0.0, "label": "low"},
+        {"start": 8.0, "end": 22.4, "energy": 1.0, "index": 1, "energy_rel": 1.0, "label": "high"},
+        {"start": 22.4, "end": duration, "energy": 0.6, "index": 2, "energy_rel": 0.385, "label": "mid"},
+    ]
+    profile = {
+        "created_at": "2026-07-01T00:00:00+00:00",
+        "ingest_version": config.INGEST_VERSION,
+        "clips": [clip("test-a", 18.0, 6), clip("test-b", 15.0, 5)],
+        "audio": {
+            "path": "music/goodbye-party.wav", "hash": "1" * 64,
+            "duration": duration, "sample_rate": 22050, "bpm": 120.0, "bpm_raw": 60.0,
+            "beat_interval": beat, "beat_grid": {"halved": True},
+            "beats": beats, "downbeats": beats[::4], "onsets": beats,
+            "onset_strength": {"times": times, "values": [float(i % 5 == 0) for i in range(len(times))]},
+            "rms_energy": {"times": times,
+                           "values": [next(s["energy"] for s in sections if s["start"] <= t < s["end"])
+                                      for t in times]},
+            "sections": sections,
+        },
+    }
+    common.write_json(root / "profiles" / "goodbye-party.json", profile)
+    _FIXTURE = {"root": root, "profile": profile}
+    return _FIXTURE
+
+
 def _profile():
-    return common.read_json("profiles/goodbye-party.json")
+    return _fixture()["profile"]
+
+
+class _in_fixture_dir:
+    """Run with the fixture root as cwd, so ``schema.resolve_media`` finds the
+    placeholder media through its ``Path.cwd()`` fallback."""
+
+    def __enter__(self):
+        import os
+        self.prev = os.getcwd()
+        os.chdir(_fixture()["root"])
+
+    def __exit__(self, *exc):
+        import os
+        os.chdir(self.prev)
 
 
 def _plan_edl(segments, audio_start=0.035, **over):
@@ -473,7 +568,8 @@ def _():
     assert seg.out_ > seg.in_
     # it should have fallen back to the earlier beat rather than giving up
     assert seg.snap_to_beat is True, report
-    errors, _ = schema.validate_media(snapped)
+    with _in_fixture_dir():
+        errors, _ = schema.validate_media(snapped)
     assert not errors, errors
 
 
@@ -640,27 +736,38 @@ def _():
 @check("posting a render stores its EDL and derived features")
 def _():
     import tempfile
-    with tempfile.TemporaryDirectory() as d:
-        d = Path(d)
-        conn = log.connect(d / "t.db")
-        vid = _seed_video(conn, d, name="alpha", hook="why does this sound like that?",
-                          avg_len=0.8, cuts=10)
-        row = conn.execute("SELECT * FROM videos WHERE id = ?", (vid,)).fetchone()
-        assert row["variant_name"] == "alpha"
-        assert row["hook_type"] == "question"
-        assert row["hook_text"] == "why does this sound like that?"
-        assert row["cut_count"] == 10
-        assert abs(row["avg_segment_length"] - 0.8) < 1e-6
-        assert row["beat_synced"] == 1
-        assert row["posted_at"] == "2026-07-01"
-        assert json.loads(row["edl_json"])["variant_name"] == "alpha"
-        # song section comes from the real profile on disk
-        assert row["song_section"] == "high", row["song_section"]
-        # re-posting the same file updates rather than duplicating
-        again = _seed_video(conn, d, name="alpha", posted="2026-07-05")
-        assert again == vid
-        assert conn.execute("SELECT COUNT(*) FROM videos").fetchone()[0] == 1
-        assert conn.execute("SELECT posted_at FROM videos").fetchone()[0] == "2026-07-05"
+    # The song section is looked up from a profile on disk, matched on the
+    # track's filename. Point that lookup at the fixture's profiles/ so the
+    # check exercises the real lookup without needing a real ingest.
+    prev_dir = config.PROFILE_DIR
+    config.PROFILE_DIR = _fixture()["root"] / "profiles"
+    try:
+        with tempfile.TemporaryDirectory() as d:
+            _check_post(Path(d))
+    finally:
+        config.PROFILE_DIR = prev_dir
+
+
+def _check_post(d: Path) -> None:
+    conn = log.connect(d / "t.db")
+    vid = _seed_video(conn, d, name="alpha", hook="why does this sound like that?",
+                      avg_len=0.8, cuts=10)
+    row = conn.execute("SELECT * FROM videos WHERE id = ?", (vid,)).fetchone()
+    assert row["variant_name"] == "alpha"
+    assert row["hook_type"] == "question"
+    assert row["hook_text"] == "why does this sound like that?"
+    assert row["cut_count"] == 10
+    assert abs(row["avg_segment_length"] - 0.8) < 1e-6
+    assert row["beat_synced"] == 1
+    assert row["posted_at"] == "2026-07-01"
+    assert json.loads(row["edl_json"])["variant_name"] == "alpha"
+    # audio_start 9.0 sits in the fixture's "high" section (8.0 to 22.4)
+    assert row["song_section"] == "high", row["song_section"]
+    # re-posting the same file updates rather than duplicating
+    again = _seed_video(conn, d, name="alpha", posted="2026-07-05")
+    assert again == vid
+    assert conn.execute("SELECT COUNT(*) FROM videos").fetchone()[0] == 1
+    assert conn.execute("SELECT posted_at FROM videos").fetchone()[0] == "2026-07-05"
 
 
 @check("posting a video with no render sidecar fails readably")
