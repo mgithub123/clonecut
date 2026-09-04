@@ -104,6 +104,20 @@ def validate(doc: dict) -> list[dict]:
             raise ToolError(f"shot {i}: rig {sh['rig']!r} does not support tears")
         if sh.get("gaze") and not caps.get("gaze"):
             raise ToolError(f"shot {i}: rig {sh['rig']!r} has no pupils, so gaze is impossible")
+        if sh.get("pose") is not None:
+            # Fail here rather than twenty minutes into a render. A pose can be
+            # missing, or present but unusable, or usable but too foreshortened to
+            # sing - three different answers, so say which.
+            g = perform.pose_geometry(r, int(sh["pose"]))
+            if not g["lipsync"]:
+                print(f"  shot {i}: pose {sh['pose']} has the mouth at "
+                      f"{g['foreshortening']:.0%} of head-on width - it will be held shut")
+        if sh.get("gesture"):
+            if sh.get("pose") is None:
+                raise ToolError(f"shot {i}: gesture needs a pose - the hand plates are "
+                                f"baked per view angle")
+            if not caps.get("gesture"):
+                raise ToolError(f"shot {i}: rig {sh['rig']!r} has no baked hand poses")
         start, shift = snap(float(sh["start"]), beats)
         dur = float(sh["duration"])
         end, _ = snap(start + dur, beats)
@@ -131,7 +145,9 @@ def render(doc: dict, shots: list[dict], out_dir: Path, name: str) -> Path:
         work = config.CACHE_DIR / f"montage-{name}-shot{i}"
         frames = perform.build_frames(r, an, track, work,
                                       blink=sh.get("blink", True),
-                                      tears=int(sh.get("tears", 0)))
+                                      tears=int(sh.get("tears", 0)),
+                                      pose=(int(sh["pose"]) if sh.get("pose") is not None else None),
+                                      gesture=bool(sh.get("gesture")))
         bg = None
         if sh.get("background"):
             bp = Path(sh["background"])
@@ -200,7 +216,7 @@ def main(argv=None) -> int:
     for sh in shots:
         shift = sh["_shift"]
         note = f"  (snapped {shift:+.3f}s to the beat)" if abs(shift) > 0.001 else ""
-        extras = [k for k in ("background", "rain", "tears", "text") if sh.get(k)]
+        extras = [k for k in ("pose", "gesture", "background", "rain", "tears", "text") if sh.get(k)]
         print(f"  {sh['_index']}. {sh['rig']:8s} {sh['_start']:7.2f}s +{sh['_duration']:5.2f}s"
               f"{note}   {', '.join(extras)}")
         total += sh["_duration"]

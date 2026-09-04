@@ -70,11 +70,11 @@
         1510,
         1612,
         1672,
-        1817
+        1676
       ],
       "centre_x": 1591,
       "lip_line": 1612,
-      "anchor_y": 1817,
+      "anchor_y": 1676,
       "mouth_width": 163,
       "max_mouth_height": 78,
       "eyes": [
@@ -136,7 +136,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.748,
+      "mouth_foreshortening": 0.886,
       "lipsync": true
     },
     "2": {
@@ -159,13 +159,13 @@
       "mouth_bbox": [
         1504,
         1563,
-        1685,
-        1799
+        1665,
+        1678
       ],
-      "centre_x": 1594,
+      "centre_x": 1584,
       "lip_line": 1563,
-      "anchor_y": 1799,
-      "mouth_width": 182,
+      "anchor_y": 1678,
+      "mouth_width": 162,
       "max_mouth_height": 129,
       "eyes": [
         [
@@ -226,7 +226,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.835,
+      "mouth_foreshortening": 0.88,
       "lipsync": true
     },
     "3": {
@@ -249,13 +249,13 @@
       "mouth_bbox": [
         1424,
         1561,
-        1607,
-        1793
+        1586,
+        1677
       ],
-      "centre_x": 1515,
+      "centre_x": 1505,
       "lip_line": 1561,
-      "anchor_y": 1793,
-      "mouth_width": 184,
+      "anchor_y": 1677,
+      "mouth_width": 163,
       "max_mouth_height": 126,
       "eyes": [
         [
@@ -310,7 +310,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.844,
+      "mouth_foreshortening": 0.886,
       "lipsync": true
     },
     "4": {
@@ -330,17 +330,7 @@
         1838,
         2092
       ],
-      "mouth_bbox": [
-        1430,
-        1666,
-        1505,
-        1774
-      ],
-      "centre_x": 1467,
-      "lip_line": 1666,
-      "anchor_y": 1774,
-      "mouth_width": 76,
-      "max_mouth_height": 26,
+      "mouth_bbox": null,
       "eyes": [
         [
           1491,
@@ -394,7 +384,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.349,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "5": {
@@ -414,17 +404,7 @@
         1893,
         2092
       ],
-      "mouth_bbox": [
-        1699,
-        1669,
-        1773,
-        1779
-      ],
-      "centre_x": 1736,
-      "lip_line": 1669,
-      "anchor_y": 1779,
-      "mouth_width": 75,
-      "max_mouth_height": 25,
+      "mouth_bbox": null,
       "eyes": [
         [
           1702,
@@ -478,7 +458,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.344,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "6": {
@@ -499,15 +479,15 @@
         2093
       ],
       "mouth_bbox": [
-        1582,
+        1609,
         1560,
         1771,
-        1786
+        1676
       ],
-      "centre_x": 1676,
+      "centre_x": 1690,
       "lip_line": 1560,
-      "anchor_y": 1786,
-      "mouth_width": 190,
+      "anchor_y": 1676,
+      "mouth_width": 163,
       "max_mouth_height": 128,
       "eyes": [
         [
@@ -562,7 +542,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.872,
+      "mouth_foreshortening": 0.886,
       "lipsync": true
     },
     "7": {
@@ -583,15 +563,15 @@
         2093
       ],
       "mouth_bbox": [
-        1505,
+        1523,
         1563,
         1685,
-        1805
+        1678
       ],
-      "centre_x": 1595,
+      "centre_x": 1604,
       "lip_line": 1563,
-      "anchor_y": 1805,
-      "mouth_width": 181,
+      "anchor_y": 1678,
+      "mouth_width": 163,
       "max_mouth_height": 134,
       "eyes": [
         [
@@ -652,7 +632,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.83,
+      "mouth_foreshortening": 0.886,
       "lipsync": true
     },
     "8": {
@@ -676,11 +656,11 @@
         1499,
         1570,
         1671,
-        1813
+        1672
       ],
       "centre_x": 1585,
       "lip_line": 1570,
-      "anchor_y": 1813,
+      "anchor_y": 1672,
       "mouth_width": 173,
       "max_mouth_height": 120,
       "eyes": [
@@ -742,7 +722,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.794,
+      "mouth_foreshortening": 0.94,
       "lipsync": true
     },
     "9": {
@@ -765,13 +745,13 @@
       "mouth_bbox": [
         1490,
         1538,
-        1701,
-        1785
+        1673,
+        1681
       ],
-      "centre_x": 1595,
+      "centre_x": 1581,
       "lip_line": 1538,
-      "anchor_y": 1785,
-      "mouth_width": 212,
+      "anchor_y": 1681,
+      "mouth_width": 184,
       "max_mouth_height": 154,
       "eyes": [
         [
@@ -832,7 +812,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.972,
+      "mouth_foreshortening": 1.0,
       "lipsync": true
     },
     "10": {
@@ -855,13 +835,13 @@
       "mouth_bbox": [
         1409,
         1539,
-        1626,
-        1765
+        1592,
+        1677
       ],
-      "centre_x": 1517,
+      "centre_x": 1500,
       "lip_line": 1539,
-      "anchor_y": 1765,
-      "mouth_width": 218,
+      "anchor_y": 1677,
+      "mouth_width": 184,
       "max_mouth_height": 147,
       "eyes": [
         [
@@ -936,17 +916,7 @@
         1838,
         2092
       ],
-      "mouth_bbox": [
-        1430,
-        1657,
-        1505,
-        1774
-      ],
-      "centre_x": 1467,
-      "lip_line": 1657,
-      "anchor_y": 1774,
-      "mouth_width": 76,
-      "max_mouth_height": 34,
+      "mouth_bbox": null,
       "eyes": [
         [
           1503,
@@ -1000,7 +970,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.349,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "12": {
@@ -1020,17 +990,7 @@
         1893,
         2092
       ],
-      "mouth_bbox": [
-        1699,
-        1660,
-        1773,
-        1779
-      ],
-      "centre_x": 1736,
-      "lip_line": 1660,
-      "anchor_y": 1779,
-      "mouth_width": 75,
-      "max_mouth_height": 33,
+      "mouth_bbox": null,
       "eyes": [
         [
           1685,
@@ -1084,7 +1044,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.344,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "13": {
@@ -1105,15 +1065,15 @@
         2093
       ],
       "mouth_bbox": [
-        1549,
+        1579,
         1541,
         1762,
-        1785
+        1678
       ],
-      "centre_x": 1655,
+      "centre_x": 1670,
       "lip_line": 1541,
-      "anchor_y": 1785,
-      "mouth_width": 214,
+      "anchor_y": 1678,
+      "mouth_width": 184,
       "max_mouth_height": 147,
       "eyes": [
         [
@@ -1168,7 +1128,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.982,
+      "mouth_foreshortening": 1.0,
       "lipsync": true
     },
     "14": {
@@ -1189,15 +1149,15 @@
         2093
       ],
       "mouth_bbox": [
-        1506,
+        1536,
         1539,
         1719,
-        1784
+        1682
       ],
-      "centre_x": 1612,
+      "centre_x": 1627,
       "lip_line": 1539,
-      "anchor_y": 1784,
-      "mouth_width": 214,
+      "anchor_y": 1682,
+      "mouth_width": 184,
       "max_mouth_height": 158,
       "eyes": [
         [
@@ -1258,7 +1218,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.982,
+      "mouth_foreshortening": 1.0,
       "lipsync": true
     },
     "15": {
@@ -1282,11 +1242,11 @@
         1503,
         1639,
         1673,
-        1837
+        1690
       ],
       "centre_x": 1588,
       "lip_line": 1639,
-      "anchor_y": 1837,
+      "anchor_y": 1690,
       "mouth_width": 171,
       "max_mouth_height": 62,
       "eyes": [
@@ -1348,7 +1308,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.784,
+      "mouth_foreshortening": 0.929,
       "lipsync": true
     },
     "16": {
@@ -1371,13 +1331,13 @@
       "mouth_bbox": [
         1506,
         1565,
-        1701,
-        1769
+        1669,
+        1687
       ],
-      "centre_x": 1603,
+      "centre_x": 1587,
       "lip_line": 1565,
-      "anchor_y": 1769,
-      "mouth_width": 196,
+      "anchor_y": 1687,
+      "mouth_width": 164,
       "max_mouth_height": 132,
       "eyes": [
         [
@@ -1438,7 +1398,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.899,
+      "mouth_foreshortening": 0.891,
       "lipsync": true
     },
     "17": {
@@ -1461,13 +1421,13 @@
       "mouth_bbox": [
         1436,
         1568,
-        1625,
-        1787
+        1597,
+        1688
       ],
-      "centre_x": 1530,
+      "centre_x": 1516,
       "lip_line": 1568,
-      "anchor_y": 1787,
-      "mouth_width": 190,
+      "anchor_y": 1688,
+      "mouth_width": 162,
       "max_mouth_height": 136,
       "eyes": [
         [
@@ -1522,7 +1482,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.872,
+      "mouth_foreshortening": 0.88,
       "lipsync": true
     },
     "18": {
@@ -1542,17 +1502,7 @@
         1838,
         2092
       ],
-      "mouth_bbox": [
-        1430,
-        1675,
-        1505,
-        1774
-      ],
-      "centre_x": 1467,
-      "lip_line": 1675,
-      "anchor_y": 1774,
-      "mouth_width": 76,
-      "max_mouth_height": 29,
+      "mouth_bbox": null,
       "eyes": [
         [
           1491,
@@ -1606,7 +1556,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.349,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "19": {
@@ -1626,17 +1576,7 @@
         1893,
         2092
       ],
-      "mouth_bbox": [
-        1699,
-        1673,
-        1773,
-        1779
-      ],
-      "centre_x": 1736,
-      "lip_line": 1673,
-      "anchor_y": 1779,
-      "mouth_width": 75,
-      "max_mouth_height": 30,
+      "mouth_bbox": null,
       "eyes": [
         [
           1702,
@@ -1690,7 +1630,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.344,
+      "mouth_foreshortening": 0.0,
       "lipsync": false
     },
     "20": {
@@ -1711,15 +1651,15 @@
         2093
       ],
       "mouth_bbox": [
-        1553,
+        1583,
         1564,
         1744,
-        1783
+        1684
       ],
-      "centre_x": 1648,
+      "centre_x": 1663,
       "lip_line": 1564,
-      "anchor_y": 1783,
-      "mouth_width": 192,
+      "anchor_y": 1684,
+      "mouth_width": 162,
       "max_mouth_height": 137,
       "eyes": [
         [
@@ -1774,7 +1714,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.881,
+      "mouth_foreshortening": 0.88,
       "lipsync": true
     },
     "21": {
@@ -1795,15 +1735,15 @@
         2093
       ],
       "mouth_bbox": [
-        1499,
+        1532,
         1568,
         1693,
-        1767
+        1688
       ],
-      "centre_x": 1596,
+      "centre_x": 1612,
       "lip_line": 1568,
-      "anchor_y": 1767,
-      "mouth_width": 195,
+      "anchor_y": 1688,
+      "mouth_width": 162,
       "max_mouth_height": 130,
       "eyes": [
         [
@@ -1864,7 +1804,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.894,
+      "mouth_foreshortening": 0.88,
       "lipsync": true
     },
     "22": {
@@ -1888,11 +1828,11 @@
         1510,
         1612,
         1672,
-        1817
+        1676
       ],
       "centre_x": 1591,
       "lip_line": 1612,
-      "anchor_y": 1817,
+      "anchor_y": 1676,
       "mouth_width": 163,
       "max_mouth_height": 78,
       "eyes": [
@@ -1954,7 +1894,7 @@
         }
       },
       "usable": true,
-      "mouth_foreshortening": 0.748,
+      "mouth_foreshortening": 0.886,
       "lipsync": true
     }
   }

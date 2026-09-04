@@ -1080,6 +1080,65 @@ def _():
     assert got[0, 0, 3] < 8, "white background stayed opaque"
     assert got[3, 3, 3] > 200, "the art was matted away"
 
+
+@check("every rig has usable baked view angles")
+def _():
+    import json as _json
+    root = config.ROOT / "assets" / "rigs"
+    for p in sorted(root.glob("*/rig.json")):
+        man = p.parent / "poses" / "manifest.json"
+        assert man.exists(), (
+            f"{p.parent.name} has no baked poses. Harmony's licence expires "
+            f"2026-10-03 and it is the only thing that can bake them.")
+        poses = _json.loads(man.read_text())["poses"]
+        usable = [v for v in poses.values() if v["usable"]]
+        assert usable, f"{p.parent.name}: no usable pose"
+        for k, v in poses.items():
+            if not v["usable"]:
+                continue
+            for part in ("head", "body"):
+                assert (p.parent / "poses" / v[part]).exists(), \
+                    f"{p.parent.name} pose {k}: missing {part} plate"
+
+
+@check("no pose puts the mouth outside the head")
+def _():
+    import json as _json
+    root = config.ROOT / "assets" / "rigs"
+    for p in sorted(root.glob("*/poses/manifest.json")):
+        for k, v in _json.loads(p.read_text())["poses"].items():
+            if not v["usable"] or not v.get("mouth_bbox"):
+                continue
+            mb, hb = v["mouth_bbox"], v["head_bbox"]
+            assert (mb[0] >= hb[0] and mb[2] <= hb[2]
+                    and mb[1] >= hb[1] and mb[3] <= hb[3]), (
+                f"{p.parent.parent.name} pose {k}: mouth {mb} falls outside the "
+                f"head {hb} - this is how the dog's mouth ended up on its nose. "
+                f"Measuring the mouth family instead of the mouth element does it: "
+                f"a hanging tongue drags the box down onto the neck.")
+
+
+@check("an unusable or absent pose is refused, not rendered")
+def _():
+    import json as _json
+    import perform as _perform
+    root = config.ROOT / "assets" / "rigs"
+    name = sorted(d.name for d in root.iterdir() if (d / "rig.json").exists())[0]
+    r = _perform.load_rig(name)
+    poses = _json.loads((r["_dir"] / "poses" / "manifest.json").read_text())["poses"]
+    try:
+        _perform.pose_geometry(r, 10 ** 6)
+        raise AssertionError("a pose that does not exist was accepted")
+    except common.ToolError:
+        pass
+    bad = [k for k, v in poses.items() if not v["usable"]]
+    if bad:
+        try:
+            _perform.pose_geometry(r, int(bad[0]))
+            raise AssertionError(f"unusable pose {bad[0]} was accepted")
+        except common.ToolError:
+            pass
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

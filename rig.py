@@ -804,8 +804,11 @@ def bake_poses(rig_dir: Path, out_dir: Path, cfg: dict, *,
     # element that a subset render blanks - and bypassing the cutter instead would
     # hand back the raw art, which for the robot is a 591px strip of teeth behind a
     # 221px slot. head-plus-mouth minus head is exactly the pixels the rig shows.
-    mouth_ids = {str(layers["mouth"])} | {str(i) for i in layers.get("mouth_family", [])}
-    withmouth_f = run(ids("head") | mouth_ids, "withmouth")
+    # The mouth element alone, not the mouth family. The dog's family includes
+    # Tongue_OUT, a tongue that hangs to its chest, so measuring the family put the
+    # box 137px too low and pasted the mouth on the dog's neck. The family parts are
+    # supporting art that can extend well past the opening.
+    withmouth_f = run(ids("head") | {str(layers["mouth"])}, "withmouth")
     noeye_f = run(ids("head") - {str(layers["eyes"])}, "noeye")
 
     def diff(a_path: Path, b_path: Path):
@@ -838,12 +841,17 @@ def bake_poses(rig_dir: Path, out_dir: Path, cfg: dict, *,
 
         em = diff(head_f[fr - 1], noeye_f[fr - 1])
         lab, n = ndimage.label(em)
-        boxes = []
+        # The two biggest blobs are the eyes; anything else is anti-aliasing along
+        # a lid. Rank by area and only then left to right - ranking by position
+        # first takes the two leftmost specks and puts overlapping boxes on one eye.
+        found = []
         for i in range(1, n + 1):
             b = box(lab == i)
-            if b and (b[2] - b[0]) * (b[3] - b[1]) > 200:
-                boxes.append(b)
-        rec["eyes"] = sorted(boxes)[:2]
+            if b:
+                found.append((int((lab == i).sum()), b))
+        found.sort(key=lambda t: -t[0])
+        keep = [b for a, b in found[:2] if a >= 0.25 * found[0][0]] if found else []
+        rec["eyes"] = sorted(keep, key=lambda b: b[0])
 
         hb = rec["head_bbox"]
         rec["head_pivot"] = [(hb[0] + hb[2]) // 2, hb[3]] if hb else None

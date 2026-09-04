@@ -4,7 +4,7 @@ Turns a Toon Boom Harmony character rig and a vocal stem into a finished vertica
 music-video shot, and cuts several shots together.
 
 ```bash
-# one shot
+# one shot, front-on
 uv run perform.py --rig doctor \
     --audio "~/Desktop/LuckyDog-Harmony/goodbyparty 1.4 vox.wav" \
     --start 41.2 --duration 9 --track "goodbyparty 1.4" \
@@ -17,7 +17,48 @@ uv run perform.py --rig doctor \
 # several shots, cutting between characters
 uv run montage.py examples/shots-two-rigs.json --dry-run   # check the cut plan
 uv run montage.py examples/shots-two-rigs.json
+
+# a three-quarter view, singing, with the hands changing between lines
+uv run perform.py --rig dog --pose 13 --gesture \
+    --audio "…vox.wav" --start 41.2 --duration 4 --track "goodbyparty 1.4"
 ```
+
+## View angles
+
+A turnaround is a rotation, so every rig already contains the angles a music video
+wants. `rig.py poses` bakes each one as **the head/body plate pair the front-on
+path already uses**, which is the whole trick: a turned character then goes through
+the same compositing, mouth anchoring, blink and camera code. Treating a pose as a
+flat full-figure image would have meant a second path and hand-measured geometry
+per angle.
+
+Pegs animate over time, so pose *p* exists only on frame *p* and a subset cannot be
+moved onto frame 1 — but rendering the turnaround **unfrozen** with a chosen
+element subset yields that subset at every pose in one pass. Five passes cover a
+rig.
+
+Geometry is measured, never typed in. `centre_x`, `lip_line`, mouth width and the
+eye boxes come from differencing head-plus-mouth against head, at every angle.
+Measured against the hand-tuned front values, the dog agrees to 4px — which is the
+check that the whole chain is right, and it is what stops a mouth landing on a nose.
+
+| | Dog | Doctor | Robot |
+|---|---|---|---|
+| Usable poses | **22** | 11 | 8 |
+| Of those, can lip-sync | **16** | 9 | 6 |
+| Hand poses | 5 | 5 | **10 + 9** |
+| Independent hands | no | no | **yes** |
+
+Two limits are recorded per pose rather than hidden:
+
+**A rig has no profile mouth.** As the head turns, the visible mouth narrows — the
+robot's from 112px head-on to 10px — and scaling a front-drawn shape into that
+reads as a smudge. Each pose carries its foreshortening and a `lipsync` flag at a
+35% threshold; below it the mouth is held shut and `perform.py` says so.
+
+**The tail of a turnaround is not a pose.** The doctor's last frames render a
+collar, a skirt and boots with no head — the rig part-disassembled after the
+rotation ends. Those are marked unusable; three of its fourteen.
 
 ## The pieces
 
@@ -30,6 +71,7 @@ uv run montage.py examples/shots-two-rigs.json
 | `montage.py` | 7d. Several shots, cut to the beat |
 | `assets/rigs/<name>/rig.json` | Per-rig geometry and capabilities |
 | `assets/rigs/<name>/plates/` | **The baked rigs.** Element plates, drawing libraries, turnaround poses |
+| `assets/rigs/<name>/poses/` | **The view angles.** Head/body plates and measured geometry per pose |
 | `prototype/` | The original working code, kept as the reference |
 
 ## What makes it work
@@ -125,6 +167,15 @@ That is why generated mouth libraries are a first-class part of this pipeline
 rather than a workaround.
 
 ## Things that will bite
+
+**Measure the mouth from the mouth element, not the mouth family.** The dog's
+family includes `Tongue_OUT`, a tongue that hangs to its chest, so measuring the
+family put the box 137px too low and pasted the mouth on the dog's neck.
+
+**A colour card fills the alpha channel.** The dog's and doctor's scenes each hold
+a white `COLOR_CARD`; the robot's does not, which is why only the robot first baked
+with a usable matte. `Scene.drop_colour_cards()` unwires them. Checking that no
+element baked *empty* does not catch this — on a white canvas nothing ever is.
 
 **Use the vocal stem, never the full mix.** On a mix the envelope reads drums and
 guitar as singing: the mouth is shut 6% of the time instead of 34%.

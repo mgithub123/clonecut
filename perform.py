@@ -80,7 +80,58 @@ def _matted(path) -> Image.Image:
     return face.unmul(im)
 
 
-def plates(r: dict) -> tuple[Image.Image, Image.Image]:
+def pose_table(r: dict) -> dict:
+    """The rig's baked view angles, or an error saying how to make them."""
+    p = r["_dir"] / "poses" / "manifest.json"
+    if not p.exists():
+        raise ToolError(
+            f"rig {r['name']!r} has no baked poses ({common.rel(p)}).\n"
+            f"  bake them while the licence lasts: uv run rig.py poses <scene> "
+            f"--name {r['name']} --out {common.rel(p.parent)}")
+    return json.loads(p.read_text())
+
+
+def pose_geometry(r: dict, pose: int) -> dict:
+    """Face geometry for one view angle, in that pose's own plate coordinates.
+
+    Positions are the measured ones. Sizes are not: the mouth *width* is scaled by
+    how much the mouth foreshortens at this angle, but its height keeps the value
+    tuned for the rig, because turning a head sideways narrows the mouth without
+    shortening it. Framing keeps the offset the rig's own crop has from its default
+    pose, so a cut between angles does not also jump the camera.
+    """
+    tab = pose_table(r)
+    key = str(pose)
+    if key not in tab["poses"]:
+        have = sorted(int(k) for k, v in tab["poses"].items() if v["usable"])
+        raise ToolError(f"rig {r['name']!r} has no pose {pose}; usable poses are {have}")
+    rec = tab["poses"][key]
+    if not rec["usable"]:
+        raise ToolError(
+            f"rig {r['name']!r} pose {pose} is not usable - the turnaround had "
+            f"come apart by that frame and it has no head or no body.")
+    base = tab["poses"][str(tab.get("default", 1))]
+    ratio = (rec["mouth_width"] / base["mouth_width"]) if base.get("mouth_width") else 1.0
+
+    fa = dict(r["face"])
+    fa["centre_x"] = rec["centre_x"]
+    fa["lip_line"] = rec["lip_line"]
+    fa["anchor_y"] = rec["anchor_y"]
+    fa["width"] = max(8.0, r["face"]["width"] * ratio)
+
+    crop = list(r["crop"])
+    cw, ch = crop[2] - crop[0], crop[3] - crop[1]
+    hb0, hb = base["head_bbox"], rec["head_bbox"]
+    off_x = (hb0[0] + hb0[2]) // 2 - crop[0]
+    off_y = hb0[1] - crop[1]
+    x0 = (hb[0] + hb[2]) // 2 - off_x
+    y0 = hb[1] - off_y
+    return {"face": fa, "eyes": rec["eyes"], "head_pivot": rec["head_pivot"],
+            "crop": (x0, y0, x0 + cw, y0 + ch), "record": rec,
+            "foreshortening": ratio, "lipsync": rec["lipsync"]}
+
+
+def plates(r: dict, pose: int | None = None) -> tuple[Image.Image, Image.Image]:
     """Head (no mouth) and body plates.
 
     Tracked plates under assets/rigs/<name>/plates/ come first, and are keyed on
@@ -92,6 +143,10 @@ def plates(r: dict) -> tuple[Image.Image, Image.Image]:
     dependency on Harmony's scene being present for work that needed none of it.
     """
     config.ensure_dirs()
+    if pose is not None:
+        rec = pose_table(r)["poses"][str(pose)]
+        d = r["_dir"] / "poses"
+        return _matted(d / rec["head"]), _matted(d / rec["body"])
     res = tuple(r["render"]["resolution"])
     out = []
     for part in ("head", "body"):
@@ -229,16 +284,68 @@ def _settle(t: float, ends: list[int], dur: float = 0.95) -> float:
     return v
 
 
+def gesture_track(r: dict, track: list[str], rec: dict, n: int,
+                  seed: int = 11) -> list[dict] | None:
+    """A hand pose per frame, changing between sung lines.
+
+    Hands that change mid-word read as a glitch; hands that change while the mouth
+    is shut read as the character moving between phrases. So the boundaries are
+    phrase_ends() - the same breaths the head settle already uses.
+
+    The dog's and doctor's hands are one element drawn twice, so their groups move
+    together. The robot has two, and they are chosen independently.
+    """
+    groups = rec.get("hands") or {}
+    if not groups:
+        return None
+    rng = np.random.default_rng(seed)
+    bounds = [0] + [f for f in phrase_ends(track) if 0 < f < n] + [n]
+    out: list[dict] = [{} for _ in range(n)]
+    for gi, lib in sorted(groups.items()):
+        names = [k for k, v in lib.items() if v]
+        if not names:
+            continue
+        rest = names[0]
+        for a, b in zip(bounds[:-1], bounds[1:]):
+            pick = rest if (b - a) < FPS // 2 else names[int(rng.integers(len(names)))]
+            for f in range(max(0, a), min(n, b)):
+                out[f][gi] = pick
+    return out
+
+
 def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
-                 *, blink: bool = True, tears: int = 0) -> list[Path]:
-    head, body = plates(r)
+                 *, blink: bool = True, tears: int = 0,
+                 pose: int | None = None, gesture: bool = False) -> list[Path]:
+    head, body = plates(r, pose)
     lib = mouth_library(r)
     n = len(track)
-    fa = r["face"]
-    pivot = tuple(fa["head_pivot"])
-    eyes = [tuple(e) for e in r["eyes"]]
+    # With no pose this is the rig's hand-measured front-on geometry and the code
+    # below is untouched; with one, every value comes from that angle's own
+    # measurement instead. Same compositing either way - which is the whole reason
+    # poses were baked as head/body plates rather than as flat figures.
+    if pose is None:
+        fa = r["face"]
+        pivot = tuple(fa["head_pivot"])
+        eyes = [tuple(e) for e in r["eyes"]]
+        crop = tuple(r["crop"])
+        prec, gtrack = None, None
+    else:
+        g = pose_geometry(r, pose)
+        fa = g["face"]
+        pivot = tuple(g["head_pivot"])
+        eyes = [tuple(e) for e in g["eyes"]]
+        crop = g["crop"]
+        prec = g["record"]
+        if not g["lipsync"] and any(s != "CLOSED" for s in track):
+            print(f"  note: pose {pose} has the mouth at {g['foreshortening']:.0%} of "
+                  f"head-on width, too foreshortened to animate; holding it shut.")
+            track = ["CLOSED"] * n
+        gtrack = gesture_track(r, track, prec, n) if gesture else None
+        if gesture and gtrack is None:
+            raise ToolError(f"rig {r['name']!r} has no baked hand poses for pose {pose}")
+        if gtrack is not None and prec.get("body_nohands"):
+            body = _matted(r["_dir"] / "poses" / prec["body_nohands"])
     pct = r["mouth_width_pct"]
-    crop = tuple(r["crop"])
     bl = blink_track(n) if (blink and r["capabilities"].get("blink")) else np.ones(n)
     ends = phrase_ends(track)
 
@@ -268,7 +375,15 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
         head_rot = 1.25 * float(np.sin(2 * np.pi * t / 6.1 + 1.2)) - 0.9 * p + 1.7 * st
 
         canvas = Image.new("RGBA", head.size, (0, 0, 0, 0))
-        canvas.alpha_composite(body, (0, int(round(body_dy))))
+        frame_body = body
+        if gtrack is not None:
+            frame_body = body.copy()
+            for gi, name in sorted(gtrack[f].items()):
+                ent = (prec.get("hands") or {}).get(gi, {}).get(name)
+                if ent:
+                    hp = _matted(r["_dir"] / "poses" / ent["file"])
+                    frame_body.alpha_composite(hp, tuple(ent["at"]))
+        canvas.alpha_composite(frame_body, (0, int(round(body_dy))))
 
         h = head.copy()
         shape = lib[track[f]]
@@ -474,6 +589,10 @@ def main(argv=None) -> int:
     p.add_argument("--text", default="")
     p.add_argument("--tears", type=int, default=0)
     p.add_argument("--no-blink", action="store_true")
+    p.add_argument("--pose", type=int, default=None,
+                   help="a baked view angle (see rig.py poses); omit for front-on")
+    p.add_argument("--gesture", action="store_true",
+                   help="change hand poses between sung lines (needs --pose)")
     p.add_argument("--char-width", type=int, default=850)
     p.add_argument("--char-top", type=int, default=480)
     p.add_argument("--name", default="shot")
@@ -502,7 +621,8 @@ def main(argv=None) -> int:
 
     work = config.CACHE_DIR / f"perform-{a.rig}-{a.name}"
     print("rendering character frames")
-    frames = build_frames(r, an, track, work, blink=not a.no_blink, tears=a.tears)
+    frames = build_frames(r, an, track, work, blink=not a.no_blink, tears=a.tears,
+                          pose=a.pose, gesture=a.gesture)
 
     bg = None
     if a.background:
