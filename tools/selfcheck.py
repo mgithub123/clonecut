@@ -1165,6 +1165,87 @@ def _():
     assert moved["coverage_mismatch_px"] > 0, "a 3px shift went unnoticed"
     assert spike._alpha_bbox(head) == [20, 10, 40, 30], spike._alpha_bbox(head)
 
+
+@check("the puppet's draw order is peeled from the truth, top layer first")
+def _():
+    import puppet
+    from PIL import Image
+    canvas = (60, 60)
+    def plate(colour, box):
+        im = Image.new("RGBA", (box[2] - box[0] + 1, box[3] - box[1] + 1), colour + (255,))
+        p = puppet.Plate(Path("unused.png"), box)
+        p._arr = np.asarray(im).astype(np.int16)
+        return p
+    # three overlapping squares; the truth was drawn 3 over 1 over 2
+    plates = {"1": plate((200, 0, 0), [5, 5, 35, 35]),
+              "2": plate((0, 200, 0), [20, 20, 50, 50]),
+              "3": plate((0, 0, 200), [15, 15, 25, 45])}
+    truth = puppet.composite([{"id": i} for i in ("2", "1", "3")], plates, canvas, mattes=False)
+    order, stat = puppet.measure_order(plates, np.asarray(truth).astype(np.int16))
+    assert order == ["2", "1", "3"], order
+    assert not stat["hidden"], stat
+    again = puppet.composite([{"id": i} for i in order], plates, canvas, mattes=False)
+    assert puppet.compare(again, truth)["differing_px"] == 0
+    # a plate nothing shows is reported hidden and sent to the bottom
+    plates["4"] = plate((9, 9, 9), [21, 21, 24, 24])
+    order, stat = puppet.measure_order(plates, np.asarray(truth).astype(np.int16))
+    assert stat["hidden"] == ["4"] and order[0] == "4", (order, stat)
+
+
+@check("a pivot is the joined end of a part, not its free end")
+def _():
+    import puppet
+    child = np.zeros((80, 80), bool); child[30:70, 20:30] = True       # a shin
+    thigh = np.zeros((80, 80), bool); thigh[10:34, 18:32] = True       # overlaps at the knee
+    boot = np.zeros((80, 80), bool);  boot[66:78, 16:34] = True        # overlaps at the ankle
+    # against the whole leg the shin's free end is the ankle, so the knee wins
+    pv, how = puppet.measure_pivot(child, thigh | boot)
+    assert 29 <= pv[1] <= 34, (pv, how)
+    # against the boot alone the joint is the ankle
+    pv, how = puppet.measure_pivot(child, boot)
+    assert 65 <= pv[1] <= 70, (pv, how)
+    # an arm that runs down the side of a chest still pivots at its top
+    arm = np.zeros((80, 80), bool); arm[10:70, 40:50] = True
+    chest = np.zeros((80, 80), bool); chest[5:60, 0:46] = True
+    pv, how = puppet.measure_pivot(arm, chest)
+    assert pv[1] <= 20, (pv, how)
+    pv, how = puppet.measure_pivot(child, np.zeros((80, 80), bool))
+    assert pv == [24, 69] and "root" in how, (pv, how)
+
+
+@check("a plate drawn twice splits into one layer per blob, left to right")
+def _():
+    import puppet
+    from PIL import Image
+    im = Image.new("RGBA", (100, 40), (0, 0, 0, 0))
+    im.paste((10, 10, 10, 255), (2, 5, 30, 35))
+    im.paste((10, 10, 10, 255), (60, 8, 98, 38))
+    p = puppet.Plate(Path("unused.png"), [500, 300, 599, 339])
+    p._arr = np.asarray(im).astype(np.int16)
+    parts = puppet.split_instances(p, 2)
+    assert [b for b, _ in parts] == [[502, 305, 529, 334], [560, 308, 597, 337]], parts
+    assert parts[0][1].arr[..., 3].max() == 255 and parts[0][1].arr.shape[1] == 28
+    assert puppet.split_instances(p, 3) == [], "asked for three blobs of a two-blob plate"
+    assert puppet._idkey("36#2") == (36, 2) and puppet._idkey("7") == (7, 0)
+
+
+@check("every rig's puppet recomposites to within 3% of its cutter-free ground truth")
+def _():
+    import puppet
+    from PIL import Image
+    root = config.ROOT / "assets" / "rigs"
+    for p in sorted(root.glob("*/rig.json")):
+        r = json.loads(p.read_text())
+        pp = r.get("puppet")
+        assert pp, f"{p.parent.name} has no puppet block - run: uv run puppet.py build {p.parent.name}"
+        m = pp["measured"]["recomposite_vs_nocut"]
+        assert m["differing_pct"] < 3.0, f"{p.parent.name}: {m['differing_pct']}% recorded at build"
+        assert all(l["bone"] in pp["bones"] for l in pp["layers"]), f"{p.parent.name}: a layer hangs from no bone"
+        for k, b in pp["bones"].items():
+            assert b["parent"] is None or b["parent"] in pp["bones"], f"{p.parent.name}: bone {k} orphaned"
+        truth = p.parent / pp["ground_truth"]["nocut"]
+        assert truth.exists(), f"{p.parent.name}: {truth.name} missing"
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

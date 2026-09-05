@@ -202,5 +202,1951 @@
     "count": 22,
     "lipsync_count": 16,
     "note": "View angles baked from the turnaround as head/body plate pairs, with the mouth and eye geometry measured per pose by difference against the head plate. A pose marked lipsync:false has its mouth too foreshortened to animate - the rigs have no profile mouth."
+  },
+  "puppet": {
+    "generated_by": "puppet.py build - measured from plates/, do not edit by hand",
+    "canvas": [
+      7680,
+      4320
+    ],
+    "ground_truth": {
+      "nocut": "plates/_ALL_NOCUT.png",
+      "authored": "plates/_ALL.png"
+    },
+    "parenting_source": "peg hierarchy of assets/rigs/dog/scene/Luckydog_DOG_MA.xstage (Harmony)",
+    "bones": {
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_Flap_01_P": {
+        "name": "Ear_Flap_01_P",
+        "parent": "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P",
+        "pivot": [
+          3556,
+          2766
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "10#2"
+        ]
+      },
+      "Dog_Rig-G/Ear_01_GRP/Ear_Flap_01_P": {
+        "name": "Ear_Flap_01_P",
+        "parent": "Dog_Rig-G/Ear_01_GRP/Ear_01_P",
+        "pivot": [
+          2801,
+          2767
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "10#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Pupil_01_P": {
+        "name": "Pupil_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3060,
+          3024
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "12#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/T_eyelid_01_P": {
+        "name": "T_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3283,
+          2957
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "15#2"
+        ]
+      },
+      "Dog_Rig-G/M_LA_P_1": {
+        "name": "M_LA_P_1",
+        "parent": "Dog_Rig-G/M_UA_P_1",
+        "pivot": [
+          3486,
+          3567
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "27#2"
+        ]
+      },
+      "Dog_Rig-G/tongue_P": {
+        "name": "tongue_P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3285,
+          3368
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "35"
+        ]
+      },
+      "Dog_Rig-G/Tag_P": {
+        "name": "Tag_P",
+        "parent": "Dog_Rig-G/Collar_Master_P",
+        "pivot": [
+          3134,
+          3420
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "22"
+        ]
+      },
+      "Dog_Rig-G/Master_SIZE": {
+        "name": "Master_SIZE",
+        "parent": null,
+        "pivot": [
+          3187,
+          4235
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "Dog_Rig-G/Eye_01_GRP/Eye_01_P": {
+        "name": "Eye_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3085,
+          3066
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "13#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Pupil_01_P": {
+        "name": "Pupil_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3294,
+          3049
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "12#2"
+        ]
+      },
+      "Dog_Rig-G/Peg_2": {
+        "name": "Peg_2",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3174,
+          3592
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "38"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Peg_1": {
+        "name": "Peg_1",
+        "parent": "Dog_Rig-G/M_Eye_01_P",
+        "pivot": [
+          3107,
+          2899
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "11#1"
+        ]
+      },
+      "Dog_Rig-G/Nose_GRP/Nose_shine_P": {
+        "name": "Nose_shine_P",
+        "parent": "Dog_Rig-G/Nose_GRP/Nose_P",
+        "pivot": [
+          3124,
+          3162
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "18"
+        ]
+      },
+      "Dog_Rig-G/Face_P": {
+        "name": "Face_P",
+        "parent": "Dog_Rig-G/Master_Face_P",
+        "pivot": [
+          3186,
+          3221
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "7"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P": {
+        "name": "Eyeball_01_P",
+        "parent": "Dog_Rig-G/M_Eye_01_P_1",
+        "pivot": [
+          3287,
+          3115
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Mouth_P": {
+        "name": "Mouth_P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3286,
+          3284
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "34"
+        ]
+      },
+      "Dog_Rig-G/Foot_P": {
+        "name": "Foot_P",
+        "parent": "Dog_Rig-G/Calf_P",
+        "pivot": [
+          3095,
+          4129
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "41#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Eyebag_01_P": {
+        "name": "Eyebag_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3306,
+          3103
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "14#2"
+        ]
+      },
+      "Dog_Rig-G/Master_ears_P": {
+        "name": "Master_ears_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3339,
+          2911
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Head_Collar_Master_P": {
+        "name": "Head_Collar_Master_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3188,
+          3566
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Body_Leg_MP": {
+        "name": "Body_Leg_MP",
+        "parent": "Dog_Rig-G/Master_SIZE",
+        "pivot": [
+          3187,
+          4235
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "Dog_Rig-G/Tail_P": {
+        "name": "Tail_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3201,
+          3708
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "37"
+        ]
+      },
+      "Dog_Rig-G/Stitches_P": {
+        "name": "Stitches_P",
+        "parent": "Dog_Rig-G/Body_P",
+        "pivot": [
+          3019,
+          3721
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "24"
+        ]
+      },
+      "Dog_Rig-G/M_UA_P_1": {
+        "name": "M_UA_P_1",
+        "parent": "Dog_Rig-G/Master_arms_P",
+        "pivot": [
+          3447,
+          3658
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "26#2"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/B_eyelid_01_P": {
+        "name": "B_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3121,
+          3120
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "16#1"
+        ]
+      },
+      "Dog_Rig-G/Hand_M_P": {
+        "name": "Hand_M_P",
+        "parent": "Dog_Rig-G/M_LA_P",
+        "pivot": [
+          2804,
+          3727
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "28#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/T_eyelid_01_P": {
+        "name": "T_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3072,
+          2957
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "15#1"
+        ]
+      },
+      "Dog_Rig-G/M_Eye_01_P": {
+        "name": "M_Eye_01_P",
+        "parent": "Dog_Rig-G/Eyes_Master_P",
+        "pivot": [
+          3071,
+          3116
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Eyes_Master_P": {
+        "name": "Eyes_Master_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3235,
+          3103
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Upper_Leg_P_1": {
+        "name": "Upper_Leg_P_1",
+        "parent": "Dog_Rig-G/Leg_MP",
+        "pivot": [
+          3247,
+          3917
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "39#2"
+        ]
+      },
+      "Dog_Rig-G/Hand_M_P_1": {
+        "name": "Hand_M_P_1",
+        "parent": "Dog_Rig-G/M_LA_P_1",
+        "pivot": [
+          3558,
+          3714
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "28#2"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P": {
+        "name": "Eyeball_01_P",
+        "parent": "Dog_Rig-G/M_Eye_01_P",
+        "pivot": [
+          3071,
+          3116
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Torso_M_P": {
+        "name": "Torso_M_P",
+        "parent": "Dog_Rig-G/Body_Leg_MP",
+        "pivot": [
+          2982,
+          4132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/B_eyelid_01_P": {
+        "name": "B_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3236,
+          3119
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "16#2"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Eye_01_P": {
+        "name": "Eye_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3273,
+          3066
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "13#2"
+        ]
+      },
+      "Dog_Rig-G/Master_arms_P": {
+        "name": "Master_arms_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3641,
+          3869
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Body_P": {
+        "name": "Body_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          2967,
+          3604
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "23"
+        ]
+      },
+      "Dog_Rig-G/M_UA_P": {
+        "name": "M_UA_P",
+        "parent": "Dog_Rig-G/Master_arms_P",
+        "pivot": [
+          2909,
+          3692
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "26#1"
+        ]
+      },
+      "Dog_Rig-G/Mouth_ALL_P": {
+        "name": "Mouth_ALL_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3162,
+          3542
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Foot_P_1": {
+        "name": "Foot_P_1",
+        "parent": "Dog_Rig-G/Calf_P_1",
+        "pivot": [
+          3232,
+          4129
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "41#2"
+        ]
+      },
+      "Dog_Rig-G/Nose_GRP/Nose_P": {
+        "name": "Nose_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3214,
+          3213
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "17"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Eyebag_01_P": {
+        "name": "Eyebag_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3051,
+          3103
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "14#1"
+        ]
+      },
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P": {
+        "name": "Ear_01_P",
+        "parent": "Dog_Rig-G/Master_ears_P",
+        "pivot": [
+          3314,
+          2906
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "9#2"
+        ]
+      },
+      "Dog_Rig-G/Ear_01_GRP/Ear_01_P": {
+        "name": "Ear_01_P",
+        "parent": "Dog_Rig-G/Master_ears_P",
+        "pivot": [
+          3043,
+          2907
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "9#1"
+        ]
+      },
+      "Dog_Rig-G/M_Eye_01_P_1": {
+        "name": "M_Eye_01_P_1",
+        "parent": "Dog_Rig-G/Eyes_Master_P",
+        "pivot": [
+          3287,
+          3115
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Teeth-P": {
+        "name": "Teeth-P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3096,
+          3270
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "31"
+        ]
+      },
+      "Dog_Rig-G/Nose_Stitches_P": {
+        "name": "Nose_Stitches_P",
+        "parent": "Dog_Rig-G/Master_Face_P",
+        "pivot": [
+          3091,
+          3115
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "29"
+        ]
+      },
+      "Dog_Rig-G/Master_Head_P": {
+        "name": "Master_Head_P",
+        "parent": "Dog_Rig-G/Head_Collar_Master_P",
+        "pivot": [
+          3181,
+          3563
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/M_LA_P": {
+        "name": "M_LA_P",
+        "parent": "Dog_Rig-G/M_UA_P",
+        "pivot": [
+          2866,
+          3576
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "27#1"
+        ]
+      },
+      "Dog_Rig-G/Collar_Master_P": {
+        "name": "Collar_Master_P",
+        "parent": "Dog_Rig-G/Head_Collar_Master_P",
+        "pivot": [
+          3260,
+          3435
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "21"
+        ]
+      },
+      "Dog_Rig-G/Foot_Lines_P": {
+        "name": "Foot_Lines_P",
+        "parent": "Dog_Rig-G/Foot_P",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "42"
+        ]
+      },
+      "Dog_Rig-G/Master_Face_P": {
+        "name": "Master_Face_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3177,
+          3312
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Calf_P": {
+        "name": "Calf_P",
+        "parent": "Dog_Rig-G/Upper_Leg_P",
+        "pivot": [
+          3088,
+          3974
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Peg_1": {
+        "name": "Peg_1",
+        "parent": "Dog_Rig-G/M_Eye_01_P_1",
+        "pivot": [
+          3257,
+          2901
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "11#2"
+        ]
+      },
+      "Dog_Rig-G/Calf_P_1": {
+        "name": "Calf_P_1",
+        "parent": "Dog_Rig-G/Upper_Leg_P_1",
+        "pivot": [
+          3240,
+          3974
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#2"
+        ]
+      },
+      "Dog_Rig-G/Leg_MP": {
+        "name": "Leg_MP",
+        "parent": "Dog_Rig-G/Body_Leg_MP",
+        "pivot": [
+          3387,
+          4080
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Upper_Leg_P": {
+        "name": "Upper_Leg_P",
+        "parent": "Dog_Rig-G/Leg_MP",
+        "pivot": [
+          3080,
+          3910
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "39#1"
+        ]
+      },
+      "Dog_Rig-G/Jaw_P": {
+        "name": "Jaw_P",
+        "parent": "Dog_Rig-G/Master_Face_P",
+        "pivot": [
+          3277,
+          3268
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "8"
+        ]
+      }
+    },
+    "layers": [
+      {
+        "id": "39#1",
+        "name": "R_Upper_Leg#1",
+        "file": "plates/39-R_Upper_Leg.png",
+        "bbox": [
+          3026,
+          3825,
+          3125,
+          4027
+        ],
+        "bone": "Dog_Rig-G/Upper_Leg_P",
+        "z": 0,
+        "element": "39",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          99,
+          202
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy",
+        "hidden_at_rest": true,
+        "hidden_note": "this layer's observable pixels are all gone in _ALL"
+      },
+      {
+        "id": "39#2",
+        "name": "R_Upper_Leg#2",
+        "file": "plates/39-R_Upper_Leg.png",
+        "bbox": [
+          3202,
+          3825,
+          3301,
+          4027
+        ],
+        "bone": "Dog_Rig-G/Upper_Leg_P_1",
+        "z": 1,
+        "element": "39",
+        "instance": 2,
+        "crop": [
+          176,
+          0,
+          275,
+          202
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy",
+        "hidden_at_rest": true,
+        "hidden_note": "this layer's observable pixels are all gone in _ALL"
+      },
+      {
+        "id": "40#1",
+        "name": "R_Lower_Leg#1",
+        "file": "plates/40-R_Lower_Leg.png",
+        "bbox": [
+          3024,
+          3951,
+          3113,
+          4176
+        ],
+        "bone": "Dog_Rig-G/Calf_P",
+        "z": 2,
+        "element": "40",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          89,
+          225
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "40#2",
+        "name": "R_Lower_Leg#2",
+        "file": "plates/40-R_Lower_Leg.png",
+        "bbox": [
+          3215,
+          3951,
+          3303,
+          4176
+        ],
+        "bone": "Dog_Rig-G/Calf_P_1",
+        "z": 3,
+        "element": "40",
+        "instance": 2,
+        "crop": [
+          191,
+          0,
+          279,
+          225
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "41#2",
+        "name": "R_Foot#2",
+        "file": "plates/41-R_Foot.png",
+        "bbox": [
+          3207,
+          4067,
+          3536,
+          4185
+        ],
+        "bone": "Dog_Rig-G/Foot_P_1",
+        "z": 4,
+        "element": "41",
+        "instance": 2,
+        "crop": [
+          416,
+          0,
+          745,
+          118
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "21",
+        "name": "Collar",
+        "file": "plates/21-Collar.png",
+        "bbox": [
+          2985,
+          3289,
+          3355,
+          3452
+        ],
+        "bone": "Dog_Rig-G/Collar_Master_P",
+        "z": 5,
+        "matte": {
+          "layer": "23",
+          "inverted": true,
+          "cut_fraction": 0.832,
+          "fit": 0.896,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "8",
+        "name": "Jaw",
+        "file": "plates/8-Jaw.png",
+        "bbox": [
+          2886,
+          3059,
+          3466,
+          3380
+        ],
+        "bone": "Dog_Rig-G/Jaw_P",
+        "z": 6
+      },
+      {
+        "id": "7",
+        "name": "Face",
+        "file": "plates/7-Face.png",
+        "bbox": [
+          2981,
+          2816,
+          3376,
+          3293
+        ],
+        "bone": "Dog_Rig-G/Face_P",
+        "z": 7,
+        "matte": {
+          "layer": "8",
+          "inverted": true,
+          "cut_fraction": 0.103,
+          "fit": 0.951,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "34",
+        "name": "Mouth_NEW",
+        "file": "plates/34-Mouth_NEW.png",
+        "bbox": [
+          3020,
+          3225,
+          3344,
+          3352
+        ],
+        "bone": "Dog_Rig-G/Mouth_P",
+        "z": 8,
+        "library": {
+          "1": {
+            "file": "plates/drawings/34-1.png",
+            "bbox": [
+              3020,
+              3225,
+              3344,
+              3352
+            ]
+          },
+          "10": {
+            "file": "plates/drawings/34-10.png",
+            "bbox": [
+              3070,
+              3146,
+              3378,
+              3359
+            ]
+          },
+          "11": {
+            "file": "plates/drawings/34-11.png",
+            "bbox": [
+              3019,
+              3135,
+              3344,
+              3342
+            ]
+          },
+          "12": {
+            "file": "plates/drawings/34-12.png",
+            "bbox": [
+              2970,
+              3078,
+              3299,
+              3351
+            ]
+          },
+          "13": {
+            "file": "plates/drawings/34-13.png",
+            "bbox": [
+              2838,
+              3084,
+              3166,
+              3346
+            ]
+          },
+          "14": {
+            "file": "plates/drawings/34-14.png",
+            "bbox": [
+              3146,
+              3093,
+              3477,
+              3356
+            ]
+          },
+          "15": {
+            "file": "plates/drawings/34-15.png",
+            "bbox": [
+              3097,
+              3095,
+              3427,
+              3365
+            ]
+          },
+          "16": {
+            "file": "plates/drawings/34-16.png",
+            "bbox": [
+              3027,
+              3307,
+              3351,
+              3385
+            ]
+          },
+          "17": {
+            "file": "plates/drawings/34-17.png",
+            "bbox": [
+              3009,
+              3187,
+              3303,
+              3375
+            ]
+          },
+          "18": {
+            "file": "plates/drawings/34-18.png",
+            "bbox": [
+              2916,
+              3162,
+              3180,
+              3376
+            ]
+          },
+          "19": {
+            "file": "plates/drawings/34-19.png",
+            "bbox": [
+              3149,
+              3162,
+              3417,
+              3375
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/34-2.png",
+            "bbox": [
+              2988,
+              3126,
+              3311,
+              3357
+            ]
+          },
+          "20": {
+            "file": "plates/drawings/34-20.png",
+            "bbox": [
+              3051,
+              3190,
+              3346,
+              3375
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/34-3.png",
+            "bbox": [
+              2865,
+              3141,
+              3160,
+              3353
+            ]
+          },
+          "4": {
+            "file": "plates/drawings/34-4.png",
+            "bbox": [
+              2874,
+              3127,
+              3074,
+              3338
+            ]
+          },
+          "5": {
+            "file": "plates/drawings/34-5.png",
+            "bbox": [
+              3330,
+              3137,
+              3532,
+              3344
+            ]
+          },
+          "6": {
+            "file": "plates/drawings/34-6.png",
+            "bbox": [
+              2810,
+              3142,
+              3106,
+              3353
+            ]
+          },
+          "7": {
+            "file": "plates/drawings/34-7.png",
+            "bbox": [
+              2865,
+              3141,
+              3160,
+              3353
+            ]
+          },
+          "8": {
+            "file": "plates/drawings/34-8.png",
+            "bbox": [
+              3205,
+              3137,
+              3502,
+              3349
+            ]
+          },
+          "9": {
+            "file": "plates/drawings/34-9.png",
+            "bbox": [
+              2988,
+              3144,
+              3296,
+              3359
+            ]
+          }
+        }
+      },
+      {
+        "id": "31",
+        "name": "Teeth",
+        "file": "plates/31-Teeth.png",
+        "bbox": [
+          3060,
+          3207,
+          3295,
+          3313
+        ],
+        "bone": "Dog_Rig-G/Teeth-P",
+        "z": 9,
+        "library": {
+          "1": {
+            "file": "plates/drawings/31-1.png",
+            "bbox": [
+              3060,
+              3207,
+              3295,
+              3313
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/31-2.png",
+            "bbox": [
+              3028,
+              3170,
+              3258,
+              3304
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/31-3.png",
+            "bbox": [
+              2930,
+              3156,
+              3157,
+              3307
+            ]
+          },
+          "4": {
+            "file": "plates/drawings/31-4.png",
+            "bbox": [
+              2902,
+              3156,
+              3128,
+              3307
+            ]
+          },
+          "5": {
+            "file": "plates/drawings/31-5.png",
+            "bbox": [
+              2902,
+              3156,
+              3128,
+              3307
+            ]
+          },
+          "6": {
+            "file": "plates/drawings/31-6.png",
+            "bbox": [
+              3202,
+              3182,
+              3429,
+              3333
+            ]
+          },
+          "7": {
+            "file": "plates/drawings/31-7.png",
+            "bbox": [
+              3223,
+              3154,
+              3449,
+              3305
+            ]
+          },
+          "8": {
+            "file": "plates/drawings/31-8.png",
+            "bbox": [
+              3101,
+              3175,
+              3332,
+              3309
+            ]
+          },
+          "9": {
+            "file": "plates/drawings/31-9.png",
+            "bbox": [
+              3058,
+              3127,
+              3294,
+              3233
+            ]
+          }
+        },
+        "matte": {
+          "layer": "34",
+          "inverted": false,
+          "cut_fraction": 0.449,
+          "fit": 0.931,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "16#2",
+        "name": "B_Eyelid_01#2",
+        "file": "plates/16-B_Eyelid_01.png",
+        "bbox": [
+          3207,
+          3055,
+          3360,
+          3162
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/B_eyelid_01_P",
+        "z": 10,
+        "element": "16",
+        "instance": 2,
+        "crop": [
+          210,
+          0,
+          363,
+          107
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "16#1",
+        "name": "B_Eyelid_01#1",
+        "file": "plates/16-B_Eyelid_01.png",
+        "bbox": [
+          2997,
+          3055,
+          3150,
+          3163
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/B_eyelid_01_P",
+        "z": 11,
+        "element": "16",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          153,
+          108
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "37",
+        "name": "Tail",
+        "file": "plates/37-Tail.png",
+        "bbox": [
+          3156,
+          3476,
+          3463,
+          3749
+        ],
+        "bone": "Dog_Rig-G/Tail_P",
+        "z": 12
+      },
+      {
+        "id": "27#1",
+        "name": "Lower_Arm_01#1",
+        "file": "plates/27-Lower_Arm_01.png",
+        "bbox": [
+          2737,
+          3560,
+          2896,
+          3862
+        ],
+        "bone": "Dog_Rig-G/M_LA_P",
+        "z": 13,
+        "element": "27",
+        "instance": 1,
+        "crop": [
+          0,
+          9,
+          159,
+          311
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "27#2",
+        "name": "Lower_Arm_01#2",
+        "file": "plates/27-Lower_Arm_01.png",
+        "bbox": [
+          3457,
+          3551,
+          3631,
+          3847
+        ],
+        "bone": "Dog_Rig-G/M_LA_P_1",
+        "z": 14,
+        "element": "27",
+        "instance": 2,
+        "crop": [
+          720,
+          0,
+          894,
+          296
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "26#1",
+        "name": "Upper_arm_01#1",
+        "file": "plates/26-Upper_arm_01.png",
+        "bbox": [
+          2817,
+          3420,
+          3028,
+          3636
+        ],
+        "bone": "Dog_Rig-G/M_UA_P",
+        "z": 15,
+        "element": "26",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          211,
+          216
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "26#2",
+        "name": "Upper_arm_01#2",
+        "file": "plates/26-Upper_arm_01.png",
+        "bbox": [
+          3316,
+          3420,
+          3536,
+          3626
+        ],
+        "bone": "Dog_Rig-G/M_UA_P_1",
+        "z": 16,
+        "element": "26",
+        "instance": 2,
+        "crop": [
+          499,
+          0,
+          719,
+          206
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "23",
+        "name": "Body",
+        "file": "plates/23-Body.png",
+        "bbox": [
+          2930,
+          3323,
+          3411,
+          3882
+        ],
+        "bone": "Dog_Rig-G/Body_P",
+        "z": 17,
+        "matte": {
+          "layer": "35",
+          "inverted": true,
+          "cut_fraction": 0.155,
+          "fit": 0.999,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "14#1",
+        "name": "Eyebag_01#1",
+        "file": "plates/14-Eyebag_01.png",
+        "bbox": [
+          3007,
+          3073,
+          3060,
+          3109
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/Eyebag_01_P",
+        "z": 18,
+        "element": "14",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          53,
+          36
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "14#2",
+        "name": "Eyebag_01#2",
+        "file": "plates/14-Eyebag_01.png",
+        "bbox": [
+          3297,
+          3073,
+          3350,
+          3108
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/Eyebag_01_P",
+        "z": 19,
+        "element": "14",
+        "instance": 2,
+        "crop": [
+          290,
+          0,
+          343,
+          35
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "17",
+        "name": "Nose",
+        "file": "plates/17-Nose.png",
+        "bbox": [
+          3055,
+          3123,
+          3302,
+          3258
+        ],
+        "bone": "Dog_Rig-G/Nose_GRP/Nose_P",
+        "z": 20
+      },
+      {
+        "id": "22",
+        "name": "Tag",
+        "file": "plates/22-Tag.png",
+        "bbox": [
+          3080,
+          3405,
+          3257,
+          3557
+        ],
+        "bone": "Dog_Rig-G/Tag_P",
+        "z": 21
+      },
+      {
+        "id": "35",
+        "name": "tongue_NEW",
+        "file": "plates/35-tongue_NEW.png",
+        "bbox": [
+          3011,
+          3306,
+          3344,
+          3431
+        ],
+        "bone": "Dog_Rig-G/tongue_P",
+        "z": 22,
+        "library": {
+          "1": {
+            "file": "plates/drawings/35-1.png",
+            "bbox": [
+              3011,
+              3306,
+              3344,
+              3431
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/35-2.png",
+            "bbox": [
+              3077,
+              3293,
+              3409,
+              3418
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/35-3.png",
+            "bbox": [
+              2935,
+              3263,
+              3261,
+              3404
+            ]
+          },
+          "4": {
+            "file": "plates/drawings/35-4.png",
+            "bbox": [
+              2963,
+              3205,
+              3289,
+              3346
+            ]
+          },
+          "5": {
+            "file": "plates/drawings/35-5.png",
+            "bbox": [
+              2963,
+              3205,
+              3289,
+              3346
+            ]
+          },
+          "6": {
+            "file": "plates/drawings/35-6.png",
+            "bbox": [
+              3052,
+              3250,
+              3378,
+              3391
+            ]
+          },
+          "7": {
+            "file": "plates/drawings/35-7.png",
+            "bbox": [
+              2960,
+              3284,
+              3292,
+              3409
+            ]
+          },
+          "8": {
+            "file": "plates/drawings/35-8.png",
+            "bbox": [
+              3024,
+              3286,
+              3356,
+              3410
+            ]
+          }
+        },
+        "matte": {
+          "layer": "34",
+          "inverted": false,
+          "cut_fraction": 0.873,
+          "fit": 0.988,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "41#1",
+        "name": "R_Foot#1",
+        "file": "plates/41-R_Foot.png",
+        "bbox": [
+          2791,
+          4067,
+          3120,
+          4185
+        ],
+        "bone": "Dog_Rig-G/Foot_P",
+        "z": 23,
+        "element": "41",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          329,
+          118
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "29",
+        "name": "Nose_Stitches",
+        "file": "plates/29-Nose_Stitches.png",
+        "bbox": [
+          3058,
+          3077,
+          3307,
+          3137
+        ],
+        "bone": "Dog_Rig-G/Nose_Stitches_P",
+        "z": 24
+      },
+      {
+        "id": "9#2",
+        "name": "Ear_01#2",
+        "file": "plates/9-Ear_01.png",
+        "bbox": [
+          3303,
+          2724,
+          3722,
+          2932
+        ],
+        "bone": "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P",
+        "z": 25,
+        "element": "9",
+        "instance": 2,
+        "crop": [
+          669,
+          0,
+          1088,
+          208
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "13#1",
+        "name": "Eye_01#1",
+        "file": "plates/13-Eye_01.png",
+        "bbox": [
+          3002,
+          2940,
+          3149,
+          3095
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/Eye_01_P",
+        "z": 26,
+        "element": "13",
+        "instance": 1,
+        "crop": [
+          0,
+          1,
+          147,
+          156
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "13#2",
+        "name": "Eye_01#2",
+        "file": "plates/13-Eye_01.png",
+        "bbox": [
+          3208,
+          2939,
+          3355,
+          3095
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/Eye_01_P",
+        "z": 27,
+        "element": "13",
+        "instance": 2,
+        "crop": [
+          206,
+          0,
+          353,
+          156
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "9#1",
+        "name": "Ear_01#1",
+        "file": "plates/9-Ear_01.png",
+        "bbox": [
+          2634,
+          2725,
+          3054,
+          2933
+        ],
+        "bone": "Dog_Rig-G/Ear_01_GRP/Ear_01_P",
+        "z": 28,
+        "element": "9",
+        "instance": 1,
+        "crop": [
+          0,
+          1,
+          420,
+          209
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "15#1",
+        "name": "T_Eyelid_01#1",
+        "file": "plates/15-T_Eyelid_01.png",
+        "bbox": [
+          3005,
+          2841,
+          3166,
+          3003
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/T_eyelid_01_P",
+        "z": 29,
+        "element": "15",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          161,
+          162
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "15#2",
+        "name": "T_Eyelid_01#2",
+        "file": "plates/15-T_Eyelid_01.png",
+        "bbox": [
+          3191,
+          2841,
+          3352,
+          3003
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/T_eyelid_01_P",
+        "z": 30,
+        "element": "15",
+        "instance": 2,
+        "crop": [
+          186,
+          0,
+          347,
+          162
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "12#2",
+        "name": "Pupil_01#2",
+        "file": "plates/12-Pupil_01.png",
+        "bbox": [
+          3273,
+          3009,
+          3321,
+          3059
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/Pupil_01_P",
+        "z": 31,
+        "element": "12",
+        "instance": 2,
+        "crop": [
+          241,
+          26,
+          289,
+          76
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "12#1",
+        "name": "Pupil_01#1",
+        "file": "plates/12-Pupil_01.png",
+        "bbox": [
+          3032,
+          2983,
+          3080,
+          3033
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/Pupil_01_P",
+        "z": 32,
+        "element": "12",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          48,
+          50
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "42",
+        "name": "Foot_Lines",
+        "file": "plates/42-Foot_Lines.png",
+        "bbox": [
+          2802,
+          4113,
+          3525,
+          4221
+        ],
+        "bone": "Dog_Rig-G/Foot_Lines_P",
+        "z": 33,
+        "instances": 2,
+        "instances_note": "the scene draws this element more than once but the plate does not fall into that many blobs, so the copies move together",
+        "matte": {
+          "layer": "24",
+          "inverted": true,
+          "cut_fraction": 0.903,
+          "fit": 0.814,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "24",
+        "name": "Stitches",
+        "file": "plates/24-Stitches.png",
+        "bbox": [
+          2686,
+          3606,
+          3705,
+          4236
+        ],
+        "bone": "Dog_Rig-G/Stitches_P",
+        "z": 34,
+        "matte": {
+          "layer": "23",
+          "inverted": false,
+          "cut_fraction": 0.738,
+          "fit": 0.984,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "11#2",
+        "name": "Brow_01#2",
+        "file": "plates/11-Brow_01.png",
+        "bbox": [
+          3216,
+          2866,
+          3336,
+          2925
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP_1/Peg_1",
+        "z": 35,
+        "element": "11",
+        "instance": 2,
+        "crop": [
+          195,
+          0,
+          315,
+          59
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "11#1",
+        "name": "Brow_01#1",
+        "file": "plates/11-Brow_01.png",
+        "bbox": [
+          3021,
+          2866,
+          3140,
+          2926
+        ],
+        "bone": "Dog_Rig-G/Eye_01_GRP/Peg_1",
+        "z": 36,
+        "element": "11",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          119,
+          60
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "38",
+        "name": "Tongue_flapper",
+        "file": "plates/38-Tongue_flapper.png",
+        "bbox": [
+          3105,
+          3321,
+          3249,
+          3634
+        ],
+        "bone": "Dog_Rig-G/Peg_2",
+        "z": 37
+      },
+      {
+        "id": "28#2",
+        "name": "Hand_01#2",
+        "file": "plates/28-Hand_01.png",
+        "bbox": [
+          3451,
+          3667,
+          3808,
+          4021
+        ],
+        "bone": "Dog_Rig-G/Hand_M_P_1",
+        "z": 38,
+        "element": "28",
+        "instance": 2,
+        "crop": [
+          883,
+          0,
+          1240,
+          354
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "28#1",
+        "name": "Hand_01#1",
+        "file": "plates/28-Hand_01.png",
+        "bbox": [
+          2568,
+          3685,
+          2926,
+          4042
+        ],
+        "bone": "Dog_Rig-G/Hand_M_P",
+        "z": 39,
+        "element": "28",
+        "instance": 1,
+        "crop": [
+          0,
+          18,
+          358,
+          375
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "10#1",
+        "name": "Ear_flap_01#1",
+        "file": "plates/10-Ear_flap_01.png",
+        "bbox": [
+          2627,
+          2727,
+          2867,
+          3109
+        ],
+        "bone": "Dog_Rig-G/Ear_01_GRP/Ear_Flap_01_P",
+        "z": 40,
+        "element": "10",
+        "instance": 1,
+        "crop": [
+          0,
+          1,
+          240,
+          383
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "10#2",
+        "name": "Ear_flap_01#2",
+        "file": "plates/10-Ear_flap_01.png",
+        "bbox": [
+          3490,
+          2726,
+          3729,
+          3108
+        ],
+        "bone": "Dog_Rig-G/Ear_01_GRP_1/Ear_Flap_01_P",
+        "z": 41,
+        "element": "10",
+        "instance": 2,
+        "crop": [
+          863,
+          0,
+          1102,
+          382
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "18",
+        "name": "Nose_SHINE",
+        "file": "plates/18-Nose_SHINE.png",
+        "bbox": [
+          3095,
+          3146,
+          3264,
+          3178
+        ],
+        "bone": "Dog_Rig-G/Nose_GRP/Nose_shine_P",
+        "z": 42
+      }
+    ],
+    "angles": {
+      "source": "poses/manifest.json",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "usable": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "default": 1,
+      "note": "whole-figure head/body plate pairs per view angle, at the poses resolution; a frame at an angle other than the default swaps the entire layer stack for that pair"
+    },
+    "hands": {
+      "28": {
+        "drawings": [
+          "Drumstick_BACK",
+          "Drumstick_PALM",
+          "Fist",
+          "Open_BACK",
+          "Open_PALM"
+        ],
+        "with": []
+      }
+    },
+    "measured": {
+      "recomposite_vs_nocut": {
+        "covered_px": 1113102,
+        "differing_px": 20743,
+        "differing_pct": 1.86,
+        "coverage_mismatch_px": 0
+      },
+      "matted_vs_authored": {
+        "covered_px": 877638,
+        "differing_px": 55446,
+        "differing_pct": 6.32,
+        "coverage_mismatch_px": 24242
+      }
+    }
   }
 }

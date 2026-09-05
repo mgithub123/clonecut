@@ -40,7 +40,7 @@ browser, and there is a double-clickable launcher for Mac and Windows.
 | 5. Retrieval | `log.py` -> `plan.py` | done |
 | 6. App | `app.py` + `webui/` | done |
 | 7. Perform | `perform.py` + `montage.py` + `rig.py` — see [HARMONY.md](HARMONY.md) | done |
-| 8. Puppet | `tools/blender_spike.py` first, then a layered rig format | 8z done: Blender passed |
+| 8. Puppet | `puppet.py` + `blenderpuppet.py` — see [RIGS.md](RIGS.md) | 8z, 8a done |
 
 ---
 
@@ -510,3 +510,47 @@ blender`). `config.BLENDER` finds it on PATH or under `/Applications`, and
 Python, but its Eevee renders on this Mac come out with magenta textures on an
 opaque white ground, and it pins numpy back to 1.26 for the whole project, so
 the spike uses the binary and the dependency was not kept.
+
+### 8a — A layered puppet built from the baked plates
+
+```bash
+uv run puppet.py build doctor      # measure the puppet, write rig.json["puppet"]
+uv run puppet.py tree doctor       # bones, pivots, layers
+uv run puppet.py verify doctor     # recomposite against both ground truths
+uv run puppet.py render doctor     # the puppet in Blender, at rest, checked
+```
+
+A rig is now a folder of PNG plates plus `rig.json`, and the format is written
+down in [RIGS.md](RIGS.md). `puppet.py build` turns the baked plates into a
+puppet: a tree of bones, each with a parent and a pivot, and a stack of layers
+in draw order, each hanging from a bone. Three things are measured rather than
+typed in, because measuring is what makes the same code work for a rig that did
+not come from Harmony:
+
+- **Draw order** is peeled from the rig's own cutter-free render, top layer
+  first. Element-id order is 12–28% wrong against that truth across the three
+  rigs; the peeled order is 0.2–1.9%.
+- **Pivots** are the joined end of each part's overlap with its parent's art:
+  hips, knees, ankles, shoulders, ear roots. Each one records in words which rule
+  found it, so a wrong one can be found.
+- **Mattes** are read back from the difference between the two ground truths -
+  the plate whose shape best explains what a layer loses when the cutters are on
+  is its matte - and a layer the rig draws see-through gets its opacity fitted
+  the same way, and a drawing the rig hides at rest (a closed lid) is marked
+  hidden rather than matted. With those applied the recomposite is within 2.3%
+  (doctor) and 6.3% (dog) of the authored render; the rest is Harmony's
+  deformers, which a plate cannot carry. The robot stays at 16% because its glass
+  dome's shine is a node the bake did not keep.
+
+Parenting comes from the peg hierarchy in the tracked scene file, which is the
+one Harmony-only input and is labelled as such in the output. An element the
+scene draws twice - both arms, both legs, both ears - splits into one layer per
+blob on its own peg, so limbs can move apart. Every turnaround angle and every
+hand drawing is exposed as a set a frame can pick from.
+
+`blenderpuppet.py` builds the same puppet as a Blender scene: one plane per
+layer, one bone per puppet bone with its pivot and parent, planes bound to bones
+by vertex group, mattes and opacity in the material. The doctor's 63 bones and
+58 layers render in about two seconds a frame, and the `.blend` can be opened and
+nudged by hand. Stage 7's two-plate `perform.py` path is untouched and still
+renders the same shot.

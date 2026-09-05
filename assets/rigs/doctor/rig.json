@@ -170,5 +170,1758 @@
     "count": 11,
     "lipsync_count": 9,
     "note": "View angles baked from the turnaround as head/body plate pairs, with the mouth and eye geometry measured per pose by difference against the head plate. A pose marked lipsync:false has its mouth too foreshortened to animate - the rigs have no profile mouth."
+  },
+  "puppet": {
+    "generated_by": "puppet.py build - measured from plates/, do not edit by hand",
+    "canvas": [
+      7680,
+      4320
+    ],
+    "ground_truth": {
+      "nocut": "plates/_ALL_NOCUT.png",
+      "authored": "plates/_ALL.png"
+    },
+    "parenting_source": "peg hierarchy of assets/rigs/doctor/scene/LD_DOCTOR_RIG_MA.xstage (Harmony)",
+    "bones": {
+      "DOC_RIG/Peg_1": {
+        "name": "Peg_1",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": []
+      },
+      "DOC_RIG/HL_color": {
+        "name": "HL_color",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          4139,
+          738
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "28"
+        ]
+      },
+      "DOC_RIG/Peg_2": {
+        "name": "Peg_2",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3764,
+          1177
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "25"
+        ]
+      },
+      "DOC_RIG/Shirt_Collar_P": {
+        "name": "Shirt_Collar_P",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3766,
+          1409
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "33"
+        ]
+      },
+      "DOC_RIG/Upper_Leg_P": {
+        "name": "Upper_Leg_P",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
+        "pivot": [
+          3715,
+          2536
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "51#1"
+        ]
+      },
+      "DOC_RIG/Waistband_P": {
+        "name": "Waistband_P",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3694,
+          2254
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "48"
+        ]
+      },
+      "DOC_RIG/Head+Neck_MP": {
+        "name": "Head+Neck_MP",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3870,
+          1413
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Hair_MP": {
+        "name": "Hair_MP",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3961,
+          1083
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Arm_01_MP_2": {
+        "name": "Arm_01_MP_2",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          4120,
+          1498
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Body_MP": {
+        "name": "Body_MP",
+        "parent": "DOC_MP",
+        "pivot": [
+          3752,
+          4111
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "DOC_RIG/Hand_P_1": {
+        "name": "Hand_P_1",
+        "parent": "DOC_RIG/Glove_P_1",
+        "pivot": [
+          4434,
+          2608
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "39#2"
+        ]
+      },
+      "DOC_RIG/Upper_Leg_P_1": {
+        "name": "Upper_Leg_P_1",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
+        "pivot": [
+          3963,
+          2535
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "51#2"
+        ]
+      },
+      "DOC_RIG/Shoulders_Peg": {
+        "name": "Shoulders_Peg",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3572,
+          1546
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "46"
+        ]
+      },
+      "DOC_RIG/Lower_Leg_P": {
+        "name": "Lower_Leg_P",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG",
+        "pivot": [
+          3636,
+          3132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "52#1"
+        ]
+      },
+      "DOC_RIG/Jaw_P": {
+        "name": "Jaw_P",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3793,
+          1228
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "18"
+        ]
+      },
+      "DOC_RIG/Boot_Cuff_P_1": {
+        "name": "Boot_Cuff_P_1",
+        "parent": "DOC_RIG/Boot_P_1",
+        "pivot": [
+          4003,
+          3415
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "55#2"
+        ]
+      },
+      "DOC_RIG/Skirt_P": {
+        "name": "Skirt_P",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3734,
+          2450
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "49",
+          "50"
+        ]
+      },
+      "DOC_RIG/Boot_P_1": {
+        "name": "Boot_P_1",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
+        "pivot": [
+          3991,
+          3412
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Shirt_Fold_P": {
+        "name": "Shirt_Fold_P",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3766,
+          2146
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "35"
+        ]
+      },
+      "DOC_MP": {
+        "name": "DOC_MP",
+        "parent": null,
+        "pivot": [
+          3752,
+          4111
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "DOC_RIG/Toes_P_1": {
+        "name": "Toes_P_1",
+        "parent": "DOC_RIG/Heel_P_1",
+        "pivot": [
+          4043,
+          3992
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "53#2"
+        ]
+      },
+      "DOC_RIG/Peg_7": {
+        "name": "Peg_7",
+        "parent": "DOC_RIG/Peg_9",
+        "pivot": [
+          3828,
+          560
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#1"
+        ]
+      },
+      "DOC_RIG/Ear_01_P_1": {
+        "name": "Ear_01_P_1",
+        "parent": "DOC_RIG/Ears_MP",
+        "pivot": [
+          3987,
+          1077
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "24#2"
+        ]
+      },
+      "DOC_RIG/Ears_MP": {
+        "name": "Ears_MP",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3649,
+          1025
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Lowerbody_MP": {
+        "name": "Lowerbody_MP",
+        "parent": "DOC_RIG/Body_MP",
+        "pivot": [
+          3729,
+          2215
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Lower_Leg_P_1": {
+        "name": "Lower_Leg_P_1",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
+        "pivot": [
+          4041,
+          3132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "52#2"
+        ]
+      },
+      "DOC_RIG/Glove_B_P_1": {
+        "name": "Glove_B_P_1",
+        "parent": "DOC_RIG/Glove_P_1",
+        "pivot": [
+          4337,
+          2397
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#2"
+        ]
+      },
+      "DOC_RIG/Eye/U_Eyelid_P": {
+        "name": "U_Eyelid_P",
+        "parent": "DOC_RIG/Peg_1",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "21"
+        ]
+      },
+      "DOC_RIG/Toes_P": {
+        "name": "Toes_P",
+        "parent": "DOC_RIG/Heel_P",
+        "pivot": [
+          3635,
+          3992
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "53#1"
+        ]
+      },
+      "DOC_RIG/Peg_4": {
+        "name": "Peg_4",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          3773,
+          1082
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "27"
+        ]
+      },
+      "DOC_RIG/Upper_Arm_P": {
+        "name": "Upper_Arm_P",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3556,
+          1502
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "36#1"
+        ]
+      },
+      "DOC_RIG/Glove_P_1": {
+        "name": "Glove_P_1",
+        "parent": "DOC_RIG/Upper_Arm_P_1",
+        "pivot": [
+          4389,
+          2227
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "38#2"
+        ]
+      },
+      "DOC_RIG/Nose_P": {
+        "name": "Nose_P",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3842,
+          1093
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "23"
+        ]
+      },
+      "DOC_RIG/Eye/L_Eyelid_P": {
+        "name": "L_Eyelid_P",
+        "parent": "DOC_RIG/Peg_1",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "22"
+        ]
+      },
+      "DOC_RIG/Eye/Eye_01_P": {
+        "name": "Eye_01_P",
+        "parent": "DOC_RIG/Peg_1",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "19"
+        ]
+      },
+      "DOC_RIG/Heel_P_1": {
+        "name": "Heel_P_1",
+        "parent": "DOC_RIG/Boot_P_1",
+        "pivot": [
+          3974,
+          3769
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "54#2"
+        ]
+      },
+      "DOC_RIG/Peg_9": {
+        "name": "Peg_9",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          3859,
+          559
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/M_Lower_Leg_PEG_1": {
+        "name": "M_Lower_Leg_PEG_1",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
+        "pivot": [
+          4035,
+          3049
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Heel_P": {
+        "name": "Heel_P",
+        "parent": "DOC_RIG/Boot_P",
+        "pivot": [
+          3703,
+          3769
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "54#1"
+        ]
+      },
+      "DOC_RIG/Peg_8": {
+        "name": "Peg_8",
+        "parent": "DOC_RIG/Peg_9",
+        "pivot": [
+          3856,
+          564
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#2"
+        ]
+      },
+      "DOC_RIG/Boot_Cuff_P": {
+        "name": "Boot_Cuff_P",
+        "parent": "DOC_RIG/Boot_P",
+        "pivot": [
+          3675,
+          3415
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "55#1"
+        ]
+      },
+      "DOC_RIG/Glove_P": {
+        "name": "Glove_P",
+        "parent": "DOC_RIG/Upper_Arm_P",
+        "pivot": [
+          3282,
+          2224
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "38#1"
+        ]
+      },
+      "DOC_RIG/Chest_P": {
+        "name": "Chest_P",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3803,
+          2138
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "32"
+        ]
+      },
+      "DOC_RIG/group_1/Shoulder_Fixer_P": {
+        "name": "Shoulder_Fixer_P",
+        "parent": "DOC_RIG/Upper_Arm_P",
+        "pivot": [
+          3512,
+          1595
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "62#1"
+        ]
+      },
+      "DOC_RIG/Boot_P": {
+        "name": "Boot_P",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG",
+        "pivot": [
+          3687,
+          3412
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Glove_B_P": {
+        "name": "Glove_B_P",
+        "parent": "DOC_RIG/Glove_P",
+        "pivot": [
+          3332,
+          2395
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#1"
+        ]
+      },
+      "DOC_RIG/Skull_P": {
+        "name": "Skull_P",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3827,
+          1019
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "16"
+        ]
+      },
+      "DOC_RIG/Chest_MP": {
+        "name": "Chest_MP",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3853,
+          2232
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/group_1/Shoulder_Fixer_P_1": {
+        "name": "Shoulder_Fixer_P_1",
+        "parent": "DOC_RIG/Arm_01_MP_2",
+        "pivot": [
+          4089,
+          1562
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "62#2"
+        ]
+      },
+      "DOC_RIG/Ear_01_P": {
+        "name": "Ear_01_P",
+        "parent": "DOC_RIG/Ears_MP",
+        "pivot": [
+          3701,
+          1074
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "24#1"
+        ]
+      },
+      "DOC_RIG/Hand_P": {
+        "name": "Hand_P",
+        "parent": "DOC_RIG/Glove_P",
+        "pivot": [
+          3233,
+          2605
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "39#1"
+        ]
+      },
+      "DOC_RIG/Legs_MP": {
+        "name": "Legs_MP",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3787,
+          2527
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Leg_Lower_Leg_P_1": {
+        "name": "Upper_Leg_Lower_Leg_P_1",
+        "parent": "DOC_RIG/Legs_MP",
+        "pivot": [
+          3958,
+          2519
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Body_MP": {
+        "name": "Upper_Body_MP",
+        "parent": "DOC_RIG/Body_MP",
+        "pivot": [
+          3956,
+          2658
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Leg_Lower_Leg_P": {
+        "name": "Upper_Leg_Lower_Leg_P",
+        "parent": "DOC_RIG/Legs_MP",
+        "pivot": [
+          3719,
+          2520
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Arm_P_1": {
+        "name": "Upper_Arm_P_1",
+        "parent": "DOC_RIG/Arm_01_MP_2",
+        "pivot": [
+          4120,
+          1499
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "36#2"
+        ]
+      },
+      "DOC_RIG/M_Lower_Leg_PEG": {
+        "name": "M_Lower_Leg_PEG",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
+        "pivot": [
+          3643,
+          3049
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Peg_10": {
+        "name": "Peg_10",
+        "parent": "DOC_RIG/Peg_9",
+        "pivot": [
+          3882,
+          555
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#3"
+        ]
+      },
+      "DOC_RIG/Boot_Inside_P_1": {
+        "name": "Boot_Inside_P_1",
+        "parent": "DOC_RIG/Boot_Cuff_P_1",
+        "pivot": [
+          4122,
+          3458
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "56#2"
+        ]
+      },
+      "DOC_RIG/Neck_P": {
+        "name": "Neck_P",
+        "parent": "DOC_RIG/Head+Neck_MP",
+        "pivot": [
+          3841,
+          1408
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "31"
+        ]
+      },
+      "DOC_RIG/Peg_3": {
+        "name": "Peg_3",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          3734,
+          808
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "26"
+        ]
+      },
+      "DOC_RIG/Boot_Inside_P": {
+        "name": "Boot_Inside_P",
+        "parent": "DOC_RIG/Boot_Cuff_P",
+        "pivot": [
+          3556,
+          3458
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "56#1"
+        ]
+      },
+      "DOC_RIG/HEAD_MP": {
+        "name": "HEAD_MP",
+        "parent": "DOC_RIG/Head+Neck_MP",
+        "pivot": [
+          3867,
+          1260
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      }
+    },
+    "layers": [
+      {
+        "id": "16",
+        "name": "Skull",
+        "file": "plates/16-Skull.png",
+        "bbox": [
+          3634,
+          703,
+          4050,
+          1092
+        ],
+        "bone": "DOC_RIG/Skull_P",
+        "z": 0
+      },
+      {
+        "id": "24#1",
+        "name": "Ear_01#1",
+        "file": "plates/24-Ear_01.png",
+        "bbox": [
+          3612,
+          959,
+          3735,
+          1102
+        ],
+        "bone": "DOC_RIG/Ear_01_P",
+        "z": 1,
+        "element": "24",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          123,
+          143
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "30#1",
+        "name": "HairStrand_01#1",
+        "file": "plates/30-HairStrand_01.png",
+        "bbox": [
+          3751,
+          468,
+          3836,
+          579
+        ],
+        "bone": "DOC_RIG/Peg_7",
+        "z": 2,
+        "element": "30",
+        "instance": 1,
+        "crop": [
+          0,
+          54,
+          85,
+          165
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "30#3",
+        "name": "HairStrand_01#3",
+        "file": "plates/30-HairStrand_01.png",
+        "bbox": [
+          3875,
+          488,
+          3934,
+          569
+        ],
+        "bone": "DOC_RIG/Peg_10",
+        "z": 3,
+        "element": "30",
+        "instance": 3,
+        "crop": [
+          124,
+          74,
+          183,
+          155
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "50",
+        "name": "Skirt_BACK",
+        "file": "plates/50-Skirt_BACK.png",
+        "bbox": [
+          3413,
+          2231,
+          4268,
+          2948
+        ],
+        "bone": "DOC_RIG/Skirt_P",
+        "z": 4
+      },
+      {
+        "id": "31",
+        "name": "Neck",
+        "file": "plates/31-Neck.png",
+        "bbox": [
+          3777,
+          1130,
+          3906,
+          1451
+        ],
+        "bone": "DOC_RIG/Neck_P",
+        "z": 5
+      },
+      {
+        "id": "18",
+        "name": "Jaw",
+        "file": "plates/18-Jaw.png",
+        "bbox": [
+          3677,
+          1000,
+          4008,
+          1296
+        ],
+        "bone": "DOC_RIG/Jaw_P",
+        "z": 6
+      },
+      {
+        "id": "27",
+        "name": "Main_Hair",
+        "file": "plates/27-Main_Hair.png",
+        "bbox": [
+          3367,
+          559,
+          4314,
+          1316
+        ],
+        "bone": "DOC_RIG/Peg_4",
+        "z": 7,
+        "matte": {
+          "layer": "18",
+          "inverted": true,
+          "cut_fraction": 0.143,
+          "fit": 0.923,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "24#2",
+        "name": "Ear_01#2",
+        "file": "plates/24-Ear_01.png",
+        "bbox": [
+          3952,
+          962,
+          4074,
+          1105
+        ],
+        "bone": "DOC_RIG/Ear_01_P_1",
+        "z": 8,
+        "element": "24",
+        "instance": 2,
+        "crop": [
+          340,
+          3,
+          462,
+          146
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy",
+        "matte": {
+          "layer": "22",
+          "inverted": true,
+          "cut_fraction": 0.231,
+          "fit": 0.905,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "46",
+        "name": "Shoulders",
+        "file": "plates/46-Shoulders.png",
+        "bbox": [
+          3477,
+          1398,
+          4185,
+          1637
+        ],
+        "bone": "DOC_RIG/Shoulders_Peg",
+        "z": 9
+      },
+      {
+        "id": "33",
+        "name": "Collar_F",
+        "file": "plates/33-Collar_F.png",
+        "bbox": [
+          3656,
+          1312,
+          4023,
+          1461
+        ],
+        "bone": "DOC_RIG/Shirt_Collar_P",
+        "z": 10
+      },
+      {
+        "id": "32",
+        "name": "Chest",
+        "file": "plates/32-Chest.png",
+        "bbox": [
+          3528,
+          1380,
+          4160,
+          2269
+        ],
+        "bone": "DOC_RIG/Chest_P",
+        "z": 11,
+        "library": {
+          "1": {
+            "file": "plates/drawings/32-1.png",
+            "bbox": [
+              3528,
+              1380,
+              4160,
+              2269
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/32-2.png",
+            "bbox": [
+              3552,
+              1371,
+              4160,
+              2267
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/32-3.png",
+            "bbox": [
+              3483,
+              1380,
+              4168,
+              2265
+            ]
+          }
+        }
+      },
+      {
+        "id": "35",
+        "name": "Shirt_Fold",
+        "file": "plates/35-Shirt_Fold.png",
+        "bbox": [
+          3640,
+          1235,
+          3825,
+          2330
+        ],
+        "bone": "DOC_RIG/Shirt_Fold_P",
+        "z": 12
+      },
+      {
+        "id": "28",
+        "name": "Hair_HL",
+        "file": "plates/28-Hair_HL.png",
+        "bbox": [
+          2711,
+          413,
+          4793,
+          937
+        ],
+        "bone": "DOC_RIG/HL_color",
+        "z": 13,
+        "matte": {
+          "layer": "27",
+          "inverted": false,
+          "cut_fraction": 0.81,
+          "fit": 0.98,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "23",
+        "name": "Nose",
+        "file": "plates/23-Nose.png",
+        "bbox": [
+          3827,
+          984,
+          3857,
+          1110
+        ],
+        "bone": "DOC_RIG/Nose_P",
+        "z": 14
+      },
+      {
+        "id": "26",
+        "name": "Bangs",
+        "file": "plates/26-Bangs.png",
+        "bbox": [
+          3609,
+          609,
+          4073,
+          892
+        ],
+        "bone": "DOC_RIG/Peg_3",
+        "z": 15,
+        "library": {
+          "1": {
+            "file": "plates/drawings/26-1.png",
+            "bbox": [
+              3609,
+              609,
+              4073,
+              892
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/26-2.png",
+            "bbox": [
+              3583,
+              643,
+              4202,
+              960
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/26-3.png",
+            "bbox": [
+              3570,
+              658,
+              4055,
+              929
+            ]
+          },
+          "4": {
+            "file": "plates/drawings/26-4.png",
+            "bbox": [
+              3470,
+              711,
+              3758,
+              1013
+            ]
+          }
+        },
+        "matte": {
+          "layer": "28",
+          "inverted": false,
+          "cut_fraction": 0.35,
+          "fit": 0.752,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "30#2",
+        "name": "HairStrand_01#2",
+        "file": "plates/30-HairStrand_01.png",
+        "bbox": [
+          3816,
+          414,
+          3863,
+          577
+        ],
+        "bone": "DOC_RIG/Peg_8",
+        "z": 16,
+        "element": "30",
+        "instance": 2,
+        "crop": [
+          65,
+          0,
+          112,
+          163
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "40#1",
+        "name": "Glove_Back#1",
+        "file": "plates/40-Glove_Back.png",
+        "bbox": [
+          3155,
+          2195,
+          3424,
+          2463
+        ],
+        "bone": "DOC_RIG/Glove_B_P",
+        "z": 17,
+        "element": "40",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          269,
+          268
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "36#1",
+        "name": "Upper_Arm#1",
+        "file": "plates/36-Upper_Arm.png",
+        "bbox": [
+          3217,
+          1471,
+          3626,
+          2315
+        ],
+        "bone": "DOC_RIG/Upper_Arm_P",
+        "z": 18,
+        "element": "36",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          409,
+          844
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "40#2",
+        "name": "Glove_Back#2",
+        "file": "plates/40-Glove_Back.png",
+        "bbox": [
+          4247,
+          2198,
+          4517,
+          2466
+        ],
+        "bone": "DOC_RIG/Glove_B_P_1",
+        "z": 19,
+        "element": "40",
+        "instance": 2,
+        "crop": [
+          1092,
+          3,
+          1362,
+          271
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "36#2",
+        "name": "Upper_Arm#2",
+        "file": "plates/36-Upper_Arm.png",
+        "bbox": [
+          4052,
+          1471,
+          4455,
+          2317
+        ],
+        "bone": "DOC_RIG/Upper_Arm_P_1",
+        "z": 20,
+        "element": "36",
+        "instance": 2,
+        "crop": [
+          835,
+          0,
+          1238,
+          846
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "54#1",
+        "name": "Heel#1",
+        "file": "plates/54-Heel.png",
+        "bbox": [
+          3459,
+          3720,
+          3804,
+          4062
+        ],
+        "bone": "DOC_RIG/Heel_P",
+        "z": 21,
+        "element": "54",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          345,
+          342
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "54#2",
+        "name": "Heel#2",
+        "file": "plates/54-Heel.png",
+        "bbox": [
+          3874,
+          3720,
+          4219,
+          4062
+        ],
+        "bone": "DOC_RIG/Heel_P_1",
+        "z": 22,
+        "element": "54",
+        "instance": 2,
+        "crop": [
+          415,
+          0,
+          760,
+          342
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "38#2",
+        "name": "Gloves#2",
+        "file": "plates/38-Gloves.png",
+        "bbox": [
+          4247,
+          2198,
+          4517,
+          2686
+        ],
+        "bone": "DOC_RIG/Glove_P_1",
+        "z": 23,
+        "element": "38",
+        "instance": 2,
+        "crop": [
+          1092,
+          3,
+          1362,
+          491
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "39#2",
+        "name": "Hand_01#2",
+        "file": "plates/39-Hand_01.png",
+        "bbox": [
+          4201,
+          2590,
+          4589,
+          3112
+        ],
+        "bone": "DOC_RIG/Hand_P_1",
+        "z": 24,
+        "element": "39",
+        "instance": 2,
+        "crop": [
+          1122,
+          4,
+          1510,
+          526
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "38#1",
+        "name": "Gloves#1",
+        "file": "plates/38-Gloves.png",
+        "bbox": [
+          3155,
+          2195,
+          3423,
+          2683
+        ],
+        "bone": "DOC_RIG/Glove_P",
+        "z": 25,
+        "element": "38",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          268,
+          488
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "39#1",
+        "name": "Hand_01#1",
+        "file": "plates/39-Hand_01.png",
+        "bbox": [
+          3079,
+          2586,
+          3466,
+          3108
+        ],
+        "bone": "DOC_RIG/Hand_P",
+        "z": 26,
+        "element": "39",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          387,
+          522
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "62#1",
+        "name": "Shoulder_FIXER#1",
+        "file": "plates/62-Shoulder_FIXER.png",
+        "bbox": [
+          3469,
+          1493,
+          3614,
+          1637
+        ],
+        "bone": "DOC_RIG/group_1/Shoulder_Fixer_P",
+        "z": 27,
+        "element": "62",
+        "instance": 1,
+        "crop": [
+          0,
+          10,
+          145,
+          154
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "56#1",
+        "name": "Boot_Inside#1",
+        "file": "plates/56-Boot_Inside.png",
+        "bbox": [
+          3490,
+          3354,
+          3812,
+          3507
+        ],
+        "bone": "DOC_RIG/Boot_Inside_P",
+        "z": 28,
+        "element": "56",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          322,
+          153
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "52#1",
+        "name": "Lower_Leg#1",
+        "file": "plates/52-Lower_Leg.png",
+        "bbox": [
+          3545,
+          3018,
+          3769,
+          3854
+        ],
+        "bone": "DOC_RIG/Lower_Leg_P",
+        "z": 29,
+        "element": "52",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          224,
+          836
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "56#2",
+        "name": "Boot_Inside#2",
+        "file": "plates/56-Boot_Inside.png",
+        "bbox": [
+          3866,
+          3354,
+          4187,
+          3507
+        ],
+        "bone": "DOC_RIG/Boot_Inside_P_1",
+        "z": 30,
+        "element": "56",
+        "instance": 2,
+        "crop": [
+          376,
+          0,
+          697,
+          153
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "52#2",
+        "name": "Lower_Leg#2",
+        "file": "plates/52-Lower_Leg.png",
+        "bbox": [
+          3908,
+          3018,
+          4133,
+          3854
+        ],
+        "bone": "DOC_RIG/Lower_Leg_P_1",
+        "z": 31,
+        "element": "52",
+        "instance": 2,
+        "crop": [
+          363,
+          0,
+          588,
+          836
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "51#1",
+        "name": "Upper_Leg#1",
+        "file": "plates/51-Upper_Leg.png",
+        "bbox": [
+          3546,
+          2430,
+          3799,
+          3186
+        ],
+        "bone": "DOC_RIG/Upper_Leg_P",
+        "z": 32,
+        "element": "51",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          253,
+          756
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "51#2",
+        "name": "Upper_Leg#2",
+        "file": "plates/51-Upper_Leg.png",
+        "bbox": [
+          3878,
+          2430,
+          4132,
+          3186
+        ],
+        "bone": "DOC_RIG/Upper_Leg_P_1",
+        "z": 33,
+        "element": "51",
+        "instance": 2,
+        "crop": [
+          332,
+          0,
+          586,
+          756
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "49",
+        "name": "Skirt",
+        "file": "plates/49-Skirt.png",
+        "bbox": [
+          3413,
+          2231,
+          4268,
+          2948
+        ],
+        "bone": "DOC_RIG/Skirt_P",
+        "z": 34
+      },
+      {
+        "id": "62#2",
+        "name": "Shoulder_FIXER#2",
+        "file": "plates/62-Shoulder_FIXER.png",
+        "bbox": [
+          4061,
+          1483,
+          4182,
+          1592
+        ],
+        "bone": "DOC_RIG/group_1/Shoulder_Fixer_P_1",
+        "z": 35,
+        "element": "62",
+        "instance": 2,
+        "crop": [
+          592,
+          0,
+          713,
+          109
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "48",
+        "name": "Waistband",
+        "file": "plates/48-Waistband.png",
+        "bbox": [
+          3607,
+          2194,
+          4077,
+          2318
+        ],
+        "bone": "DOC_RIG/Waistband_P",
+        "z": 36
+      },
+      {
+        "id": "19",
+        "name": "Eye_01",
+        "file": "plates/19-Eye_01.png",
+        "bbox": [
+          3652,
+          862,
+          4036,
+          1064
+        ],
+        "bone": "DOC_RIG/Eye/Eye_01_P",
+        "z": 37,
+        "instances": 2,
+        "instances_note": "the scene draws this element more than once but the plate does not fall into that many blobs, so the copies move together"
+      },
+      {
+        "id": "21",
+        "name": "Upper_Lid",
+        "file": "plates/21-Upper_Lid.png",
+        "bbox": [
+          3633,
+          673,
+          4056,
+          901
+        ],
+        "bone": "DOC_RIG/Eye/U_Eyelid_P",
+        "z": 38,
+        "instances": 2,
+        "instances_note": "the scene draws this element more than once but the plate does not fall into that many blobs, so the copies move together",
+        "matte": {
+          "layer": "26",
+          "inverted": true,
+          "cut_fraction": 0.841,
+          "fit": 0.945,
+          "method": "plate whose mask best explains the region this layer loses between _ALL_NOCUT and _ALL, fitted top layer first"
+        }
+      },
+      {
+        "id": "22",
+        "name": "Lower_Lid",
+        "file": "plates/22-Lower_Lid.png",
+        "bbox": [
+          3599,
+          1068,
+          4089,
+          1296
+        ],
+        "bone": "DOC_RIG/Eye/L_Eyelid_P",
+        "z": 39,
+        "instances": 2,
+        "instances_note": "the scene draws this element more than once but the plate does not fall into that many blobs, so the copies move together",
+        "hidden_at_rest": true,
+        "hidden_note": "this layer's observable pixels are all gone in _ALL"
+      },
+      {
+        "id": "55#2",
+        "name": "Boot_Cuff#2",
+        "file": "plates/55-Boot_Cuff.png",
+        "bbox": [
+          3864,
+          3372,
+          4192,
+          3892
+        ],
+        "bone": "DOC_RIG/Boot_Cuff_P_1",
+        "z": 40,
+        "element": "55",
+        "instance": 2,
+        "crop": [
+          378,
+          0,
+          706,
+          520
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "55#1",
+        "name": "Boot_Cuff#1",
+        "file": "plates/55-Boot_Cuff.png",
+        "bbox": [
+          3486,
+          3372,
+          3814,
+          3892
+        ],
+        "bone": "DOC_RIG/Boot_Cuff_P",
+        "z": 41,
+        "element": "55",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          328,
+          520
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "53#1",
+        "name": "Toes#1",
+        "file": "plates/53-Toes.png",
+        "bbox": [
+          3256,
+          3850,
+          3677,
+          4112
+        ],
+        "bone": "DOC_RIG/Toes_P",
+        "z": 42,
+        "element": "53",
+        "instance": 1,
+        "crop": [
+          0,
+          0,
+          421,
+          262
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "53#2",
+        "name": "Toes#2",
+        "file": "plates/53-Toes.png",
+        "bbox": [
+          4001,
+          3850,
+          4422,
+          4112
+        ],
+        "bone": "DOC_RIG/Toes_P_1",
+        "z": 43,
+        "element": "53",
+        "instance": 2,
+        "crop": [
+          745,
+          0,
+          1166,
+          262
+        ],
+        "crop_note": "this blob of the shared plate, in plate pixels; the scene draws the element more than once and the plate holds every copy"
+      },
+      {
+        "id": "25",
+        "name": "Mouth",
+        "file": "plates/25-Mouth.png",
+        "bbox": [
+          3728,
+          1121,
+          3954,
+          1236
+        ],
+        "bone": "DOC_RIG/Peg_2",
+        "z": 44,
+        "library": {
+          "1": {
+            "file": "plates/drawings/25-1.png",
+            "bbox": [
+              3728,
+              1121,
+              3954,
+              1236
+            ]
+          },
+          "2": {
+            "file": "plates/drawings/25-2.png",
+            "bbox": [
+              3802,
+              1113,
+              3967,
+              1241
+            ]
+          },
+          "3": {
+            "file": "plates/drawings/25-3.png",
+            "bbox": [
+              3818,
+              1116,
+              3988,
+              1239
+            ]
+          }
+        }
+      }
+    ],
+    "angles": {
+      "source": "poses/manifest.json",
+      "resolution": [
+        3840,
+        2160
+      ],
+      "usable": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "default": 1,
+      "note": "whole-figure head/body plate pairs per view angle, at the poses resolution; a frame at an angle other than the default swaps the entire layer stack for that pair"
+    },
+    "hands": {
+      "39": {
+        "drawings": [
+          "Hand_1",
+          "Hand_2",
+          "Hand_3",
+          "Hand_Pick",
+          "Hand_nofingers"
+        ],
+        "with": [
+          "38",
+          "40"
+        ]
+      }
+    },
+    "measured": {
+      "recomposite_vs_nocut": {
+        "covered_px": 3250681,
+        "differing_px": 45048,
+        "differing_pct": 1.39,
+        "coverage_mismatch_px": 3
+      },
+      "matted_vs_authored": {
+        "covered_px": 2776747,
+        "differing_px": 64247,
+        "differing_pct": 2.31,
+        "coverage_mismatch_px": 1382
+      }
+    }
   }
 }

@@ -69,7 +69,7 @@ rotation ends. Those are marked unusable; three of its fourteen.
 | `rig.py` | 7c. Harmony scene surgery and headless render |
 | `perform.py` | 7. One shot, end to end |
 | `montage.py` | 7d. Several shots, cut to the beat |
-| `assets/rigs/<name>/rig.json` | Per-rig geometry and capabilities |
+| `assets/rigs/<name>/rig.json` | Per-rig geometry and capabilities; the format is written down in [RIGS.md](RIGS.md) |
 | `assets/rigs/<name>/plates/` | **The baked rigs.** Element plates, drawing libraries, turnaround poses |
 | `assets/rigs/<name>/poses/` | **The view angles.** Head/body plates and measured geometry per pose |
 | `prototype/` | The original working code, kept as the reference |
