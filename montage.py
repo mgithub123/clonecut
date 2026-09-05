@@ -146,7 +146,7 @@ def render(doc: dict, shots: list[dict], out_dir: Path, name: str) -> Path:
 
         track = perform.mouth_track(r, an, n)
         work = config.CACHE_DIR / f"montage-{name}-shot{i}"
-        engine = perform.choose_engine(sh.get("engine", "auto"), r)
+        engine = perform.choose_engine(sh.get("engine", "pillow"), r)
         if engine == "blender" and not (sh.get("tears") or sh.get("gesture")):
             import act
             frames = act.build_frames(r, an, track, work, blink=sh.get("blink", True),

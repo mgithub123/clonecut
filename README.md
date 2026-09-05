@@ -592,9 +592,11 @@ uv run perform.py --rig doctor ... --turns auto      # the Blender puppet, by de
 uv run perform.py --rig doctor ... --engine pillow   # Stage 7's two-plate path
 ```
 
-`perform.py` keeps its command line and sidecar; with a puppet and Blender
-present it now renders through them (`--engine auto`), and the Pillow path
-stays as `--engine pillow`. `montage.py` follows the same rule per shot.
+`perform.py` keeps its command line and sidecar. The Stage 7 Pillow path is
+still the default and still the reference: `--engine blender` renders through
+the puppet, which does not match it yet (no tears, no gestures, a heavier bob),
+and `--engine auto` picks Blender when a puppet and the binary are present.
+`montage.py` follows the same rule per shot.
 
 `motion.py` is the motion library: easing, anticipation, overshoot,
 follow-through, settle, squash and stretch, blink, head turns, gaze darts and
@@ -611,10 +613,11 @@ curves are still there to nudge in the graph editor:
 - **Children lag their parents** by a per-bone number of frames recorded in
   `rig.json` (ears and hair 2, strands and tail 3, hands 1); the lag is the
   parent's motion late and damped, applied as a delta so nothing jumps.
-- **Eyes dart** toward a coming turn three frames before the head moves. The dog
-  moves its pupil layers; the doctor and robot, which have none, get a disc drawn
-  in the eye's own darkest colour at a size measured from the eye box, recorded
-  in `rig.json`.
+- **Eyes dart** toward a coming turn three frames before the head moves, with
+  `--gaze`. The dog moves its pupil layers; the doctor and robot, which have
+  none, get a disc drawn in the eye's own darkest colour at a size measured from
+  the eye box, recorded in `rig.json`. Off by default: a pupil on the doctor's
+  flat cream discs changes the character.
 - **A phrase end** sinks the body, tilts the head, holds, and releases on the
   next onset.
 - **A head turn** steps through the baked view angles two frames each; a turned

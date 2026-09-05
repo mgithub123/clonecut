@@ -19,14 +19,17 @@ FPS = 24
 # --- beat hits ---------------------------------------------------------------
 # A hit is a small dip before it and a bounce after, never a step. The body
 # dips on the anticipation, drops through on the hit, overshoots up, and settles.
+# Sized against the Stage 7 render that read right: its head travelled 12px per
+# beat in the finished frame. Body and head here add, and the squash below adds
+# again at the head, so each is smaller than it looks.
 BEAT = dict(
     anticipation_frames=3,   # frames before the hit the dip starts
-    anticipation_px=1.6,     # how far the body lifts before dropping (px, up)
-    hit_px=4.4,              # how far it drops on the hit (px, down)
-    overshoot_px=1.4,        # how far it bounces past rest afterwards (px, up)
+    anticipation_px=0.8,     # how far the body lifts before dropping (px, up)
+    hit_px=2.2,              # how far it drops on the hit (px, down)
+    overshoot_px=0.8,        # how far it bounces past rest afterwards (px, up)
     settle_frames=9,         # frames from the hit to rest
     head_delay_frames=1,     # the head follows the body this much later
-    head_scale=1.6,          # and moves this much more, being on a neck
+    head_scale=1.8,          # and moves this much more, being on a neck
 )
 
 # --- squash and stretch ------------------------------------------------------
@@ -35,8 +38,8 @@ BEAT = dict(
 # Scale is about the body's pivot at the feet, so a percent of height is the
 # whole figure's height: on a 3700px doctor 1.8% moved the head 33px, a pogo.
 SQUASH = dict(
-    hit_pct=0.5,             # % shorter on the hit
-    release_pct=0.35,        # % taller on the release
+    hit_pct=0.2,             # % shorter on the hit
+    release_pct=0.15,        # % taller on the release
     release_offset_frames=3, # release follows the hit by this
     frames=5,                # duration of each half
 )

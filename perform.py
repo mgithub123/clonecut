@@ -616,8 +616,12 @@ def main(argv=None) -> int:
                    help="a baked view angle (see rig.py poses); omit for front-on")
     p.add_argument("--capture", default=None,
                    help="a capture.py track (JSON) to map onto the puppet; blender engine only")
-    p.add_argument("--engine", choices=("auto", "blender", "pillow"), default="auto",
-                   help="auto: the Blender puppet when the rig has one and Blender is installed")
+    p.add_argument("--gaze", action="store_true",
+                   help="blender engine: draw pupils on a rig that has none, so the eyes can dart")
+    p.add_argument("--engine", choices=("auto", "blender", "pillow"), default="pillow",
+                   help="pillow is the Stage 7 path and the default; blender is the puppet, "
+                        "which does not yet match it (no tears, no gestures); auto picks blender "
+                        "when the rig has a puppet and Blender is installed")
     p.add_argument("--turns", default="none",
                    help="blender engine: 'auto' turns the head at long breaths, or "
                         "'frame:pose,frame:pose' explicitly; 'none' stays front-on")
@@ -672,7 +676,8 @@ def main(argv=None) -> int:
                                    (pp.get("angles") or {}).get("default", 1))
         elif a.turns != "none":
             turns = [(int(f), int(p)) for f, p in (t.split(":") for t in a.turns.split(","))]
-        frames = act.build_frames(r, an, track, work, blink=not a.no_blink, pose=a.pose, turns=turns, cap=cap)
+        frames = act.build_frames(r, an, track, work, blink=not a.no_blink, pose=a.pose, turns=turns, cap=cap,
+                                  gaze=a.gaze)
     else:
         if cap is not None:
             print("  note: --capture needs the Blender engine; ignored")
@@ -708,7 +713,7 @@ def main(argv=None) -> int:
         "duration": common.r3(a.duration), "track": a.track,
         "background": a.background, "rain": a.rain, "text": a.text,
         "tears": a.tears, "blink": not a.no_blink, "engine": engine,
-        "pose": a.pose, "turns": turns,
+        "pose": a.pose, "turns": turns, "gaze": a.gaze,
         "capture": (common.rel(Path(a.capture)) if a.capture else None),
         "capture_sha256": (common.file_hash(Path(a.capture)) if a.capture else None),
         "capture_mouth_frames": cap_changed,
