@@ -70,12 +70,15 @@ def sheet_tiles(sheet: np.ndarray) -> list[tuple[int, int, int, int]]:
     return boxes
 
 
-def extract_shape(tile: np.ndarray) -> Image.Image | None:
+def extract_shape(tile: np.ndarray, palette: np.ndarray | None = None) -> Image.Image | None:
     """One tile -> a tight transparent PNG of just the mouth.
 
     Keeping only the largest connected component is what drops the generator's
-    captions and decorations without needing to know they are there.
+    captions and decorations without needing to know they are there. Colours
+    snap to `palette` (the Lucky Dog rig palette by default; a rig with its own
+    colours, like the robot's green teeth, passes its own).
     """
+    pal = RIG_PALETTE if palette is None else np.asarray(palette)
     keep = ndimage.binary_opening(~_green(tile, loose=True), iterations=2)
     lab, k = ndimage.label(keep)
     if k == 0:
@@ -87,12 +90,13 @@ def extract_shape(tile: np.ndarray) -> Image.Image | None:
         return None
     sub = tile[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
     mask = big[ys.min():ys.max() + 1, xs.min():xs.max() + 1]
-    dist = np.linalg.norm(sub[:, :, None, :] - RIG_PALETTE[None, None, :, :], axis=3)
-    snapped = RIG_PALETTE[np.argmin(dist, axis=2)].astype(np.uint8)
+    dist = np.linalg.norm(sub[:, :, None, :] - pal[None, None, :, :], axis=3)
+    snapped = pal[np.argmin(dist, axis=2)].astype(np.uint8)
     return Image.fromarray(np.dstack([snapped, (mask * 255).astype(np.uint8)]))
 
 
-def split_sheet(path: Path, out_dir: Path, names=SHEET_ORDER) -> list[Path]:
+def split_sheet(path: Path, out_dir: Path, names=SHEET_ORDER,
+                palette: np.ndarray | None = None) -> list[Path]:
     sheet = np.array(Image.open(path).convert("RGB")).astype(int)
     boxes = sheet_tiles(sheet)
     if len(boxes) != len(names):
@@ -102,7 +106,7 @@ def split_sheet(path: Path, out_dir: Path, names=SHEET_ORDER) -> list[Path]:
     written = []
     for name, (x0, y0, x1, y1) in zip(names, boxes):
         tile = sheet[y0 + TILE_INSET:y1 - TILE_INSET, x0 + TILE_INSET:x1 - TILE_INSET]
-        img = extract_shape(tile)
+        img = extract_shape(tile, palette)
         if img is None:
             raise ToolError(f"tile {name} in {common.rel(path)} contained no shape")
         dest = out_dir / f"{name}.png"

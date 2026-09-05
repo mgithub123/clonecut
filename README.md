@@ -40,7 +40,7 @@ browser, and there is a double-clickable launcher for Mac and Windows.
 | 5. Retrieval | `log.py` -> `plan.py` | done |
 | 6. App | `app.py` + `webui/` | done |
 | 7. Perform | `perform.py` + `montage.py` + `rig.py` — see [HARMONY.md](HARMONY.md) | done |
-| 8. Puppet | `puppet.py` + `blenderpuppet.py` — see [RIGS.md](RIGS.md) | 8z, 8a done |
+| 8. Puppet | `puppet.py` + `blenderpuppet.py` + `gen.py` — see [RIGS.md](RIGS.md) | 8z, 8a, 8g done |
 
 ---
 
@@ -554,3 +554,33 @@ by vertex group, mattes and opacity in the material. The doctor's 63 bones and
 58 layers render in about two seconds a frame, and the `.blend` can be opened and
 nudged by hand. Stage 7's two-plate `perform.py` path is untouched and still
 renders the same shot.
+
+### 8g — `gen.py`: image generation in manual mode
+
+```bash
+uv run gen.py prompt --rig robot --job mouths      # writes gen/<stamp>-robot-mouths/
+uv run gen.py ingest gen/<stamp>-robot-mouths downloaded.png
+```
+
+The only image model available is the Gemini app, so this does what `plan.py`
+does with the Claude app: writes a bundle you paste in, and reads the result
+back. `prompt` writes `prompt.md`, the images to attach (the rig's head from its
+tracked plate, the shapes it already has for the job, and a blank grid of green
+cells sized from the rig's own face width so the model lays the sheet out where
+`face.py sheet` expects it), and `meta.json` with the SHA-256 of everything sent.
+Jobs: `mouths` (the eight-shape ladder), `brows`, `eyes` (open, half, shut,
+and pupils for the rigs that have none), `expressions`. The prompt text is
+built from the rig config in one place, so it can be tuned.
+
+`ingest` splits the sheet with the existing `face.py` code, snapping colours to
+the rig's own measured palette rather than the doctor's, un-premultiplies a cell
+drawn on white, and rejects a sheet whose cell count is wrong, whose cells are
+empty, or whose line weight or palette is far from the rig's head - both
+measured against the reference and printed either way. Line weight is the lower
+quartile of the outline's spine thickness, so a filled mouth cavity does not
+read as a thick line. Accepted shapes go to `assets/rigs/<rig>/gen/<job>/` with
+a sidecar naming the bundle; generated art is not regenerable, so it is tracked.
+
+The first job, a robot mouth sheet, is written and waiting for the paste. Once
+it is back, a shot with it and a shot with the drawn grille go side by side and
+the user picks - the tool does not decide which has the character's hand.

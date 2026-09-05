@@ -1246,6 +1246,71 @@ def _():
         truth = p.parent / pp["ground_truth"]["nocut"]
         assert truth.exists(), f"{p.parent.name}: {truth.name} missing"
 
+
+@check("a gen template lays out exactly the cells the job asks for, where face.py will find them")
+def _():
+    import gen, face
+    r = gen.load_rig("robot")
+    for job, spec in gen.JOBS.items():
+        im, boxes = gen.template(r, job)
+        tiles = face.sheet_tiles(np.asarray(im.convert("RGB")).astype(int))
+        assert len(tiles) == len(spec["cells"]) == len(boxes), (job, len(tiles), len(spec["cells"]))
+        assert [tuple(t) for t in tiles] == boxes, f"{job}: tiles found out of reading order"
+
+
+@check("a gen prompt names every cell, every rule and every attachment")
+def _():
+    import gen
+    r = gen.load_rig("robot")
+    text = gen.prompt_text(r, "mouths", ["ref-head.png", "template.png"])
+    for name in gen.JOBS["mouths"]["cells"]:
+        assert f"**{name}**" in text, name
+    for rule in gen.RULES:
+        assert rule in text
+    assert "ref-head.png, template.png" in text
+    assert "ref-current" not in text, "claimed a current-shapes image it did not attach"
+
+
+@check("gen measures line weight from the outline, not from a filled mouth cavity")
+def _():
+    import gen
+    from PIL import Image, ImageDraw
+    im = Image.new("RGBA", (300, 200), (0, 0, 0, 0))
+    d = ImageDraw.Draw(im)
+    d.rounded_rectangle([20, 20, 280, 180], radius=30, fill=(200, 120, 130, 255),
+                        outline=(0, 0, 0, 255), width=6)
+    thin = gen.stroke_width(im)
+    assert 4.5 <= thin <= 7.5, thin
+    d.ellipse([90, 70, 210, 130], fill=(0, 0, 0, 255))        # a black cavity
+    with_cavity = gen.stroke_width(im)
+    assert abs(with_cavity - thin) <= 1.5, (thin, with_cavity)
+    assert gen.palette_fraction(im, [(0, 0, 0), (200, 120, 130)]) > 0.95
+    assert gen.palette_fraction(im, [(0, 0, 255)]) < 0.5
+
+
+@check("gen ingest refuses a sheet with the wrong number of cells")
+def _():
+    import gen, json, tempfile
+    from PIL import Image, ImageDraw
+    r = gen.load_rig("robot")
+    with tempfile.TemporaryDirectory() as td:
+        folder = Path(td) / "bundle"
+        folder.mkdir()
+        tmpl, boxes = gen.template(r, "brows")
+        json.dump({"rig": "robot", "job": "brows", "cells": list(gen.JOBS["brows"]["cells"]),
+                   "template_boxes": boxes, "palette": [[0, 0, 0]], "prompt_sha256": "x"},
+                  open(folder / "meta.json", "w"))
+        sheet = tmpl.copy()
+        d = ImageDraw.Draw(sheet)
+        x0, y0, x1, y1 = boxes[0]
+        d.rectangle([x0 - 4, y0 - 4, x1 + 4, y1 + 4], fill=(255, 255, 255))   # kill one cell outright
+        sheet.save(folder / "bad.png")
+        try:
+            gen.ingest(folder, folder / "bad.png")
+            raise AssertionError("a three-cell sheet was accepted for a four-cell job")
+        except common.ToolError as exc:
+            assert "found 3 tiles" in str(exc), str(exc)
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

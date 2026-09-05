@@ -15,6 +15,7 @@ cache/
 out/
 profiles/
 plans/
+gen/
 *.db
 
 # assets/rigs/*/plates/ is deliberately NOT here. Those PNGs look like generated
