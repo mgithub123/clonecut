@@ -614,6 +614,8 @@ def main(argv=None) -> int:
     p.add_argument("--no-blink", action="store_true")
     p.add_argument("--pose", type=int, default=None,
                    help="a baked view angle (see rig.py poses); omit for front-on")
+    p.add_argument("--capture", default=None,
+                   help="a capture.py track (JSON) to map onto the puppet; blender engine only")
     p.add_argument("--engine", choices=("auto", "blender", "pillow"), default="auto",
                    help="auto: the Blender puppet when the rig has one and Blender is installed")
     p.add_argument("--turns", default="none",
@@ -643,6 +645,15 @@ def main(argv=None) -> int:
           f"{dict(__import__('collections').Counter(an['vowels']).most_common())}")
 
     track = mouth_track(r, an, n)
+    cap, cap_changed = None, 0
+    if a.capture:
+        import capture as capmod
+        import act
+        cap = capmod.load(Path(a.capture))
+        env = np.resize(lipsync.envelope(str(a.audio), a.start, a.duration, FPS), n)
+        track, cap_changed = act.mouth_with_capture(track, env, cap, gate=GATE, audible=AUDIBLE)
+        print(f"  capture {common.rel(Path(a.capture))}: {cap['face_frames']}/{cap['frames']} face frames, "
+              f"{cap_changed} mouth frames decided by the camera")
     runs = [len(list(g)) for _, g in itertools.groupby(track)]
     print(f"  {len(runs) - 1} mouth changes, mean hold {sum(runs) / len(runs):.1f}f, "
           f"shut {track.count('CLOSED')}/{n}")
@@ -661,8 +672,10 @@ def main(argv=None) -> int:
                                    (pp.get("angles") or {}).get("default", 1))
         elif a.turns != "none":
             turns = [(int(f), int(p)) for f, p in (t.split(":") for t in a.turns.split(","))]
-        frames = act.build_frames(r, an, track, work, blink=not a.no_blink, pose=a.pose, turns=turns)
+        frames = act.build_frames(r, an, track, work, blink=not a.no_blink, pose=a.pose, turns=turns, cap=cap)
     else:
+        if cap is not None:
+            print("  note: --capture needs the Blender engine; ignored")
         frames = build_frames(r, an, track, work, blink=not a.no_blink, tears=a.tears,
                               pose=a.pose, gesture=a.gesture)
 
@@ -696,6 +709,9 @@ def main(argv=None) -> int:
         "background": a.background, "rain": a.rain, "text": a.text,
         "tears": a.tears, "blink": not a.no_blink, "engine": engine,
         "pose": a.pose, "turns": turns,
+        "capture": (common.rel(Path(a.capture)) if a.capture else None),
+        "capture_sha256": (common.file_hash(Path(a.capture)) if a.capture else None),
+        "capture_mouth_frames": cap_changed,
         "frames": n, "onsets": an["onsets"], "vowels": an["vowels"],
         "mouth_changes": len(runs) - 1, "shut_frames": track.count("CLOSED"),
         "char_width": a.char_width, "char_top": a.char_top,

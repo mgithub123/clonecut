@@ -90,8 +90,52 @@ def cast(r: dict, pp: dict) -> dict:
 
 # ------------------------------------------------------------------ tracks
 
+# --- capture mapping -------------------------------------------------------
+# How a person's measured motion lands on the puppet. Degrees and 0-1 values
+# from capture.py become render-resolution pixels and degrees here.
+CAPTURE = dict(
+    roll_deg_per_deg=0.6,     # head tilt: a person's roll, damped, on the head bone
+    pitch_px_per_deg=0.35,    # a nod moves the head down this much per degree
+    lean_px_per_width=60.0,   # body x per shoulder width of lean
+    tilt_deg_per_width=8.0,   # body rotation per unit of shoulder tilt
+    brow_px=14.0,             # brow layers rise this much at a full raise
+    yaw_full_deg=60.0,        # this much yaw reaches the last lip-syncing angle
+    eye_shut_below=0.25,      # eye openness below this is a shut eye
+    mouth_open_above=0.35,    # the camera says open above this, when the voice is unsure
+    mouth_shut_below=0.05,    # and shut below this
+)
+
+
+def capture_tracks(cap: dict, n: int) -> dict[str, np.ndarray]:
+    import capture as capmod
+    return {k: capmod.resample(v, n) for k, v in cap["tracks"].items()}
+
+
+def yaw_to_poses(yaw: np.ndarray, usable: list[int], lipsync: dict[int, bool], default: int) -> list[int]:
+    """Yaw in degrees -> a baked view angle per frame.
+
+    A turnaround rotates one way, so the rig has angles on one side only: both
+    signs of yaw map onto the same run of poses, from the default at 0 to the
+    last angle that can still lip-sync at CAPTURE['yaw_full_deg']. That is a
+    limit of the source art, and it is why a person turning left and right
+    reads as the character turning the same way twice.
+    """
+    order = [p for p in sorted(usable) if p >= default]
+    run = [p for p in order if lipsync.get(p, True)]
+    if len(run) < 2:
+        return [default] * len(yaw)
+    out = []
+    for v in yaw:
+        if np.isnan(v):
+            out.append(default)
+            continue
+        f = min(1.0, abs(float(v)) / CAPTURE["yaw_full_deg"])
+        out.append(run[int(round(f * (len(run) - 1)))])
+    return out
+
+
 def tracks(r: dict, pp: dict, an: dict, track: list[str], n: int, *,
-           blink: bool, poses: list[int]) -> dict:
+           blink: bool, poses: list[int], cap: dict | None = None) -> dict:
     """Every per-frame curve the shot needs, in render-resolution pixels."""
     parts = cast(r, pp)
     beats = (an.get("beat") or {}).get("beats") or []
@@ -115,11 +159,28 @@ def tracks(r: dict, pp: dict, an: dict, track: list[str], n: int, *,
     head_dx = motion.breath(n, D["head_dx_px"], D["head_dx_period_s"])
     head_rot = motion.breath(n, D["head_rot_deg"], D["head_rot_period_s"], D["head_rot_phase"]) \
         - 0.2 * body_beat + motion.settle(n, ends, onsets, amp=motion.SETTLE["head_tilt_deg"])
+    brow = np.zeros(n)
+    body_dx = np.zeros(n)
+    body_rot = np.zeros(n)
+    eye_open = np.ones(n)
+    if cap is not None:
+        C = CAPTURE
+        ct = capture_tracks(cap, n)
+        nz = lambda a: np.nan_to_num(a, nan=0.0)
+        head_rot = head_rot + C["roll_deg_per_deg"] * nz(ct.get("roll", np.zeros(n)))
+        head_dy = head_dy + C["pitch_px_per_deg"] * nz(ct.get("pitch", np.zeros(n)))
+        if "lean" in ct:
+            body_dx = C["lean_px_per_width"] * nz(ct["lean"])
+            body_rot = C["tilt_deg_per_width"] * nz(ct.get("shoulder_tilt", np.zeros(n)))
+        brow = C["brow_px"] * np.clip(nz(ct.get("brow", np.zeros(n))), 0, 1)
+        eye_open = np.where(nz(ct.get("eye", np.ones(n))) < C["eye_shut_below"], 0.0, 1.0)
     out = {
         "parts": parts, "hits": hits, "ends": ends, "onsets": onsets,
+        "brow": brow, "body_dx": body_dx, "body_rot": body_rot, "eye_open": eye_open,
         "body_dy": body_dy, "body_sx": sx, "body_sy": sy,
         "head_dy": head_dy, "head_dx": head_dx, "head_rot": head_rot,
-        "blink": motion.blink_track(n) if blink and r["capabilities"].get("blink") else np.ones(n),
+        "blink": np.minimum(motion.blink_track(n) if blink and r["capabilities"].get("blink") else np.ones(n),
+                            np.maximum(eye_open, 0.0)),
         "gaze_dx": motion.gaze_track(n, poses, pp["angles"]["usable"] if pp.get("angles") else [1]),
         "zoom": motion.camera_push(n),
     }
@@ -159,7 +220,7 @@ def _pupil_png(radius: int, colour: list[int], dest: Path) -> Path:
 
 def build_job(r: dict, pp: dict, an: dict, track: list[str], out_dir: Path, *,
               blink: bool = True, pose: int | None = None,
-              turns: list[tuple[int, int]] | None = None) -> Path:
+              turns: list[tuple[int, int]] | None = None, cap: dict | None = None) -> Path:
     import perform
     n = len(track)
     canvas = tuple(pp["canvas"])
@@ -170,9 +231,15 @@ def build_job(r: dict, pp: dict, an: dict, track: list[str], out_dir: Path, *,
         raise ToolError(f"rig {r['name']!r} has no usable pose {pose}; usable are {usable}")
     if pose is not None:
         poses = [pose] * n
+    elif cap is not None and "yaw" in cap["tracks"]:
+        lipsync = {}
+        pm = r["_dir"] / "poses" / "manifest.json"
+        if pm.exists():
+            lipsync = {int(k): bool(v.get("lipsync")) for k, v in json.loads(pm.read_text())["poses"].items()}
+        poses = yaw_to_poses(capture_tracks(cap, n)["yaw"], usable, lipsync, default_pose)
     else:
         poses = motion.turn_track(n, turns or [], usable, default_pose)
-    tr = tracks(r, pp, an, track, n, blink=blink, poses=poses)
+    tr = tracks(r, pp, an, track, n, blink=blink, poses=poses, cap=cap)
     parts = tr["parts"]
     bones = dict(pp["bones"])
 
@@ -248,9 +315,15 @@ def build_job(r: dict, pp: dict, an: dict, track: list[str], out_dir: Path, *,
     anim = {}
     fr = range(1, n + 1)
     anim[parts["body"]] = {
-        "location": [[f, 0.0, -float(tr["body_dy"][f - 1]) * S] for f in fr],
+        "location": [[f, float(tr["body_dx"][f - 1]) * S, -float(tr["body_dy"][f - 1]) * S] for f in fr],
+        "rotation": [[f, float(tr["body_rot"][f - 1])] for f in fr],
         "scale": [[f, float(tr["body_sx"][f - 1]), float(tr["body_sy"][f - 1])] for f in fr],
     }
+    # brows: every bone whose layer is a brow rises with the captured brow
+    if np.any(tr["brow"]):
+        for lay in pp["layers"]:
+            if "brow" in lay["name"].lower() and lay["bone"] not in anim:
+                anim[lay["bone"]] = {"location": [[f, 0.0, float(tr["brow"][f - 1]) * S] for f in fr]}
     anim[parts["head"]] = {
         "location": [[f, float(tr["head_dx"][f - 1]) * S, -float(tr["head_dy"][f - 1]) * S] for f in fr],
         "rotation": [[f, float(tr["head_rot"][f - 1])] for f in fr],
@@ -295,13 +368,13 @@ def _inside(bbox, x, y) -> bool:
 
 def build_frames(r: dict, an: dict, track: list[str], out_dir: Path, *,
                  blink: bool = True, pose: int | None = None,
-                 turns: list[tuple[int, int]] | None = None) -> list[Path]:
+                 turns: list[tuple[int, int]] | None = None, cap: dict | None = None) -> list[Path]:
     """The Blender-path twin of perform.build_frames(): same inputs, same output."""
     _, pp, _ = puppet.load_puppet(r["name"])
     out_dir.mkdir(parents=True, exist_ok=True)
     for old in out_dir.glob("rgba-*.png"):
         old.unlink()
-    job_path = build_job(r, pp, an, track, out_dir, blink=blink, pose=pose, turns=turns)
+    job_path = build_job(r, pp, an, track, out_dir, blink=blink, pose=pose, turns=turns, cap=cap)
     import shutil
     exe = config.BLENDER if (shutil.which(config.BLENDER) or Path(config.BLENDER).exists()) else None
     if not exe:
@@ -339,3 +412,34 @@ def auto_turns(track: list[str], usable: list[int], start: int, min_gap: int = 8
             sched.append((e, start))
             away = False
     return sched
+
+
+def mouth_with_capture(track: list[str], env: np.ndarray, cap: dict, *, gate: float, audible: float) -> tuple[list[str], int]:
+    """The camera decides open-versus-shut only where the voice is unsure.
+
+    Vowels from the stem are more reliable than a phone's lip reading and are
+    already aligned to the same audio, so the shapes stay. Frames whose envelope
+    sits between AUDIBLE and GATE are the unsure ones: the voice called them
+    shut by threshold, and a clearly open mouth on camera reopens them as SMALL;
+    frames the voice called open while the camera shows a shut mouth for three
+    frames or more are closed.
+    """
+    n = len(track)
+    mouth = capture_tracks(cap, n).get("mouth")
+    if mouth is None:
+        return list(track), 0
+    mouth = np.nan_to_num(mouth, nan=0.5)
+    out = list(track)
+    changed = 0
+    unsure = (env >= audible) & (env < gate)
+    for f in range(n):
+        if unsure[f] and out[f] == "CLOSED" and mouth[f] > CAPTURE["mouth_open_above"]:
+            out[f] = "SMALL"
+            changed += 1
+    run = 0
+    for f in range(n):
+        run = run + 1 if mouth[f] < CAPTURE["mouth_shut_below"] else 0
+        if run >= 3 and out[f] != "CLOSED":
+            out[f] = "CLOSED"
+            changed += 1
+    return out, changed

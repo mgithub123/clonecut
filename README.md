@@ -40,7 +40,7 @@ browser, and there is a double-clickable launcher for Mac and Windows.
 | 5. Retrieval | `log.py` -> `plan.py` | done |
 | 6. App | `app.py` + `webui/` | done |
 | 7. Perform | `perform.py` + `montage.py` + `rig.py` — see [HARMONY.md](HARMONY.md) | done |
-| 8. Puppet | `puppet.py` + `act.py` + `motion.py` + `gen.py` — see [RIGS.md](RIGS.md) | 8z, 8a, 8g, 8b done |
+| 8. Puppet | `puppet.py` + `act.py` + `motion.py` + `gen.py` + `capture.py` — see [RIGS.md](RIGS.md) | done; 8g awaits the first paste |
 
 ---
 
@@ -628,3 +628,40 @@ curves are still there to nudge in the graph editor:
 
 Tears and hand gestures are not on the Blender path yet and fall back to the
 Pillow engine when asked for. The doctor's nine-second shot renders in 24s.
+
+### 8c — Performance capture from a phone video
+
+```bash
+uv add "mediapipe==0.10.21"                       # once; see below
+uv run capture.py raw/me-singing.mp4 --start 0 --duration 9
+uv run perform.py --rig dog ... --capture cache/capture/me-singing.json
+```
+
+`capture.py` reads a video of a person singing the line and writes a JSON track
+in the shape `voice.py` uses: per frame at 24 fps, head yaw, pitch and roll,
+eyebrow raise, eye openness, mouth openness, and when the body is in frame the
+shoulder lean and each wrist's position in shoulder widths. MediaPipe's face
+landmarker (52 blendshapes and a head transform) and pose landmarker do the
+seeing; their model files download into `cache/models/` on first use, like
+whisper's weights. Every track goes through a One Euro filter - a low-pass
+whose cutoff opens with speed, so it kills jitter when the face is still and
+lets a fast turn through; raw landmark jitter on a flat drawing reads as a
+tremor.
+
+`perform.py --capture` maps the track onto the puppet: yaw to a turnaround
+angle (a turnaround rotates one way, so both directions land on the same run of
+angles - a limit of the source art, said so in `act.py`), pitch and roll to the
+head bone, brow to the brow layers on rigs that have them, eye openness to the
+blink, shoulder lean and tilt to the body, hands to nothing yet. The mouth keeps
+coming from `voice.py`; the camera decides open-versus-shut only on frames the
+envelope leaves unsure, and closes a mouth the voice called open when the camera
+shows it shut for three frames.
+
+**MediaPipe is not in `pyproject.toml`.** 1.0.1 installs on this Python but
+dies in a native check on the first frame in every running mode; 0.10.21 works,
+and pins numpy back to 1.26 and opencv to 4.11 for the whole project. That is
+too much to impose on `uv sync` for one optional input, so `capture.py` asks for
+the install when it is missing and the rest of the pipeline stays on numpy 2.
+No live-action video was on this Mac to test against; the pipeline was run on a
+still drawing and an animated clip (no face found, correctly) and the mapping
+on a synthetic track. The first real phone video will be the real test.

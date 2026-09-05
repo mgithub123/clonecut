@@ -1398,6 +1398,42 @@ def _():
     assert act.auto_turns(track, [1], 1) == [], "turned with a single usable pose"
     assert act.auto_turns(["AH"] * 50, [1, 2, 3], 1) == [], "turned with no breath"
 
+
+@check("the capture filter kills jitter at rest and lets a fast turn through")
+def _():
+    import capture
+    rng = np.random.default_rng(3)
+    still = 10 + rng.normal(0, 1.0, 96)
+    sm = capture.one_euro(still)
+    assert sm[24:].std() < 0.35 * still[24:].std(), (sm.std(), still.std())
+    step = np.zeros(96); step[48:] = 30.0
+    sm = capture.one_euro(step)
+    assert sm[47] < 1.0 and sm[52] > 24.0, "a 30-degree turn lagged more than four frames"
+    held = capture.one_euro(np.array([1.0, np.nan, np.nan, 2.0]))
+    assert held[1] == 1.0 and held[2] == 1.0, "a frame with no face did not hold"
+    r = capture.resample([0.0, None, 1.0], 6)
+    assert list(r) == [0.0, 0.0, 0.0, 0.0, 1.0, 1.0], list(r)     # the gap holds the last value
+
+
+@check("head angles come out of a rotation matrix with the right sign and size")
+def _():
+    import capture, math
+    def rot(axis, deg):
+        a = math.radians(deg); c, s = math.cos(a), math.sin(a)
+        if axis == "y":
+            return np.array([[c, 0, s, 0], [0, 1, 0, 0], [-s, 0, c, 0], [0, 0, 0, 1]])
+        if axis == "x":
+            return np.array([[1, 0, 0, 0], [0, c, -s, 0], [0, s, c, 0], [0, 0, 0, 1]])
+        return np.array([[c, -s, 0, 0], [s, c, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])
+    yaw, pitch, roll = capture._head_angles(np.eye(4))
+    assert abs(yaw) < 1e-9 and abs(pitch) < 1e-9 and abs(roll) < 1e-9
+    y, p, r = capture._head_angles(rot("y", 25))
+    assert abs(p - 25) < 1e-6 or abs(y - 25) < 1e-6, (y, p, r)
+    y, p, r = capture._head_angles(rot("z", 15))
+    assert abs(y - 15) < 1e-6, (y, p, r)
+    y, p, r = capture._head_angles(rot("x", 10))
+    assert abs(r - 10) < 1e-6, (y, p, r)
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:
