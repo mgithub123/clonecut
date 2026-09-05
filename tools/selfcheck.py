@@ -1311,6 +1311,93 @@ def _():
         except common.ToolError as exc:
             assert "found 3 tiles" in str(exc), str(exc)
 
+
+@check("a beat hit dips before it and bounces after, and overlapping hits add")
+def _():
+    import motion
+    n = 48
+    one = motion.impulse(n, [12], pre=3, pre_amp=1.6, amp=4.4, post_amp=1.4, settle=9)
+    assert one[9] < 0 and one[11] < one[9], "no anticipation lift before the hit"
+    assert one[12] == max(one) and one[12] > 4.0, "the hit is not the peak"
+    assert min(one[13:22]) < 0, "no overshoot past rest after the hit"
+    assert abs(one[30]) < 1e-9, "did not settle"
+    two = motion.impulse(n, [12, 14], pre=3, pre_amp=1.6, amp=4.4, post_amp=1.4, settle=9)
+    assert two[14] > one[14], "a second hit did not add"
+
+
+@check("squash and stretch keep volume and stay under three percent")
+def _():
+    import motion
+    sx, sy = motion.squash_stretch(40, [10])
+    assert sy.min() > 0.97 and sy.max() < 1.03, (sy.min(), sy.max())
+    assert np.allclose(sx * sx * sy, 1.0), "volume not kept"
+    assert np.argmin(sy) < np.argmax(sy), "stretch came before squash"
+    assert sy[0] == 1.0 and sy[-1] == 1.0
+
+
+@check("a phrase end settles down, holds, and releases on the next onset")
+def _():
+    import motion
+    st = motion.settle(60, [10], [30], amp=2.4)
+    assert st[9] == 0 and abs(st[18] - 2.4) < 1e-6 and abs(st[29] - 2.4) < 1e-6, st[8:31]
+    assert 0 < st[31] < 2.4 and st[40] == 0, "no release after the onset"
+    # a phrase end with no later onset holds to the end
+    assert abs(motion.settle(30, [10], [], amp=1.0)[-1] - 1.0) < 1e-6
+
+
+@check("a lagging child starts where its parent starts and follows late and smaller")
+def _():
+    import motion
+    parent = np.zeros(20); parent[5:] = 10.0
+    child = motion.lag(parent, 2)
+    assert child[0] == 0 and child[5] == 0 and child[6] == 0, "the child moved on time"
+    assert abs(child[7] - 10 * motion.LAG_DAMP) < 1e-9, child[7]
+    assert np.array_equal(motion.lag(parent, 0), parent)
+    off = np.full(20, 3.0); off[5:] = 13.0
+    assert motion.lag(off, 2)[0] == 3.0, "a child with an offset start jumped on frame 1"
+
+
+@check("a head turn steps through the poses between, and the eyes dart first")
+def _():
+    import motion
+    poses = motion.turn_track(30, [(6, 4)], [1, 2, 3, 4, 5], 1)
+    assert poses[:6] == [1] * 6 and poses[-1] == 4
+    steps = [p for i, p in enumerate(poses) if i == 0 or p != poses[i - 1]]
+    assert steps == [1, 2, 3, 4], steps
+    for k in (2, 3):
+        assert poses.count(k) == motion.TURN["step_frames"], poses
+    gaze = motion.gaze_track(30, poses, [1, 2, 3, 4, 5])
+    first = int(np.argmax(np.abs(gaze) > 0))
+    assert first == 6 - motion.TURN["eye_lead_frames"], first
+    assert gaze[first] > 0, "a turn to a higher pose should dart the same way"
+    assert gaze[-1] == 0, "the dart never eased back"
+    assert motion.turn_track(10, [(2, 9)], [1, 2, 3], 1) == [1] * 10, "an unusable pose was turned to"
+
+
+@check("the acting cast finds root, body, head, eyes and hands from the rig's own layer lists")
+def _():
+    import act, puppet
+    for name in ("doctor", "dog", "robot"):
+        r, pp, _ = puppet.load_puppet(name)
+        parts = act.cast(r, pp)
+        bones = pp["bones"]
+        assert bones[parts["root"]]["parent"] in (None, "") or bones[parts["root"]]["parent"] not in bones
+        assert parts["head"] != parts["body"], f"{name}: head and body are the same bone"
+        assert parts["head"] in act._subtree(bones, parts["body"]), f"{name}: the head is not under the body"
+        assert parts["eyes"], f"{name}: no eye layers"
+        for lid in parts["eyes"]:
+            assert any(l["id"] == lid for l in pp["layers"])
+
+
+@check("an automatic turn schedule leaves at every second long breath and comes back")
+def _():
+    import act
+    track = ["AH"] * 30 + ["CLOSED"] * 15 + ["EE"] * 60 + ["CLOSED"] * 20 + ["OH"] * 40 + ["CLOSED"] * 14 + ["AH"] * 37
+    sched = act.auto_turns(track, list(range(1, 12)), 1)
+    assert sched == [(30, 2), (105, 1), (165, 2)], sched
+    assert act.auto_turns(track, [1], 1) == [], "turned with a single usable pose"
+    assert act.auto_turns(["AH"] * 50, [1, 2, 3], 1) == [], "turned with no breath"
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

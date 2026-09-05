@@ -215,16 +215,16 @@
     },
     "parenting_source": "peg hierarchy of assets/rigs/dog/scene/Luckydog_DOG_MA.xstage (Harmony)",
     "bones": {
-      "Dog_Rig-G/Ear_01_GRP_1/Ear_Flap_01_P": {
-        "name": "Ear_Flap_01_P",
-        "parent": "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P",
+      "Dog_Rig-G/Teeth-P": {
+        "name": "Teeth-P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
         "pivot": [
-          3556,
-          2766
+          3096,
+          3270
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "10#2"
+          "31"
         ]
       },
       "Dog_Rig-G/Ear_01_GRP/Ear_Flap_01_P": {
@@ -239,28 +239,72 @@
           "10#1"
         ]
       },
-      "Dog_Rig-G/Eye_01_GRP/Pupil_01_P": {
-        "name": "Pupil_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+      "Dog_Rig-G/Jaw_P": {
+        "name": "Jaw_P",
+        "parent": "Dog_Rig-G/Master_Face_P",
         "pivot": [
-          3060,
-          3024
+          3277,
+          3268
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "12#1"
+          "8"
         ]
       },
-      "Dog_Rig-G/Eye_01_GRP_1/T_eyelid_01_P": {
-        "name": "T_eyelid_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+      "Dog_Rig-G/Leg_MP": {
+        "name": "Leg_MP",
+        "parent": "Dog_Rig-G/Body_Leg_MP",
         "pivot": [
-          3283,
-          2957
+          3387,
+          4080
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Tag_P": {
+        "name": "Tag_P",
+        "parent": "Dog_Rig-G/Collar_Master_P",
+        "pivot": [
+          3134,
+          3420
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "15#2"
+          "22"
+        ]
+      },
+      "Dog_Rig-G/Tail_P": {
+        "name": "Tail_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3201,
+          3708
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "37"
+        ]
+      },
+      "Dog_Rig-G/Master_Head_P": {
+        "name": "Master_Head_P",
+        "parent": "Dog_Rig-G/Head_Collar_Master_P",
+        "pivot": [
+          3181,
+          3563
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Hand_M_P": {
+        "name": "Hand_M_P",
+        "parent": "Dog_Rig-G/M_LA_P",
+        "pivot": [
+          2804,
+          3727
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "28#1"
         ]
       },
       "Dog_Rig-G/M_LA_P_1": {
@@ -275,291 +319,27 @@
           "27#2"
         ]
       },
-      "Dog_Rig-G/tongue_P": {
-        "name": "tongue_P",
-        "parent": "Dog_Rig-G/Mouth_ALL_P",
-        "pivot": [
-          3285,
-          3368
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "35"
-        ]
-      },
-      "Dog_Rig-G/Tag_P": {
-        "name": "Tag_P",
-        "parent": "Dog_Rig-G/Collar_Master_P",
-        "pivot": [
-          3134,
-          3420
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "22"
-        ]
-      },
-      "Dog_Rig-G/Master_SIZE": {
-        "name": "Master_SIZE",
-        "parent": null,
-        "pivot": [
-          3187,
-          4235
-        ],
-        "pivot_method": "bottom-centre of art (root)",
-        "layers": []
-      },
-      "Dog_Rig-G/Eye_01_GRP/Eye_01_P": {
-        "name": "Eye_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
-        "pivot": [
-          3085,
-          3066
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "13#1"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP_1/Pupil_01_P": {
-        "name": "Pupil_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
-        "pivot": [
-          3294,
-          3049
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "12#2"
-        ]
-      },
-      "Dog_Rig-G/Peg_2": {
-        "name": "Peg_2",
-        "parent": "Dog_Rig-G/Mouth_ALL_P",
-        "pivot": [
-          3174,
-          3592
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "38"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP/Peg_1": {
-        "name": "Peg_1",
-        "parent": "Dog_Rig-G/M_Eye_01_P",
-        "pivot": [
-          3107,
-          2899
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "11#1"
-        ]
-      },
-      "Dog_Rig-G/Nose_GRP/Nose_shine_P": {
-        "name": "Nose_shine_P",
-        "parent": "Dog_Rig-G/Nose_GRP/Nose_P",
-        "pivot": [
-          3124,
-          3162
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "18"
-        ]
-      },
-      "Dog_Rig-G/Face_P": {
-        "name": "Face_P",
-        "parent": "Dog_Rig-G/Master_Face_P",
-        "pivot": [
-          3186,
-          3221
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "7"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P": {
-        "name": "Eyeball_01_P",
-        "parent": "Dog_Rig-G/M_Eye_01_P_1",
-        "pivot": [
-          3287,
-          3115
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Mouth_P": {
-        "name": "Mouth_P",
-        "parent": "Dog_Rig-G/Mouth_ALL_P",
-        "pivot": [
-          3286,
-          3284
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "34"
-        ]
-      },
-      "Dog_Rig-G/Foot_P": {
-        "name": "Foot_P",
-        "parent": "Dog_Rig-G/Calf_P",
-        "pivot": [
-          3095,
-          4129
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "41#1"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP_1/Eyebag_01_P": {
-        "name": "Eyebag_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
-        "pivot": [
-          3306,
-          3103
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "14#2"
-        ]
-      },
-      "Dog_Rig-G/Master_ears_P": {
-        "name": "Master_ears_P",
-        "parent": "Dog_Rig-G/Master_Head_P",
-        "pivot": [
-          3339,
-          2911
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Head_Collar_Master_P": {
-        "name": "Head_Collar_Master_P",
-        "parent": "Dog_Rig-G/Torso_M_P",
-        "pivot": [
-          3188,
-          3566
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Body_Leg_MP": {
-        "name": "Body_Leg_MP",
-        "parent": "Dog_Rig-G/Master_SIZE",
-        "pivot": [
-          3187,
-          4235
-        ],
-        "pivot_method": "bottom-centre of art (root)",
-        "layers": []
-      },
-      "Dog_Rig-G/Tail_P": {
-        "name": "Tail_P",
-        "parent": "Dog_Rig-G/Torso_M_P",
-        "pivot": [
-          3201,
-          3708
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "37"
-        ]
-      },
-      "Dog_Rig-G/Stitches_P": {
-        "name": "Stitches_P",
-        "parent": "Dog_Rig-G/Body_P",
-        "pivot": [
-          3019,
-          3721
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "24"
-        ]
-      },
-      "Dog_Rig-G/M_UA_P_1": {
-        "name": "M_UA_P_1",
-        "parent": "Dog_Rig-G/Master_arms_P",
-        "pivot": [
-          3447,
-          3658
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "26#2"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP/B_eyelid_01_P": {
+      "Dog_Rig-G/Eye_01_GRP_1/B_eyelid_01_P": {
         "name": "B_eyelid_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
         "pivot": [
-          3121,
-          3120
+          3236,
+          3119
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "16#1"
+          "16#2"
         ]
       },
-      "Dog_Rig-G/Hand_M_P": {
-        "name": "Hand_M_P",
-        "parent": "Dog_Rig-G/M_LA_P",
-        "pivot": [
-          2804,
-          3727
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "28#1"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP/T_eyelid_01_P": {
-        "name": "T_eyelid_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
-        "pivot": [
-          3072,
-          2957
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "15#1"
-        ]
-      },
-      "Dog_Rig-G/M_Eye_01_P": {
-        "name": "M_Eye_01_P",
-        "parent": "Dog_Rig-G/Eyes_Master_P",
-        "pivot": [
-          3071,
-          3116
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Eyes_Master_P": {
-        "name": "Eyes_Master_P",
+      "Dog_Rig-G/Mouth_ALL_P": {
+        "name": "Mouth_ALL_P",
         "parent": "Dog_Rig-G/Master_Head_P",
         "pivot": [
-          3235,
-          3103
+          3162,
+          3542
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
-      },
-      "Dog_Rig-G/Upper_Leg_P_1": {
-        "name": "Upper_Leg_P_1",
-        "parent": "Dog_Rig-G/Leg_MP",
-        "pivot": [
-          3247,
-          3917
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "39#2"
-        ]
       },
       "Dog_Rig-G/Hand_M_P_1": {
         "name": "Hand_M_P_1",
@@ -573,116 +353,36 @@
           "28#2"
         ]
       },
-      "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P": {
-        "name": "Eyeball_01_P",
-        "parent": "Dog_Rig-G/M_Eye_01_P",
+      "Dog_Rig-G/Master_Face_P": {
+        "name": "Master_Face_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
         "pivot": [
-          3071,
-          3116
+          3177,
+          3312
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "Dog_Rig-G/Torso_M_P": {
-        "name": "Torso_M_P",
-        "parent": "Dog_Rig-G/Body_Leg_MP",
+      "Dog_Rig-G/Master_ears_P": {
+        "name": "Master_ears_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
         "pivot": [
-          2982,
-          4132
+          3339,
+          2911
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "Dog_Rig-G/Eye_01_GRP_1/B_eyelid_01_P": {
-        "name": "B_eyelid_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
-        "pivot": [
-          3236,
-          3119
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "16#2"
-        ]
-      },
-      "Dog_Rig-G/Eye_01_GRP_1/Eye_01_P": {
-        "name": "Eye_01_P",
-        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
-        "pivot": [
-          3273,
-          3066
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "13#2"
-        ]
-      },
-      "Dog_Rig-G/Master_arms_P": {
-        "name": "Master_arms_P",
-        "parent": "Dog_Rig-G/Torso_M_P",
-        "pivot": [
-          3641,
-          3869
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Body_P": {
-        "name": "Body_P",
-        "parent": "Dog_Rig-G/Torso_M_P",
-        "pivot": [
-          2967,
-          3604
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "23"
-        ]
-      },
-      "Dog_Rig-G/M_UA_P": {
-        "name": "M_UA_P",
+      "Dog_Rig-G/M_UA_P_1": {
+        "name": "M_UA_P_1",
         "parent": "Dog_Rig-G/Master_arms_P",
         "pivot": [
-          2909,
-          3692
+          3447,
+          3658
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "26#1"
-        ]
-      },
-      "Dog_Rig-G/Mouth_ALL_P": {
-        "name": "Mouth_ALL_P",
-        "parent": "Dog_Rig-G/Master_Head_P",
-        "pivot": [
-          3162,
-          3542
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/Foot_P_1": {
-        "name": "Foot_P_1",
-        "parent": "Dog_Rig-G/Calf_P_1",
-        "pivot": [
-          3232,
-          4129
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "41#2"
-        ]
-      },
-      "Dog_Rig-G/Nose_GRP/Nose_P": {
-        "name": "Nose_P",
-        "parent": "Dog_Rig-G/Master_Head_P",
-        "pivot": [
-          3214,
-          3213
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "17"
+          "26#2"
         ]
       },
       "Dog_Rig-G/Eye_01_GRP/Eyebag_01_P": {
@@ -697,50 +397,74 @@
           "14#1"
         ]
       },
-      "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P": {
-        "name": "Ear_01_P",
-        "parent": "Dog_Rig-G/Master_ears_P",
+      "Dog_Rig-G/Eye_01_GRP_1/Eyebag_01_P": {
+        "name": "Eyebag_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
         "pivot": [
-          3314,
-          2906
+          3306,
+          3103
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "9#2"
+          "14#2"
         ]
       },
-      "Dog_Rig-G/Ear_01_GRP/Ear_01_P": {
-        "name": "Ear_01_P",
-        "parent": "Dog_Rig-G/Master_ears_P",
+      "Dog_Rig-G/Eye_01_GRP/T_eyelid_01_P": {
+        "name": "T_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
         "pivot": [
-          3043,
-          2907
+          3072,
+          2957
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "9#1"
+          "15#1"
         ]
       },
-      "Dog_Rig-G/M_Eye_01_P_1": {
-        "name": "M_Eye_01_P_1",
-        "parent": "Dog_Rig-G/Eyes_Master_P",
+      "Dog_Rig-G/Calf_P": {
+        "name": "Calf_P",
+        "parent": "Dog_Rig-G/Upper_Leg_P",
         "pivot": [
-          3287,
-          3115
+          3088,
+          3974
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#1"
+        ]
+      },
+      "Dog_Rig-G/M_UA_P": {
+        "name": "M_UA_P",
+        "parent": "Dog_Rig-G/Master_arms_P",
+        "pivot": [
+          2909,
+          3692
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "26#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P": {
+        "name": "Eyeball_01_P",
+        "parent": "Dog_Rig-G/M_Eye_01_P",
+        "pivot": [
+          3071,
+          3116
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "Dog_Rig-G/Teeth-P": {
-        "name": "Teeth-P",
-        "parent": "Dog_Rig-G/Mouth_ALL_P",
+      "Dog_Rig-G/Foot_P": {
+        "name": "Foot_P",
+        "parent": "Dog_Rig-G/Calf_P",
         "pivot": [
-          3096,
-          3270
+          3095,
+          4129
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "31"
+          "41#1"
         ]
       },
       "Dog_Rig-G/Nose_Stitches_P": {
@@ -755,26 +479,98 @@
           "29"
         ]
       },
-      "Dog_Rig-G/Master_Head_P": {
-        "name": "Master_Head_P",
-        "parent": "Dog_Rig-G/Head_Collar_Master_P",
+      "Dog_Rig-G/Nose_GRP/Nose_shine_P": {
+        "name": "Nose_shine_P",
+        "parent": "Dog_Rig-G/Nose_GRP/Nose_P",
         "pivot": [
-          3181,
-          3563
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "Dog_Rig-G/M_LA_P": {
-        "name": "M_LA_P",
-        "parent": "Dog_Rig-G/M_UA_P",
-        "pivot": [
-          2866,
-          3576
+          3124,
+          3162
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "27#1"
+          "18"
+        ]
+      },
+      "Dog_Rig-G/Nose_GRP/Nose_P": {
+        "name": "Nose_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
+        "pivot": [
+          3214,
+          3213
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "17"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Eye_01_P": {
+        "name": "Eye_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3085,
+          3066
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "13#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/T_eyelid_01_P": {
+        "name": "T_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3283,
+          2957
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "15#2"
+        ]
+      },
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P": {
+        "name": "Ear_01_P",
+        "parent": "Dog_Rig-G/Master_ears_P",
+        "pivot": [
+          3314,
+          2906
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "9#2"
+        ]
+      },
+      "Dog_Rig-G/Body_Leg_MP": {
+        "name": "Body_Leg_MP",
+        "parent": "Dog_Rig-G/Master_SIZE",
+        "pivot": [
+          3187,
+          4235
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "Dog_Rig-G/Foot_Lines_P": {
+        "name": "Foot_Lines_P",
+        "parent": "Dog_Rig-G/Foot_P",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "42"
+        ]
+      },
+      "Dog_Rig-G/Foot_P_1": {
+        "name": "Foot_P_1",
+        "parent": "Dog_Rig-G/Calf_P_1",
+        "pivot": [
+          3232,
+          4129
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "41#2"
         ]
       },
       "Dog_Rig-G/Collar_Master_P": {
@@ -789,38 +585,186 @@
           "21"
         ]
       },
-      "Dog_Rig-G/Foot_Lines_P": {
-        "name": "Foot_Lines_P",
-        "parent": "Dog_Rig-G/Foot_P",
+      "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P": {
+        "name": "Eyeball_01_P",
+        "parent": "Dog_Rig-G/M_Eye_01_P_1",
         "pivot": [
-          0,
-          0
-        ],
-        "pivot_method": "no art",
-        "layers": [
-          "42"
-        ]
-      },
-      "Dog_Rig-G/Master_Face_P": {
-        "name": "Master_Face_P",
-        "parent": "Dog_Rig-G/Master_Head_P",
-        "pivot": [
-          3177,
-          3312
+          3287,
+          3115
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "Dog_Rig-G/Calf_P": {
-        "name": "Calf_P",
-        "parent": "Dog_Rig-G/Upper_Leg_P",
+      "Dog_Rig-G/M_Eye_01_P": {
+        "name": "M_Eye_01_P",
+        "parent": "Dog_Rig-G/Eyes_Master_P",
         "pivot": [
-          3088,
-          3974
+          3071,
+          3116
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_Flap_01_P": {
+        "name": "Ear_Flap_01_P",
+        "parent": "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P",
+        "pivot": [
+          3556,
+          2766
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "40#1"
+          "10#2"
+        ]
+      },
+      "Dog_Rig-G/Mouth_P": {
+        "name": "Mouth_P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3286,
+          3284
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "34"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Eye_01_P": {
+        "name": "Eye_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3273,
+          3066
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "13#2"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/B_eyelid_01_P": {
+        "name": "B_eyelid_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3121,
+          3120
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "16#1"
+        ]
+      },
+      "Dog_Rig-G/Master_arms_P": {
+        "name": "Master_arms_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3641,
+          3869
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Torso_M_P": {
+        "name": "Torso_M_P",
+        "parent": "Dog_Rig-G/Body_Leg_MP",
+        "pivot": [
+          2982,
+          4132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/Master_SIZE": {
+        "name": "Master_SIZE",
+        "parent": null,
+        "pivot": [
+          3187,
+          4235
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "Dog_Rig-G/Face_P": {
+        "name": "Face_P",
+        "parent": "Dog_Rig-G/Master_Face_P",
+        "pivot": [
+          3186,
+          3221
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "7"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP_1/Pupil_01_P": {
+        "name": "Pupil_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP_1/Eyeball_01_P",
+        "pivot": [
+          3294,
+          3049
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "12#2"
+        ]
+      },
+      "Dog_Rig-G/Ear_01_GRP/Ear_01_P": {
+        "name": "Ear_01_P",
+        "parent": "Dog_Rig-G/Master_ears_P",
+        "pivot": [
+          3043,
+          2907
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "9#1"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Pupil_01_P": {
+        "name": "Pupil_01_P",
+        "parent": "Dog_Rig-G/Eye_01_GRP/Eyeball_01_P",
+        "pivot": [
+          3060,
+          3024
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "12#1"
+        ]
+      },
+      "Dog_Rig-G/Body_P": {
+        "name": "Body_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          2967,
+          3604
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "23"
+        ]
+      },
+      "Dog_Rig-G/Eye_01_GRP/Peg_1": {
+        "name": "Peg_1",
+        "parent": "Dog_Rig-G/M_Eye_01_P",
+        "pivot": [
+          3107,
+          2899
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "11#1"
+        ]
+      },
+      "Dog_Rig-G/Stitches_P": {
+        "name": "Stitches_P",
+        "parent": "Dog_Rig-G/Body_P",
+        "pivot": [
+          3019,
+          3721
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "24"
         ]
       },
       "Dog_Rig-G/Eye_01_GRP_1/Peg_1": {
@@ -835,27 +779,39 @@
           "11#2"
         ]
       },
-      "Dog_Rig-G/Calf_P_1": {
-        "name": "Calf_P_1",
-        "parent": "Dog_Rig-G/Upper_Leg_P_1",
+      "Dog_Rig-G/Upper_Leg_P_1": {
+        "name": "Upper_Leg_P_1",
+        "parent": "Dog_Rig-G/Leg_MP",
         "pivot": [
-          3240,
-          3974
+          3247,
+          3917
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "40#2"
+          "39#2"
         ]
       },
-      "Dog_Rig-G/Leg_MP": {
-        "name": "Leg_MP",
-        "parent": "Dog_Rig-G/Body_Leg_MP",
+      "Dog_Rig-G/Eyes_Master_P": {
+        "name": "Eyes_Master_P",
+        "parent": "Dog_Rig-G/Master_Head_P",
         "pivot": [
-          3387,
-          4080
+          3235,
+          3103
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
+      },
+      "Dog_Rig-G/Peg_2": {
+        "name": "Peg_2",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3174,
+          3592
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "38"
+        ]
       },
       "Dog_Rig-G/Upper_Leg_P": {
         "name": "Upper_Leg_P",
@@ -869,17 +825,61 @@
           "39#1"
         ]
       },
-      "Dog_Rig-G/Jaw_P": {
-        "name": "Jaw_P",
-        "parent": "Dog_Rig-G/Master_Face_P",
+      "Dog_Rig-G/Calf_P_1": {
+        "name": "Calf_P_1",
+        "parent": "Dog_Rig-G/Upper_Leg_P_1",
         "pivot": [
-          3277,
-          3268
+          3240,
+          3974
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "8"
+          "40#2"
         ]
+      },
+      "Dog_Rig-G/tongue_P": {
+        "name": "tongue_P",
+        "parent": "Dog_Rig-G/Mouth_ALL_P",
+        "pivot": [
+          3285,
+          3368
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "35"
+        ]
+      },
+      "Dog_Rig-G/M_LA_P": {
+        "name": "M_LA_P",
+        "parent": "Dog_Rig-G/M_UA_P",
+        "pivot": [
+          2866,
+          3576
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "27#1"
+        ]
+      },
+      "Dog_Rig-G/Head_Collar_Master_P": {
+        "name": "Head_Collar_Master_P",
+        "parent": "Dog_Rig-G/Torso_M_P",
+        "pivot": [
+          3188,
+          3566
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "Dog_Rig-G/M_Eye_01_P_1": {
+        "name": "M_Eye_01_P_1",
+        "parent": "Dog_Rig-G/Eyes_Master_P",
+        "pivot": [
+          3287,
+          3115
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
       }
     },
     "layers": [
@@ -2133,6 +2133,27 @@
         ],
         "with": []
       }
+    },
+    "lag": {
+      "Dog_Rig-G/Ear_01_GRP/Ear_Flap_01_P": 2,
+      "Dog_Rig-G/Tag_P": 2,
+      "Dog_Rig-G/Tail_P": 3,
+      "Dog_Rig-G/Hand_M_P": 1,
+      "Dog_Rig-G/Hand_M_P_1": 1,
+      "Dog_Rig-G/Master_ears_P": 2,
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_01_P": 2,
+      "Dog_Rig-G/Collar_Master_P": 1,
+      "Dog_Rig-G/Ear_01_GRP_1/Ear_Flap_01_P": 2,
+      "Dog_Rig-G/Ear_01_GRP/Ear_01_P": 2,
+      "Dog_Rig-G/Head_Collar_Master_P": 1
+    },
+    "gaze": {
+      "source": "layer",
+      "layers": [
+        "12#2",
+        "12#1"
+      ],
+      "note": "the rig has pupil drawings; darts move their bones"
     },
     "measured": {
       "recomposite_vs_nocut": {

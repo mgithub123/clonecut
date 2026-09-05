@@ -738,6 +738,45 @@ def build(name: str, *, write: bool = True) -> dict:
         if lib:
             hands[lead] = {"drawings": sorted(lib), "with": [str(i) for i in group[1:]]}
 
+    # Follow-through: which bones trail their parents, by how many frames. A
+    # per-bone number so it can be tuned; the defaults come from the bone's name.
+    import motion
+    lag = {}
+    for pk, b in bones.items():
+        low = b["name"].lower()
+        for pat, frames in motion.LAG_DEFAULT_FRAMES.items():
+            if pat in low:
+                lag[pk] = frames
+                break
+
+    # Gaze: where the pupils are and what they look like. A rig with pupil
+    # layers moves those; one without gets a pupil drawn in the eye's own
+    # outline colour at a size measured from its eye box.
+    gaze = None
+    eye_boxes = [[int(v * canvas[0] / r["render"]["resolution"][0]) for v in box]
+                 for box in r.get("eyes", [])]
+    pupil_layers = [l["id"] for l in layers if "pupil" in l["name"].lower()]
+    if pupil_layers:
+        gaze = {"source": "layer", "layers": pupil_layers,
+                "note": "the rig has pupil drawings; darts move their bones"}
+    elif eye_boxes:
+        head_plate = r["_dir"] / "plates" / f"plate-head-{r['render']['resolution'][0]}.png"
+        colour = [0, 0, 0]
+        if head_plate.exists():
+            hp = np.asarray(Image.open(head_plate).convert("RGBA")).astype(int)
+            x0, y0, x1, y1 = r["eyes"][0]
+            pad = 6
+            sub = hp[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad]
+            op = sub[sub[..., 3] > 128][:, :3]
+            if len(op):
+                colour = [int(v) for v in op[np.argmin(op.sum(axis=1))]]
+        gaze = {"source": "drawn",
+                "pupils": [{"centre": [(b[0] + b[2]) // 2, (b[1] + b[3]) // 2],
+                            "radius": max(4, int(0.22 * (b[3] - b[1])))} for b in eye_boxes],
+                "colour": colour,
+                "note": "no pupil drawing in the rig; a disc is drawn in the eye's darkest "
+                        "colour at 22% of the eye box height, canvas pixels"}
+
     puppet = {
         "generated_by": "puppet.py build - measured from plates/, do not edit by hand",
         "canvas": list(canvas),
@@ -745,6 +784,7 @@ def build(name: str, *, write: bool = True) -> dict:
                          "authored": f"plates/{man['ground_truth']}"},
         "parenting_source": source,
         "bones": bones, "layers": layers, "angles": angles, "hands": hands,
+        "lag": lag, "gaze": gaze,
     }
     # verify before writing, and record the numbers next to the data
     lay_plates = {l["id"]: plates[l["id"]] for l in layers}

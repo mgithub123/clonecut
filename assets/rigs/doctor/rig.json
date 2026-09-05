@@ -183,211 +183,6 @@
     },
     "parenting_source": "peg hierarchy of assets/rigs/doctor/scene/LD_DOCTOR_RIG_MA.xstage (Harmony)",
     "bones": {
-      "DOC_RIG/Peg_1": {
-        "name": "Peg_1",
-        "parent": "DOC_RIG/HEAD_MP",
-        "pivot": [
-          0,
-          0
-        ],
-        "pivot_method": "no art",
-        "layers": []
-      },
-      "DOC_RIG/HL_color": {
-        "name": "HL_color",
-        "parent": "DOC_RIG/Hair_MP",
-        "pivot": [
-          4139,
-          738
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "28"
-        ]
-      },
-      "DOC_RIG/Peg_2": {
-        "name": "Peg_2",
-        "parent": "DOC_RIG/HEAD_MP",
-        "pivot": [
-          3764,
-          1177
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "25"
-        ]
-      },
-      "DOC_RIG/Shirt_Collar_P": {
-        "name": "Shirt_Collar_P",
-        "parent": "DOC_RIG/Chest_MP",
-        "pivot": [
-          3766,
-          1409
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "33"
-        ]
-      },
-      "DOC_RIG/Upper_Leg_P": {
-        "name": "Upper_Leg_P",
-        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
-        "pivot": [
-          3715,
-          2536
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "51#1"
-        ]
-      },
-      "DOC_RIG/Waistband_P": {
-        "name": "Waistband_P",
-        "parent": "DOC_RIG/Lowerbody_MP",
-        "pivot": [
-          3694,
-          2254
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "48"
-        ]
-      },
-      "DOC_RIG/Head+Neck_MP": {
-        "name": "Head+Neck_MP",
-        "parent": "DOC_RIG/Upper_Body_MP",
-        "pivot": [
-          3870,
-          1413
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Hair_MP": {
-        "name": "Hair_MP",
-        "parent": "DOC_RIG/HEAD_MP",
-        "pivot": [
-          3961,
-          1083
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Arm_01_MP_2": {
-        "name": "Arm_01_MP_2",
-        "parent": "DOC_RIG/Upper_Body_MP",
-        "pivot": [
-          4120,
-          1498
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Body_MP": {
-        "name": "Body_MP",
-        "parent": "DOC_MP",
-        "pivot": [
-          3752,
-          4111
-        ],
-        "pivot_method": "bottom-centre of art (root)",
-        "layers": []
-      },
-      "DOC_RIG/Hand_P_1": {
-        "name": "Hand_P_1",
-        "parent": "DOC_RIG/Glove_P_1",
-        "pivot": [
-          4434,
-          2608
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "39#2"
-        ]
-      },
-      "DOC_RIG/Upper_Leg_P_1": {
-        "name": "Upper_Leg_P_1",
-        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
-        "pivot": [
-          3963,
-          2535
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "51#2"
-        ]
-      },
-      "DOC_RIG/Shoulders_Peg": {
-        "name": "Shoulders_Peg",
-        "parent": "DOC_RIG/Chest_MP",
-        "pivot": [
-          3572,
-          1546
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "46"
-        ]
-      },
-      "DOC_RIG/Lower_Leg_P": {
-        "name": "Lower_Leg_P",
-        "parent": "DOC_RIG/M_Lower_Leg_PEG",
-        "pivot": [
-          3636,
-          3132
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "52#1"
-        ]
-      },
-      "DOC_RIG/Jaw_P": {
-        "name": "Jaw_P",
-        "parent": "DOC_RIG/HEAD_MP",
-        "pivot": [
-          3793,
-          1228
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "18"
-        ]
-      },
-      "DOC_RIG/Boot_Cuff_P_1": {
-        "name": "Boot_Cuff_P_1",
-        "parent": "DOC_RIG/Boot_P_1",
-        "pivot": [
-          4003,
-          3415
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "55#2"
-        ]
-      },
-      "DOC_RIG/Skirt_P": {
-        "name": "Skirt_P",
-        "parent": "DOC_RIG/Lowerbody_MP",
-        "pivot": [
-          3734,
-          2450
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "49",
-          "50"
-        ]
-      },
-      "DOC_RIG/Boot_P_1": {
-        "name": "Boot_P_1",
-        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
-        "pivot": [
-          3991,
-          3412
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
       "DOC_RIG/Shirt_Fold_P": {
         "name": "Shirt_Fold_P",
         "parent": "DOC_RIG/Chest_MP",
@@ -398,156 +193,6 @@
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
           "35"
-        ]
-      },
-      "DOC_MP": {
-        "name": "DOC_MP",
-        "parent": null,
-        "pivot": [
-          3752,
-          4111
-        ],
-        "pivot_method": "bottom-centre of art (root)",
-        "layers": []
-      },
-      "DOC_RIG/Toes_P_1": {
-        "name": "Toes_P_1",
-        "parent": "DOC_RIG/Heel_P_1",
-        "pivot": [
-          4043,
-          3992
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "53#2"
-        ]
-      },
-      "DOC_RIG/Peg_7": {
-        "name": "Peg_7",
-        "parent": "DOC_RIG/Peg_9",
-        "pivot": [
-          3828,
-          560
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "30#1"
-        ]
-      },
-      "DOC_RIG/Ear_01_P_1": {
-        "name": "Ear_01_P_1",
-        "parent": "DOC_RIG/Ears_MP",
-        "pivot": [
-          3987,
-          1077
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "24#2"
-        ]
-      },
-      "DOC_RIG/Ears_MP": {
-        "name": "Ears_MP",
-        "parent": "DOC_RIG/HEAD_MP",
-        "pivot": [
-          3649,
-          1025
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Lowerbody_MP": {
-        "name": "Lowerbody_MP",
-        "parent": "DOC_RIG/Body_MP",
-        "pivot": [
-          3729,
-          2215
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Lower_Leg_P_1": {
-        "name": "Lower_Leg_P_1",
-        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
-        "pivot": [
-          4041,
-          3132
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "52#2"
-        ]
-      },
-      "DOC_RIG/Glove_B_P_1": {
-        "name": "Glove_B_P_1",
-        "parent": "DOC_RIG/Glove_P_1",
-        "pivot": [
-          4337,
-          2397
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "40#2"
-        ]
-      },
-      "DOC_RIG/Eye/U_Eyelid_P": {
-        "name": "U_Eyelid_P",
-        "parent": "DOC_RIG/Peg_1",
-        "pivot": [
-          0,
-          0
-        ],
-        "pivot_method": "no art",
-        "layers": [
-          "21"
-        ]
-      },
-      "DOC_RIG/Toes_P": {
-        "name": "Toes_P",
-        "parent": "DOC_RIG/Heel_P",
-        "pivot": [
-          3635,
-          3992
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "53#1"
-        ]
-      },
-      "DOC_RIG/Peg_4": {
-        "name": "Peg_4",
-        "parent": "DOC_RIG/Hair_MP",
-        "pivot": [
-          3773,
-          1082
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "27"
-        ]
-      },
-      "DOC_RIG/Upper_Arm_P": {
-        "name": "Upper_Arm_P",
-        "parent": "DOC_RIG/Upper_Body_MP",
-        "pivot": [
-          3556,
-          1502
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "36#1"
-        ]
-      },
-      "DOC_RIG/Glove_P_1": {
-        "name": "Glove_P_1",
-        "parent": "DOC_RIG/Upper_Arm_P_1",
-        "pivot": [
-          4389,
-          2227
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "38#2"
         ]
       },
       "DOC_RIG/Nose_P": {
@@ -562,18 +207,6 @@
           "23"
         ]
       },
-      "DOC_RIG/Eye/L_Eyelid_P": {
-        "name": "L_Eyelid_P",
-        "parent": "DOC_RIG/Peg_1",
-        "pivot": [
-          0,
-          0
-        ],
-        "pivot_method": "no art",
-        "layers": [
-          "22"
-        ]
-      },
       "DOC_RIG/Eye/Eye_01_P": {
         "name": "Eye_01_P",
         "parent": "DOC_RIG/Peg_1",
@@ -586,37 +219,95 @@
           "19"
         ]
       },
-      "DOC_RIG/Heel_P_1": {
-        "name": "Heel_P_1",
-        "parent": "DOC_RIG/Boot_P_1",
+      "DOC_RIG/Glove_P_1": {
+        "name": "Glove_P_1",
+        "parent": "DOC_RIG/Upper_Arm_P_1",
         "pivot": [
-          3974,
-          3769
+          4389,
+          2227
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "54#2"
+          "38#2"
         ]
       },
-      "DOC_RIG/Peg_9": {
-        "name": "Peg_9",
-        "parent": "DOC_RIG/Hair_MP",
+      "DOC_RIG/Glove_B_P": {
+        "name": "Glove_B_P",
+        "parent": "DOC_RIG/Glove_P",
         "pivot": [
-          3859,
-          559
+          3332,
+          2395
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#1"
+        ]
+      },
+      "DOC_RIG/Boot_P_1": {
+        "name": "Boot_P_1",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
+        "pivot": [
+          3991,
+          3412
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "DOC_RIG/M_Lower_Leg_PEG_1": {
-        "name": "M_Lower_Leg_PEG_1",
-        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
+      "DOC_RIG/HEAD_MP": {
+        "name": "HEAD_MP",
+        "parent": "DOC_RIG/Head+Neck_MP",
         "pivot": [
-          4035,
+          3867,
+          1260
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Peg_7": {
+        "name": "Peg_7",
+        "parent": "DOC_RIG/Peg_9",
+        "pivot": [
+          3828,
+          560
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#1"
+        ]
+      },
+      "DOC_RIG/Lower_Leg_P": {
+        "name": "Lower_Leg_P",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG",
+        "pivot": [
+          3636,
+          3132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "52#1"
+        ]
+      },
+      "DOC_RIG/M_Lower_Leg_PEG": {
+        "name": "M_Lower_Leg_PEG",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
+        "pivot": [
+          3643,
           3049
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
+      },
+      "DOC_RIG/Glove_B_P_1": {
+        "name": "Glove_B_P_1",
+        "parent": "DOC_RIG/Glove_P_1",
+        "pivot": [
+          4337,
+          2397
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "40#2"
+        ]
       },
       "DOC_RIG/Heel_P": {
         "name": "Heel_P",
@@ -630,16 +321,254 @@
           "54#1"
         ]
       },
-      "DOC_RIG/Peg_8": {
-        "name": "Peg_8",
-        "parent": "DOC_RIG/Peg_9",
+      "DOC_RIG/Boot_Cuff_P_1": {
+        "name": "Boot_Cuff_P_1",
+        "parent": "DOC_RIG/Boot_P_1",
         "pivot": [
-          3856,
-          564
+          4003,
+          3415
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "30#2"
+          "55#2"
+        ]
+      },
+      "DOC_RIG/Jaw_P": {
+        "name": "Jaw_P",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3793,
+          1228
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "18"
+        ]
+      },
+      "DOC_RIG/Upper_Leg_P_1": {
+        "name": "Upper_Leg_P_1",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
+        "pivot": [
+          3963,
+          2535
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "51#2"
+        ]
+      },
+      "DOC_RIG/Legs_MP": {
+        "name": "Legs_MP",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3787,
+          2527
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Peg_4": {
+        "name": "Peg_4",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          3773,
+          1082
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "27"
+        ]
+      },
+      "DOC_RIG/Head+Neck_MP": {
+        "name": "Head+Neck_MP",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3870,
+          1413
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Boot_P": {
+        "name": "Boot_P",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG",
+        "pivot": [
+          3687,
+          3412
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Shirt_Collar_P": {
+        "name": "Shirt_Collar_P",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3766,
+          1409
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "33"
+        ]
+      },
+      "DOC_RIG/Upper_Leg_Lower_Leg_P": {
+        "name": "Upper_Leg_Lower_Leg_P",
+        "parent": "DOC_RIG/Legs_MP",
+        "pivot": [
+          3719,
+          2520
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Hand_P_1": {
+        "name": "Hand_P_1",
+        "parent": "DOC_RIG/Glove_P_1",
+        "pivot": [
+          4434,
+          2608
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "39#2"
+        ]
+      },
+      "DOC_RIG/Boot_Inside_P_1": {
+        "name": "Boot_Inside_P_1",
+        "parent": "DOC_RIG/Boot_Cuff_P_1",
+        "pivot": [
+          4122,
+          3458
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "56#2"
+        ]
+      },
+      "DOC_RIG/Boot_Inside_P": {
+        "name": "Boot_Inside_P",
+        "parent": "DOC_RIG/Boot_Cuff_P",
+        "pivot": [
+          3556,
+          3458
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "56#1"
+        ]
+      },
+      "DOC_RIG/HL_color": {
+        "name": "HL_color",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          4139,
+          738
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "28"
+        ]
+      },
+      "DOC_RIG/Arm_01_MP_2": {
+        "name": "Arm_01_MP_2",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          4120,
+          1498
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Peg_1": {
+        "name": "Peg_1",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": []
+      },
+      "DOC_RIG/Hair_MP": {
+        "name": "Hair_MP",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3961,
+          1083
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Arm_P_1": {
+        "name": "Upper_Arm_P_1",
+        "parent": "DOC_RIG/Arm_01_MP_2",
+        "pivot": [
+          4120,
+          1499
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "36#2"
+        ]
+      },
+      "DOC_RIG/Toes_P_1": {
+        "name": "Toes_P_1",
+        "parent": "DOC_RIG/Heel_P_1",
+        "pivot": [
+          4043,
+          3992
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "53#2"
+        ]
+      },
+      "DOC_RIG/Waistband_P": {
+        "name": "Waistband_P",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3694,
+          2254
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "48"
+        ]
+      },
+      "DOC_RIG/Eye/U_Eyelid_P": {
+        "name": "U_Eyelid_P",
+        "parent": "DOC_RIG/Peg_1",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "21"
+        ]
+      },
+      "DOC_RIG/Peg_3": {
+        "name": "Peg_3",
+        "parent": "DOC_RIG/Hair_MP",
+        "pivot": [
+          3734,
+          808
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "26"
+        ]
+      },
+      "DOC_RIG/Neck_P": {
+        "name": "Neck_P",
+        "parent": "DOC_RIG/Head+Neck_MP",
+        "pivot": [
+          3841,
+          1408
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "31"
         ]
       },
       "DOC_RIG/Boot_Cuff_P": {
@@ -654,16 +583,16 @@
           "55#1"
         ]
       },
-      "DOC_RIG/Glove_P": {
-        "name": "Glove_P",
-        "parent": "DOC_RIG/Upper_Arm_P",
+      "DOC_RIG/Hand_P": {
+        "name": "Hand_P",
+        "parent": "DOC_RIG/Glove_P",
         "pivot": [
-          3282,
-          2224
+          3233,
+          2605
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "38#1"
+          "39#1"
         ]
       },
       "DOC_RIG/Chest_P": {
@@ -690,26 +619,175 @@
           "62#1"
         ]
       },
-      "DOC_RIG/Boot_P": {
-        "name": "Boot_P",
-        "parent": "DOC_RIG/M_Lower_Leg_PEG",
+      "DOC_RIG/Ear_01_P_1": {
+        "name": "Ear_01_P_1",
+        "parent": "DOC_RIG/Ears_MP",
         "pivot": [
-          3687,
-          3412
+          3987,
+          1077
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "24#2"
+        ]
+      },
+      "DOC_RIG/Lower_Leg_P_1": {
+        "name": "Lower_Leg_P_1",
+        "parent": "DOC_RIG/M_Lower_Leg_PEG_1",
+        "pivot": [
+          4041,
+          3132
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "52#2"
+        ]
+      },
+      "DOC_RIG/Chest_MP": {
+        "name": "Chest_MP",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3853,
+          2232
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "DOC_RIG/Glove_B_P": {
-        "name": "Glove_B_P",
-        "parent": "DOC_RIG/Glove_P",
+      "DOC_RIG/Upper_Leg_Lower_Leg_P_1": {
+        "name": "Upper_Leg_Lower_Leg_P_1",
+        "parent": "DOC_RIG/Legs_MP",
         "pivot": [
-          3332,
-          2395
+          3958,
+          2519
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Skirt_P": {
+        "name": "Skirt_P",
+        "parent": "DOC_RIG/Lowerbody_MP",
+        "pivot": [
+          3734,
+          2450
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": [
-          "40#1"
+          "49",
+          "50"
+        ]
+      },
+      "DOC_RIG/Body_MP": {
+        "name": "Body_MP",
+        "parent": "DOC_MP",
+        "pivot": [
+          3752,
+          4111
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "DOC_RIG/Upper_Arm_P": {
+        "name": "Upper_Arm_P",
+        "parent": "DOC_RIG/Upper_Body_MP",
+        "pivot": [
+          3556,
+          1502
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "36#1"
+        ]
+      },
+      "DOC_RIG/Peg_10": {
+        "name": "Peg_10",
+        "parent": "DOC_RIG/Peg_9",
+        "pivot": [
+          3882,
+          555
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#3"
+        ]
+      },
+      "DOC_RIG/Upper_Leg_P": {
+        "name": "Upper_Leg_P",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
+        "pivot": [
+          3715,
+          2536
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "51#1"
+        ]
+      },
+      "DOC_RIG/Shoulders_Peg": {
+        "name": "Shoulders_Peg",
+        "parent": "DOC_RIG/Chest_MP",
+        "pivot": [
+          3572,
+          1546
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "46"
+        ]
+      },
+      "DOC_RIG/Glove_P": {
+        "name": "Glove_P",
+        "parent": "DOC_RIG/Upper_Arm_P",
+        "pivot": [
+          3282,
+          2224
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "38#1"
+        ]
+      },
+      "DOC_RIG/M_Lower_Leg_PEG_1": {
+        "name": "M_Lower_Leg_PEG_1",
+        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P_1",
+        "pivot": [
+          4035,
+          3049
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": []
+      },
+      "DOC_RIG/Toes_P": {
+        "name": "Toes_P",
+        "parent": "DOC_RIG/Heel_P",
+        "pivot": [
+          3635,
+          3992
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "53#1"
+        ]
+      },
+      "DOC_MP": {
+        "name": "DOC_MP",
+        "parent": null,
+        "pivot": [
+          3752,
+          4111
+        ],
+        "pivot_method": "bottom-centre of art (root)",
+        "layers": []
+      },
+      "DOC_RIG/Heel_P_1": {
+        "name": "Heel_P_1",
+        "parent": "DOC_RIG/Boot_P_1",
+        "pivot": [
+          3974,
+          3769
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "54#2"
         ]
       },
       "DOC_RIG/Skull_P": {
@@ -724,15 +802,51 @@
           "16"
         ]
       },
-      "DOC_RIG/Chest_MP": {
-        "name": "Chest_MP",
-        "parent": "DOC_RIG/Upper_Body_MP",
+      "DOC_RIG/Peg_8": {
+        "name": "Peg_8",
+        "parent": "DOC_RIG/Peg_9",
         "pivot": [
-          3853,
-          2232
+          3856,
+          564
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "30#2"
+        ]
+      },
+      "DOC_RIG/Ears_MP": {
+        "name": "Ears_MP",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3649,
+          1025
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
+      },
+      "DOC_RIG/Eye/L_Eyelid_P": {
+        "name": "L_Eyelid_P",
+        "parent": "DOC_RIG/Peg_1",
+        "pivot": [
+          0,
+          0
+        ],
+        "pivot_method": "no art",
+        "layers": [
+          "22"
+        ]
+      },
+      "DOC_RIG/Peg_2": {
+        "name": "Peg_2",
+        "parent": "DOC_RIG/HEAD_MP",
+        "pivot": [
+          3764,
+          1177
+        ],
+        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
+        "layers": [
+          "25"
+        ]
       },
       "DOC_RIG/group_1/Shoulder_Fixer_P_1": {
         "name": "Shoulder_Fixer_P_1",
@@ -758,34 +872,22 @@
           "24#1"
         ]
       },
-      "DOC_RIG/Hand_P": {
-        "name": "Hand_P",
-        "parent": "DOC_RIG/Glove_P",
+      "DOC_RIG/Peg_9": {
+        "name": "Peg_9",
+        "parent": "DOC_RIG/Hair_MP",
         "pivot": [
-          3233,
-          2605
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "39#1"
-        ]
-      },
-      "DOC_RIG/Legs_MP": {
-        "name": "Legs_MP",
-        "parent": "DOC_RIG/Lowerbody_MP",
-        "pivot": [
-          3787,
-          2527
+          3859,
+          559
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
       },
-      "DOC_RIG/Upper_Leg_Lower_Leg_P_1": {
-        "name": "Upper_Leg_Lower_Leg_P_1",
-        "parent": "DOC_RIG/Legs_MP",
+      "DOC_RIG/Lowerbody_MP": {
+        "name": "Lowerbody_MP",
+        "parent": "DOC_RIG/Body_MP",
         "pivot": [
-          3958,
-          2519
+          3729,
+          2215
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
@@ -796,108 +898,6 @@
         "pivot": [
           3956,
           2658
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Upper_Leg_Lower_Leg_P": {
-        "name": "Upper_Leg_Lower_Leg_P",
-        "parent": "DOC_RIG/Legs_MP",
-        "pivot": [
-          3719,
-          2520
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Upper_Arm_P_1": {
-        "name": "Upper_Arm_P_1",
-        "parent": "DOC_RIG/Arm_01_MP_2",
-        "pivot": [
-          4120,
-          1499
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "36#2"
-        ]
-      },
-      "DOC_RIG/M_Lower_Leg_PEG": {
-        "name": "M_Lower_Leg_PEG",
-        "parent": "DOC_RIG/Upper_Leg_Lower_Leg_P",
-        "pivot": [
-          3643,
-          3049
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": []
-      },
-      "DOC_RIG/Peg_10": {
-        "name": "Peg_10",
-        "parent": "DOC_RIG/Peg_9",
-        "pivot": [
-          3882,
-          555
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "30#3"
-        ]
-      },
-      "DOC_RIG/Boot_Inside_P_1": {
-        "name": "Boot_Inside_P_1",
-        "parent": "DOC_RIG/Boot_Cuff_P_1",
-        "pivot": [
-          4122,
-          3458
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "56#2"
-        ]
-      },
-      "DOC_RIG/Neck_P": {
-        "name": "Neck_P",
-        "parent": "DOC_RIG/Head+Neck_MP",
-        "pivot": [
-          3841,
-          1408
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "31"
-        ]
-      },
-      "DOC_RIG/Peg_3": {
-        "name": "Peg_3",
-        "parent": "DOC_RIG/Hair_MP",
-        "pivot": [
-          3734,
-          808
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "26"
-        ]
-      },
-      "DOC_RIG/Boot_Inside_P": {
-        "name": "Boot_Inside_P",
-        "parent": "DOC_RIG/Boot_Cuff_P",
-        "pivot": [
-          3556,
-          3458
-        ],
-        "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
-        "layers": [
-          "56#1"
-        ]
-      },
-      "DOC_RIG/HEAD_MP": {
-        "name": "HEAD_MP",
-        "parent": "DOC_RIG/Head+Neck_MP",
-        "pivot": [
-          3867,
-          1260
         ],
         "pivot_method": "centre of the quarter of the overlap with parent art farthest from the part's free end",
         "layers": []
@@ -1908,6 +1908,44 @@
           "40"
         ]
       }
+    },
+    "lag": {
+      "DOC_RIG/Glove_P_1": 1,
+      "DOC_RIG/Glove_B_P": 1,
+      "DOC_RIG/Glove_B_P_1": 1,
+      "DOC_RIG/Shirt_Collar_P": 1,
+      "DOC_RIG/Hand_P_1": 1,
+      "DOC_RIG/Hair_MP": 2,
+      "DOC_RIG/Hand_P": 1,
+      "DOC_RIG/Ear_01_P_1": 2,
+      "DOC_RIG/Glove_P": 1,
+      "DOC_RIG/Ears_MP": 2,
+      "DOC_RIG/Ear_01_P": 2
+    },
+    "gaze": {
+      "source": "drawn",
+      "pupils": [
+        {
+          "centre": [
+            3751,
+            962
+          ],
+          "radius": 23
+        },
+        {
+          "centre": [
+            3935,
+            962
+          ],
+          "radius": 23
+        }
+      ],
+      "colour": [
+        0,
+        0,
+        0
+      ],
+      "note": "no pupil drawing in the rig; a disc is drawn in the eye's darkest colour at 22% of the eye box height, canvas pixels"
     },
     "measured": {
       "recomposite_vs_nocut": {

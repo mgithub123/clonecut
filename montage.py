@@ -146,11 +146,17 @@ def render(doc: dict, shots: list[dict], out_dir: Path, name: str) -> Path:
 
         track = perform.mouth_track(r, an, n)
         work = config.CACHE_DIR / f"montage-{name}-shot{i}"
-        frames = perform.build_frames(r, an, track, work,
-                                      blink=sh.get("blink", True),
-                                      tears=int(sh.get("tears", 0)),
-                                      pose=(int(sh["pose"]) if sh.get("pose") is not None else None),
-                                      gesture=bool(sh.get("gesture")))
+        engine = perform.choose_engine(sh.get("engine", "auto"), r)
+        if engine == "blender" and not (sh.get("tears") or sh.get("gesture")):
+            import act
+            frames = act.build_frames(r, an, track, work, blink=sh.get("blink", True),
+                                      pose=(int(sh["pose"]) if sh.get("pose") is not None else None))
+        else:
+            frames = perform.build_frames(r, an, track, work,
+                                          blink=sh.get("blink", True),
+                                          tears=int(sh.get("tears", 0)),
+                                          pose=(int(sh["pose"]) if sh.get("pose") is not None else None),
+                                          gesture=bool(sh.get("gesture")))
         bg = None
         if sh.get("background"):
             bp = Path(sh["background"])

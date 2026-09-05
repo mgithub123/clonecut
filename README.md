@@ -40,7 +40,7 @@ browser, and there is a double-clickable launcher for Mac and Windows.
 | 5. Retrieval | `log.py` -> `plan.py` | done |
 | 6. App | `app.py` + `webui/` | done |
 | 7. Perform | `perform.py` + `montage.py` + `rig.py` — see [HARMONY.md](HARMONY.md) | done |
-| 8. Puppet | `puppet.py` + `blenderpuppet.py` + `gen.py` — see [RIGS.md](RIGS.md) | 8z, 8a, 8g done |
+| 8. Puppet | `puppet.py` + `act.py` + `motion.py` + `gen.py` — see [RIGS.md](RIGS.md) | 8z, 8a, 8g, 8b done |
 
 ---
 
@@ -584,3 +584,47 @@ a sidecar naming the bundle; generated art is not regenerable, so it is tracked.
 The first job, a robot mouth sheet, is written and waiting for the paste. Once
 it is back, a shot with it and a shot with the drawn grille go side by side and
 the user picks - the tool does not decide which has the character's hand.
+
+### 8b — Animation principles, procedurally
+
+```bash
+uv run perform.py --rig doctor ... --turns auto      # the Blender puppet, by default
+uv run perform.py --rig doctor ... --engine pillow   # Stage 7's two-plate path
+```
+
+`perform.py` keeps its command line and sidecar; with a puppet and Blender
+present it now renders through them (`--engine auto`), and the Pillow path
+stays as `--engine pillow`. `montage.py` follows the same rule per shot.
+
+`motion.py` is the motion library: easing, anticipation, overshoot,
+follow-through, settle, squash and stretch, blink, head turns, gaze darts and
+the camera push, all as pure numpy curves on frame arrays, every amplitude and
+duration a named constant with its unit, nothing bare inside a frame loop.
+`act.py` decides which bone gets which curve and writes every frame as a key on
+the armature, so what Blender renders is exactly what the curves say and the
+curves are still there to nudge in the graph editor:
+
+- **A beat hit** is a small lift before it, a drop on it, a bounce past rest
+  and a settle - never a step. The head gets the same a frame later and larger.
+- **Squash on the hit, stretch on the release**, about the body's pivot at the
+  feet. Half a percent: at 1.8% the doctor's head moved 33px per hit, a pogo.
+- **Children lag their parents** by a per-bone number of frames recorded in
+  `rig.json` (ears and hair 2, strands and tail 3, hands 1); the lag is the
+  parent's motion late and damped, applied as a delta so nothing jumps.
+- **Eyes dart** toward a coming turn three frames before the head moves. The dog
+  moves its pupil layers; the doctor and robot, which have none, get a disc drawn
+  in the eye's own darkest colour at a size measured from the eye box, recorded
+  in `rig.json`.
+- **A phrase end** sinks the body, tilts the head, holds, and releases on the
+  next onset.
+- **A head turn** steps through the baked view angles two frames each; a turned
+  frame shows that angle's head/body plates in place of the layer stack, with
+  the mouth re-placed from that angle's measured geometry. `--turns auto` turns
+  at every second breath and comes back on the next.
+- **Blinks** scale each eye layer about its own centre on a bone made for it;
+  **mouths** are one sprite per shape at the face anchor, shown by the mouth
+  track; the rig's own mouth drawings stay out, as the head plate kept them out
+  in Stage 7.
+
+Tears and hand gestures are not on the Blender path yet and fall back to the
+Pillow engine when asked for. The doctor's nine-second shot renders in 24s.

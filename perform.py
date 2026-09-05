@@ -463,6 +463,16 @@ def build_frames(r: dict, an: dict, track: list[str], out_dir: Path,
     return written
 
 
+def choose_engine(engine: str, r: dict) -> str:
+    """auto means the Blender puppet when the rig has one and Blender is here."""
+    if engine != "auto":
+        return engine
+    import shutil
+    has_puppet = bool(r.get("puppet"))
+    has_blender = bool(shutil.which(config.BLENDER) or Path(config.BLENDER).exists())
+    return "blender" if has_puppet and has_blender else "pillow"
+
+
 # ------------------------------------------------------------------ background
 
 def rain_layer(bg: Image.Image, f: int, seed: int = 7, n: int = 130) -> Image.Image:
@@ -604,6 +614,11 @@ def main(argv=None) -> int:
     p.add_argument("--no-blink", action="store_true")
     p.add_argument("--pose", type=int, default=None,
                    help="a baked view angle (see rig.py poses); omit for front-on")
+    p.add_argument("--engine", choices=("auto", "blender", "pillow"), default="auto",
+                   help="auto: the Blender puppet when the rig has one and Blender is installed")
+    p.add_argument("--turns", default="none",
+                   help="blender engine: 'auto' turns the head at long breaths, or "
+                        "'frame:pose,frame:pose' explicitly; 'none' stays front-on")
     p.add_argument("--gesture", action="store_true",
                    help="change hand poses between sung lines (needs --pose)")
     p.add_argument("--char-width", type=int, default=850)
@@ -633,9 +648,23 @@ def main(argv=None) -> int:
           f"shut {track.count('CLOSED')}/{n}")
 
     work = config.CACHE_DIR / f"perform-{a.rig}-{a.name}"
-    print("rendering character frames")
-    frames = build_frames(r, an, track, work, blink=not a.no_blink, tears=a.tears,
-                          pose=a.pose, gesture=a.gesture)
+    engine = choose_engine(a.engine, r)
+    print(f"rendering character frames ({engine})")
+    turns = None
+    if engine == "blender":
+        import act
+        if a.tears or a.gesture:
+            print("  note: tears and gestures are not on the Blender path yet; ignored")
+        if a.turns == "auto":
+            _, pp, _ = __import__("puppet").load_puppet(a.rig)
+            turns = act.auto_turns(track, (pp.get("angles") or {}).get("usable") or [1],
+                                   (pp.get("angles") or {}).get("default", 1))
+        elif a.turns != "none":
+            turns = [(int(f), int(p)) for f, p in (t.split(":") for t in a.turns.split(","))]
+        frames = act.build_frames(r, an, track, work, blink=not a.no_blink, pose=a.pose, turns=turns)
+    else:
+        frames = build_frames(r, an, track, work, blink=not a.no_blink, tears=a.tears,
+                              pose=a.pose, gesture=a.gesture)
 
     bg = None
     if a.background:
@@ -665,7 +694,8 @@ def main(argv=None) -> int:
         "audio": common.rel(Path(a.audio)), "mix": a.mix, "start": common.r3(a.start),
         "duration": common.r3(a.duration), "track": a.track,
         "background": a.background, "rain": a.rain, "text": a.text,
-        "tears": a.tears, "blink": not a.no_blink,
+        "tears": a.tears, "blink": not a.no_blink, "engine": engine,
+        "pose": a.pose, "turns": turns,
         "frames": n, "onsets": an["onsets"], "vowels": an["vowels"],
         "mouth_changes": len(runs) - 1, "shut_frames": track.count("CLOSED"),
         "char_width": a.char_width, "char_top": a.char_top,

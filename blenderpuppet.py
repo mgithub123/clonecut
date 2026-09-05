@@ -120,6 +120,59 @@ def _material(name: str, img, matte=None, canvas=None, bbox=None, opacity=None):
     return mat
 
 
+def _plane(scene, name, bbox, z, file, crop=None, plate_size=None, matte=None, opacity=None):
+    """One textured plane at a canvas box. Eevee sorts blended surfaces by object
+    origin, not per pixel, so every plane gets its own origin at its own depth;
+    with all origins at the world origin the stack came out in arbitrary order."""
+    x0, y0, x1, y1 = bbox
+    cx, cy = (x0 + x1 + 1) / 2.0, -(y0 + y1 + 1) / 2.0
+    verts = [(x0 - cx, -y0 - cy, 0.0), (x1 + 1 - cx, -y0 - cy, 0.0),
+             (x1 + 1 - cx, -(y1 + 1) - cy, 0.0), (x0 - cx, -(y1 + 1) - cy, 0.0)]
+    mesh = bpy.data.meshes.new(name)
+    mesh.from_pydata(verts, [], [(0, 1, 2, 3)])
+    uv = mesh.uv_layers.new(name="UVMap")
+    u0, v0, u1, v1 = 0.0, 0.0, 1.0, 1.0
+    if crop and plate_size:
+        pw, ph = plate_size
+        cx0, cy0, cx1, cy1 = crop
+        u0, u1 = cx0 / pw, (cx1 + 1) / pw
+        v1, v0 = 1.0 - cy0 / ph, 1.0 - (cy1 + 1) / ph
+    for loop, co in zip(mesh.loops, [(u0, v1), (u1, v1), (u1, v0), (u0, v0)]):
+        uv.data[loop.index].uv = co
+    mesh.update()
+    obj = bpy.data.objects.new(name, mesh)
+    obj.location = (cx, cy, z)
+    scene.collection.objects.link(obj)
+    img = bpy.data.images.load(file)
+    img.alpha_mode = "STRAIGHT"
+    obj.data.materials.append(_material(obj.name, img, matte, None, bbox, opacity))
+    return obj
+
+
+def _bind(obj, arm, bone, bones):
+    if bone and bone in bones:
+        vg = obj.vertex_groups.new(name=bone)
+        vg.add(list(range(4)), 1.0, "REPLACE")
+        mod = obj.modifiers.new("puppet", "ARMATURE")
+        mod.object = arm
+
+
+def _visibility(obj, visible, n):
+    """Key hide_render per frame from a list of booleans (index 0 = frame 1).
+    Only changes are keyed, so a sprite shown for one frame costs two keys."""
+    if visible is None:
+        return
+    prev = None
+    for f in range(n):
+        v = bool(visible[f]) if f < len(visible) else bool(visible[-1])
+        if v != prev:
+            obj.hide_render = not v
+            obj.hide_viewport = not v
+            obj.keyframe_insert("hide_render", frame=f + 1)
+            obj.keyframe_insert("hide_viewport", frame=f + 1)
+            prev = v
+
+
 def build(job: dict) -> dict:
     scene = bpy.context.scene
     out_dir = Path(job["out_dir"])
@@ -176,41 +229,17 @@ def build(job: dict) -> dict:
             eb[key].use_connect = False
     bpy.ops.object.mode_set(mode="OBJECT")
 
+    layer_objects = []
     for lay in job["layers"]:
-        x0, y0, x1, y1 = lay["bbox"]
-        z = lay["z"] * Z_STEP
-        # Eevee sorts blended surfaces by object origin, not per pixel, so every
-        # plane gets its own origin at its own depth; with all origins at the
-        # world origin the stack came out in arbitrary order.
-        cx, cy = (x0 + x1 + 1) / 2.0, -(y0 + y1 + 1) / 2.0
-        verts = [(x0 - cx, -y0 - cy, 0.0), (x1 + 1 - cx, -y0 - cy, 0.0),
-                 (x1 + 1 - cx, -(y1 + 1) - cy, 0.0), (x0 - cx, -(y1 + 1) - cy, 0.0)]
-        mesh = bpy.data.meshes.new(lay["name"])
-        mesh.from_pydata(verts, [], [(0, 1, 2, 3)])
-        uv = mesh.uv_layers.new(name="UVMap")
-        u0, v0, u1, v1 = 0.0, 0.0, 1.0, 1.0
-        if lay.get("crop") and lay.get("plate_size"):
-            pw, ph = lay["plate_size"]
-            cx0, cy0, cx1, cy1 = lay["crop"]
-            u0, u1 = cx0 / pw, (cx1 + 1) / pw
-            v1, v0 = 1.0 - cy0 / ph, 1.0 - (cy1 + 1) / ph
-        for loop, co in zip(mesh.loops, [(u0, v1), (u1, v1), (u1, v0), (u0, v0)]):
-            uv.data[loop.index].uv = co
-        mesh.update()
-        obj = bpy.data.objects.new(f"{lay['id']}-{lay['name']}", mesh)
-        obj.location = (cx, cy, z)
-        scene.collection.objects.link(obj)
-        img = bpy.data.images.load(lay["file"])
-        img.alpha_mode = "STRAIGHT"
-        obj.data.materials.append(_material(obj.name, img, lay.get("matte"), job.get("canvas"), lay["bbox"], lay.get("opacity")))
-        bone = lay["bone"] if lay["bone"] in bones else None
-        if bone:
-            vg = obj.vertex_groups.new(name=bone)
-            vg.add(list(range(4)), 1.0, "REPLACE")
-            mod = obj.modifiers.new("puppet", "ARMATURE")
-            mod.object = arm
+        obj = _plane(scene, f"{lay['id']}-{lay['name']}", lay["bbox"], lay["z"] * Z_STEP, lay["file"],
+                     lay.get("crop"), lay.get("plate_size"), lay.get("matte"), lay.get("opacity"))
+        _bind(obj, arm, lay["bone"], bones)
+        layer_objects.append(obj)
 
-    # animation: {bone: {"location": [[frame, dx, dy]], "rotation": [[frame, deg]]}}
+    # animation: {bone: {"location": [[frame, dx, dy]], "rotation": [[frame, deg]],
+    #                    "scale": [[frame, sx, sy]]}}. Keys are whatever frames the
+    # caller gives; act.py gives every frame, so the curves it computed are what
+    # renders, and they are still there to nudge in the graph editor.
     for key, tracks in (job.get("animation") or {}).items():
         if key not in arm.pose.bones:
             continue
@@ -222,14 +251,39 @@ def build(job: dict) -> dict:
         for frame, deg in tracks.get("rotation", []):
             pb.rotation_euler = (0.0, 0.0, math.radians(float(deg)))
             pb.keyframe_insert("rotation_euler", frame=int(frame))
+        for frame, sx, sy in tracks.get("scale", []):
+            pb.scale = (float(sx), float(sy), 1.0)
+            pb.keyframe_insert("scale", frame=int(frame))
     ease = job.get("easing")
-    if ease and arm.animation_data and arm.animation_data.action:
+    if arm.animation_data and arm.animation_data.action:
         for fc in _fcurves(arm.animation_data.action):
             for kp in fc.keyframe_points:
-                kp.interpolation = ease.get("interpolation", "BEZIER")
-                kp.easing = ease.get("easing", "AUTO")
-                if "back" in ease:
-                    kp.back = float(ease["back"])
+                if ease:
+                    kp.interpolation = ease.get("interpolation", "BEZIER")
+                    kp.easing = ease.get("easing", "AUTO")
+                    if "back" in ease:
+                        kp.back = float(ease["back"])
+                else:
+                    kp.interpolation = "LINEAR"
+
+    # Sprites: extra planes - mouth shapes, pose plates, pupils - each with a
+    # per-frame visibility list. A sprite is placed at its canvas box, bound to
+    # a bone, and shown only on the frames its list says.
+    for sp in job.get("sprites") or []:
+        obj = _plane(scene, sp["name"], sp["bbox"], float(sp["z"]) * Z_STEP, sp["file"],
+                     sp.get("crop"), sp.get("plate_size"), None, sp.get("opacity"))
+        _bind(obj, arm, sp.get("bone"), bones)
+        _visibility(obj, sp.get("visible"), n)
+    # When a frame shows a pose plate instead of the layer stack, the layers hide.
+    hide_layers = job.get("hide_layers")
+    if hide_layers:
+        for obj in layer_objects:
+            _visibility(obj, [not h for h in hide_layers], n)
+
+    # Camera push: ortho scale per frame, framing kept on the crop's centre.
+    for frame, zoom in job.get("camera_zoom") or []:
+        cam_data.ortho_scale = float(max(cw, ch)) / float(zoom)
+        cam_data.keyframe_insert("ortho_scale", frame=int(frame))
 
     out_dir.mkdir(parents=True, exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=str(out_dir / "puppet.blend"))
