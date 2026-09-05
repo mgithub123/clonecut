@@ -40,9 +40,14 @@ DIALS = {
     "shadow_gain": 1.0,         # multiplier on the character's far side
     "light_warmth": [1.0, 1.0, 1.0],  # RGB multipliers on the lit side only
     "rain_shadow": 0.0,         # 0 none .. 1 the rain's streaks fully darken the face
+    "zoom": 1.0,                # 1 the whole frame .. 3 tight on the face; the character is
+                                # drawn larger, not upscaled from the finished frame
+    "zoom_centre": [0.5, 0.46], # what the zoom closes on, as fractions of the frame: the
+                                # doctor's eyes and mouth at the default framing
 }
 LIGHT_RAMP = (0.2, 0.85)        # where across the character the light falls off, 0..1
 VIGNETTE_START = 0.35           # distance from centre (in half-frames) where it begins
+CAPTION_ZOOM_MAX = 1.05         # the caption stays off while the zoom is tighter than this
 VIGNETTE_CENTRE_Y = 0.45        # the vignette's centre, as a fraction of height
 RAIN_BLUR_PX = 3                # the rain is out of focus by the time it lands on him
 
@@ -173,3 +178,18 @@ def describe(look: dict | None) -> dict | None:
     return {"name": look.get("name") or Path(look["_path"]).stem, "path": common.rel(Path(look["_path"])),
             "sha256": common.file_hash(Path(look["_path"])),
             "dials": {k: v for k, v in look.items() if k in DIALS}}
+
+
+def window(d: dict, size: tuple[int, int]) -> tuple[float, float, float] | None:
+    """The zoom as (x0, y0, z): the top-left of the visible window in unzoomed
+    frame pixels and the scale, or None at zoom 1. The window is clamped inside
+    the frame so the edges never show."""
+    z = float(d["zoom"])
+    if z <= 1.0 + 1e-6:
+        return None
+    W, H = size
+    cx, cy = d["zoom_centre"][0] * W, d["zoom_centre"][1] * H
+    w, h = W / z, H / z
+    x0 = min(max(0.0, cx - w / 2), W - w)
+    y0 = min(max(0.0, cy - h / 2), H - h)
+    return x0, y0, z

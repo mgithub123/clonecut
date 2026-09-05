@@ -1478,6 +1478,22 @@ def _():
     for p in sorted(look.LOOKS_DIR.glob("*.json")):
         look.load(p)          # every shipped look names only real dials
 
+
+@check("a zoom window closes on its centre, never shows past the frame edge, and is none at 1")
+def _():
+    import look
+    rest = look.at(None, 0)
+    assert look.window(rest, (1080, 1920)) is None
+    d = dict(rest, zoom=2.0, zoom_centre=[0.5, 0.2])
+    x0, y0, z = look.window(d, (1080, 1920))
+    assert (x0, y0, z) == (270.0, 0.0, 2.0), (x0, y0, z)        # centre y at 384 would start above 0: clamped
+    d = dict(rest, zoom=2.0, zoom_centre=[0.9, 0.9])
+    x0, y0, z = look.window(d, (1080, 1920))
+    assert x0 == 540.0 and y0 == 960.0, (x0, y0)                # clamped to the far corner
+    d = dict(rest, zoom=3.0, zoom_centre=[0.5, 0.5])
+    x0, y0, z = look.window(d, (1080, 1920))
+    assert x0 == 360.0 and y0 == 640.0, (x0, y0)
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

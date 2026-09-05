@@ -564,16 +564,40 @@ def composite(frames: list[Path], *, bg: Image.Image | None, rain: bool, text: s
                 canvas.alpha_composite(rain_im)
         else:
             canvas = Image.new("RGBA", (W, H), (0x12, 0x12, 0x14, 255))
-        im = Image.open(p).crop((x0, y0, x1, y1)).resize(
-            (int(cw * scale), int(ch * scale)), Image.LANCZOS)
-        at = ((W - im.width) // 2, char_top)
+        # A zoom draws the character larger from its source frame rather than
+        # blowing up the finished picture, so a tight start stays sharp. The
+        # background and rain are resampled from the window; they are soft and
+        # dark by then anyway.
+        win = lookmod.window(dials, (W, H))
+        if win:
+            wx0, wy0, z = win
+            base_w, base_h = int(cw * scale), int(ch * scale)
+            base_at = ((W - base_w) // 2, char_top)
+            canvas = canvas.crop((int(round(wx0)), int(round(wy0)),
+                                  int(round(wx0 + W / z)), int(round(wy0 + H / z)))).resize((W, H), Image.LANCZOS)
+            if rain_im is not None:
+                rain_im = rain_im.crop((int(round(wx0)), int(round(wy0)),
+                                        int(round(wx0 + W / z)), int(round(wy0 + H / z)))).resize((W, H), Image.LANCZOS)
+            im = Image.open(p).crop((x0, y0, x1, y1)).resize(
+                (max(1, int(base_w * z)), max(1, int(base_h * z))), Image.LANCZOS)
+            at = (int(round((base_at[0] - wx0) * z)), int(round((base_at[1] - wy0) * z)))
+        else:
+            im = Image.open(p).crop((x0, y0, x1, y1)).resize(
+                (int(cw * scale), int(ch * scale)), Image.LANCZOS)
+            at = ((W - im.width) // 2, char_top)
         shadow = None
         if rain_im is not None and dials["rain_shadow"] > 0:
-            shadow = lookmod.rain_shadow_mask(rain_im, (at[0], at[1], at[0] + im.width, at[1] + im.height))
+            full = Image.new("L", (W, H), 0)
+            full.paste(rain_im.split()[3], (0, 0))
+            box = (at[0], at[1], at[0] + im.width, at[1] + im.height)
+            pad = Image.new("RGBA", (max(W, box[2]) - min(0, box[0]), max(H, box[3]) - min(0, box[1])), (0, 0, 0, 0))
+            pad.paste(rain_im, (-min(0, box[0]), -min(0, box[1])))
+            shadow = lookmod.rain_shadow_mask(pad, (box[0] - min(0, box[0]), box[1] - min(0, box[1]),
+                                                    box[2] - min(0, box[0]), box[3] - min(0, box[1])))
         im = lookmod.light(im, dials, shadow)
         canvas.alpha_composite(im, at)
         rgbc = lookmod.vignette(canvas.convert("RGB"), dials["vignette"])
-        if text:
+        if text and dials["zoom"] <= lookmod.CAPTION_ZOOM_MAX:
             d = ImageDraw.Draw(rgbc)
             tw = d.textlength(text, font=fnt)
             d.text(((W - tw) / 2, text_y), text, font=fnt, fill=(235, 235, 235))
