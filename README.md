@@ -632,6 +632,27 @@ curves are still there to nudge in the graph editor:
 Tears and hand gestures are not on the Blender path yet and fall back to the
 Pillow engine when asked for. The doctor's nine-second shot renders in 24s.
 
+### 8d — The look: lighting and background
+
+```bash
+uv run perform.py --rig doctor ... --look window-cold-to-warm
+```
+
+A cutout on a photo is evenly lit, and evenly lit reads as a sticker. `look.py`
+is the finishing path's lighting, applied per frame in `perform.composite()`:
+a grade on the background (saturation, brightness, tint), a directional light
+across the character (a lit edge with its own warmth, a shadow edge), the
+rain's shadow drifting down the face (the rain layer's alpha, blurred,
+multiplied into the character), and a vignette over the finished frame. Every
+dial is a number or a list of `[seconds, value]` keys interpolated over the
+shot, so the light can move with the song. Looks live as JSON under
+`assets/looks/`; `montage.py` takes one per shot. A look that sets nothing is
+the picture untouched, pixel for pixel, and there is a check for that.
+
+Two shipped for the chorus: `window-cold-to-warm` (cold, dim, hard side light
+and rain on the face through the wish lines, the room warming as the hook
+lands) and `window-warm-to-cold` (the reverse).
+
 ### 8c — Performance capture from a phone video
 
 ```bash

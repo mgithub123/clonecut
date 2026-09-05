@@ -1,0 +1,13 @@
+{
+  "name": "window-warm-to-cold",
+  "note": "The reverse: a warm, close room through the wish lines, going cold and dark as the hook lands at 19s and the rain takes the face.",
+  "saturation": [[0, 0.9], [17, 0.9], [21, 0.6]],
+  "brightness": [[0, 0.85], [17, 0.85], [21, 0.6]],
+  "tint": [[0, [1.05, 0.98, 0.92]], [17, [1.05, 0.98, 0.92]], [21, [0.82, 0.9, 1.15]]],
+  "vignette": [[0, 0.35], [21, 0.6]],
+  "light_side": -1,
+  "light_gain": 1.06,
+  "shadow_gain": [[0, 0.75], [17, 0.75], [21, 0.4]],
+  "light_warmth": [[0, [1.1, 1.0, 0.88]], [17, [1.1, 1.0, 0.88]], [21, [0.9, 0.96, 1.1]]],
+  "rain_shadow": [[0, 0.2], [17, 0.2], [21, 0.65]]
+}

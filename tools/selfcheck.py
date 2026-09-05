@@ -1434,6 +1434,50 @@ def _():
     y, p, r = capture._head_angles(rot("x", 10))
     assert abs(r - 10) < 1e-6, (y, p, r)
 
+
+@check("a look's dials interpolate between keys and hold past the ends")
+def _():
+    import look
+    cfg = {"brightness": [[2, 0.5], [6, 1.0]], "tint": [[0, [1, 1, 1]], [4, [0.5, 1, 2]]], "vignette": 0.3}
+    assert look.at(cfg, 0)["brightness"] == 0.5 and look.at(cfg, 10)["brightness"] == 1.0
+    assert abs(look.at(cfg, 4)["brightness"] - 0.75) < 1e-9
+    assert look.at(cfg, 2)["tint"] == [0.75, 1.0, 1.5], look.at(cfg, 2)["tint"]
+    assert look.at(cfg, 9)["vignette"] == 0.3 and look.at(None, 3)["light_side"] == 0.0
+    assert look.is_flat(look.at(None, 0)) and not look.is_flat(look.at(cfg, 0))
+
+
+@check("a flat look leaves the picture untouched, and each dial moves what it says")
+def _():
+    import look
+    from PIL import Image
+    rng = np.random.default_rng(5)
+    bg = Image.fromarray(rng.integers(40, 220, (64, 48, 3), dtype=np.uint8))
+    rest = look.at(None, 0)
+    assert np.array_equal(np.asarray(look.grade(bg, rest)), np.asarray(bg))
+    assert np.array_equal(np.asarray(look.vignette(bg, 0.0)), np.asarray(bg))
+    char = Image.new("RGBA", (40, 30), (200, 200, 200, 255))
+    assert np.array_equal(np.asarray(look.light(char, rest)), np.asarray(char))
+    d = dict(rest, light_side=-1.0, light_gain=1.0, shadow_gain=0.5)
+    lit = np.asarray(look.light(char, d)).astype(int)
+    assert lit[15, 2, 0] > lit[15, 37, 0], "lit from the left, yet the left is not brighter"
+    assert lit[15, 2, 3] == 255 and lit[15, 37, 3] == 255, "lighting changed alpha"
+    d = dict(rest, light_side=1.0, light_gain=1.0, shadow_gain=0.5)
+    lit = np.asarray(look.light(char, d)).astype(int)
+    assert lit[15, 37, 0] > lit[15, 2, 0], "lit from the right, yet the right is not brighter"
+    v = np.asarray(look.vignette(bg, 1.0)).astype(int)
+    assert v[0, 0].sum() < np.asarray(bg)[0, 0].astype(int).sum(), "corner not darkened"
+    cy, cx = int(64 * look.VIGNETTE_CENTRE_Y), 24
+    assert v[cy, cx].sum() == np.asarray(bg)[cy, cx].astype(int).sum(), "centre was darkened"
+    g = np.asarray(look.grade(bg, dict(rest, saturation=0.0))).astype(int)
+    assert (g.max(axis=2) - g.min(axis=2)).max() <= 1, "saturation 0 did not grey the picture"
+    try:
+        look.load(config.ROOT / "does-not-exist.json")
+        raise AssertionError("a missing look was accepted")
+    except common.ToolError:
+        pass
+    for p in sorted(look.LOOKS_DIR.glob("*.json")):
+        look.load(p)          # every shipped look names only real dials
+
 def main() -> int:
     failures = 0
     for name, fn in CHECKS:

@@ -515,7 +515,7 @@ def fit_background(path: Path) -> Image.Image:
 # ------------------------------------------------------------------ finish
 
 def composite(frames: list[Path], *, bg: Image.Image | None, rain: bool, text: str,
-              char_width: int, char_top: int, out_dir: Path) -> list[Path]:
+              char_width: int, char_top: int, out_dir: Path, look_cfg: dict | None = None) -> list[Path]:
     """Character frames -> finished 1080x1920 RGB frames. No audio, no encode.
 
     Split out from finish() so a montage can concatenate several shots and lay the
@@ -549,20 +549,30 @@ def composite(frames: list[Path], *, bg: Image.Image | None, rain: bool, text: s
     out_dir.mkdir(parents=True, exist_ok=True)
     written = []
     n = len(frames)
+    import look as lookmod
     for i, p in enumerate(frames):
+        dials = lookmod.at(look_cfg, i / FPS)
+        rain_im = None
         if bg is not None:
             z = 1.0 + 0.018 * (i / max(1, n - 1))
             bw, bh = int(W * z), int(H * z)
-            canvas = bg.resize((bw, bh), Image.LANCZOS).crop(
-                ((bw - W) // 2, (bh - H) // 2, (bw - W) // 2 + W, (bh - H) // 2 + H)).convert("RGBA")
+            frame_bg = bg.resize((bw, bh), Image.LANCZOS).crop(
+                ((bw - W) // 2, (bh - H) // 2, (bw - W) // 2 + W, (bh - H) // 2 + H))
+            canvas = lookmod.grade(frame_bg, dials).convert("RGBA")
             if rain:
-                canvas.alpha_composite(rain_layer(bg, i))
+                rain_im = rain_layer(bg, i)
+                canvas.alpha_composite(rain_im)
         else:
             canvas = Image.new("RGBA", (W, H), (0x12, 0x12, 0x14, 255))
         im = Image.open(p).crop((x0, y0, x1, y1)).resize(
             (int(cw * scale), int(ch * scale)), Image.LANCZOS)
-        canvas.alpha_composite(im, ((W - im.width) // 2, char_top))
-        rgbc = canvas.convert("RGB")
+        at = ((W - im.width) // 2, char_top)
+        shadow = None
+        if rain_im is not None and dials["rain_shadow"] > 0:
+            shadow = lookmod.rain_shadow_mask(rain_im, (at[0], at[1], at[0] + im.width, at[1] + im.height))
+        im = lookmod.light(im, dials, shadow)
+        canvas.alpha_composite(im, at)
+        rgbc = lookmod.vignette(canvas.convert("RGB"), dials["vignette"])
         if text:
             d = ImageDraw.Draw(rgbc)
             tw = d.textlength(text, font=fnt)
@@ -627,6 +637,8 @@ def main(argv=None) -> int:
                         "'frame:pose,frame:pose' explicitly; 'none' stays front-on")
     p.add_argument("--gesture", action="store_true",
                    help="change hand poses between sung lines (needs --pose)")
+    p.add_argument("--look", default=None,
+                   help="lighting and background over the shot: a name under assets/looks or a path")
     p.add_argument("--char-width", type=int, default=850)
     p.add_argument("--char-top", type=int, default=480)
     p.add_argument("--name", default="shot")
@@ -698,9 +710,13 @@ def main(argv=None) -> int:
         bg = fit_background(bp)
 
     out_dir = Path(a.out_dir) if a.out_dir else config.OUT_DIR
+    import look as lookmod
+    look_cfg = lookmod.load(a.look) if a.look else None
+    if look_cfg:
+        print(f"  look {look_cfg.get('name') or a.look}")
     comp = composite(frames, bg=bg, rain=a.rain, text=a.text,
                      char_width=a.char_width, char_top=a.char_top,
-                     out_dir=config.CACHE_DIR / f"comp-{a.rig}-{a.name}")
+                     out_dir=config.CACHE_DIR / f"comp-{a.rig}-{a.name}", look_cfg=look_cfg)
     if a.frames_only:
         print(f"wrote {len(comp)} frames to {common.rel(comp[0].parent)}")
         return 0
@@ -713,6 +729,7 @@ def main(argv=None) -> int:
         "duration": common.r3(a.duration), "track": a.track,
         "background": a.background, "rain": a.rain, "text": a.text,
         "tears": a.tears, "blink": not a.no_blink, "engine": engine,
+        "look": lookmod.describe(look_cfg),
         "pose": a.pose, "turns": turns, "gaze": a.gaze,
         "capture": (common.rel(Path(a.capture)) if a.capture else None),
         "capture_sha256": (common.file_hash(Path(a.capture)) if a.capture else None),

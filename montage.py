@@ -170,11 +170,13 @@ def render(doc: dict, shots: list[dict], out_dir: Path, name: str) -> Path:
                 raise ToolError(f"shot {i}: no background {sh['background']!r}")
             bg = perform.fit_background(bp)
 
+        import look as lookmod
         comp = perform.composite(frames, bg=bg, rain=bool(sh.get("rain")),
                                  text=sh.get("text", ""),
                                  char_width=int(sh.get("char_width", 705)),
                                  char_top=int(sh.get("char_top", 430)),
-                                 out_dir=config.CACHE_DIR / f"montage-{name}-comp{i}")
+                                 out_dir=config.CACHE_DIR / f"montage-{name}-comp{i}",
+                                 look_cfg=lookmod.load(sh["look"]) if sh.get("look") else None)
         all_frames.extend(comp)
 
     # Contiguous shots let the song play straight through; otherwise each shot

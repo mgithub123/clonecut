@@ -1,0 +1,13 @@
+{
+  "name": "window-cold-to-warm",
+  "note": "Cold, dim and hard-lit from the window through the wish lines; the room warms and opens as the hook lands at 19s. Times are for the chorus shot starting at 24.6s.",
+  "saturation": [[0, 0.65], [17, 0.65], [21, 0.95]],
+  "brightness": [[0, 0.7], [17, 0.7], [21, 0.9]],
+  "tint": [[0, [0.85, 0.92, 1.12]], [17, [0.85, 0.92, 1.12]], [21, [1.0, 0.98, 0.96]]],
+  "vignette": [[0, 0.55], [21, 0.4]],
+  "light_side": -1,
+  "light_gain": [[0, 1.08], [21, 1.05]],
+  "shadow_gain": [[0, 0.45], [17, 0.45], [21, 0.7]],
+  "light_warmth": [[0, [0.92, 0.97, 1.08]], [17, [0.92, 0.97, 1.08]], [21, [1.08, 1.0, 0.9]]],
+  "rain_shadow": [[0, 0.55], [17, 0.55], [21, 0.3]]
+}
