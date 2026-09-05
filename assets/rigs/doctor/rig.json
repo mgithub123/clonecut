@@ -1961,5 +1961,22 @@
         "coverage_mismatch_px": 1382
       }
     }
+  },
+  "props": {
+    "guitar": {
+      "at": [
+        1400,
+        1150
+      ],
+      "width": 900,
+      "angle": 14,
+      "strum": [
+        2210,
+        1330
+      ],
+      "hand": "Hand_Pick",
+      "strum_hand": "right",
+      "note": "render-resolution px. Slung low: the hands hang at y1097-1451 in pose 1, left blob x1529-1714 over the neck, right blob x2121-2304 over the strings. Drawn stand-in from props.py until a generated guitar is accepted under gen/props/GUITAR.png."
+    }
   }
 }
