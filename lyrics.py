@@ -69,7 +69,8 @@ def transcribe(vox: Path, start: float, dur: float, *, model: str = MODEL) -> li
     return out
 
 
-def align(segments: list[dict], lyrics: Path, start: float, dur: float) -> list[dict]:
+def align(segments: list[dict], lyrics: Path, start: float, dur: float,
+          *, drop_unmatched: bool = False) -> list[dict]:
     """Whisper's timings, the lyrics file's words.
 
     Each heard segment takes the written line it overlaps most, scanning forward so
@@ -92,8 +93,14 @@ def align(segments: list[dict], lyrics: Path, start: float, dur: float) -> list[
             score = len(heard & set(toks[i])) / max(len(toks[i]), 1)
             if score > best_score:
                 best, best_score = i, score
-        text = lines[best] if best is not None and best_score >= 0.5 else seg["text"]
-        if best is not None and best_score >= 0.5:
+        matched = best is not None and best_score >= 0.5
+        if not matched and drop_unmatched:
+            # a shot cut inside a song hears the tail of the line before it and
+            # the head of the one after; with the lyrics file limited to the
+            # lines the shot covers, an unmatched segment is one of those
+            continue
+        text = lines[best] if matched else seg["text"]
+        if matched:
             used = best + 1
         out.append({"start": max(seg["start"], start), "end": min(seg["end"], start + dur),
                     "text": text, "heard": seg["text"], "score": round(best_score, 2)})
@@ -182,6 +189,9 @@ def main(argv=None) -> int:
                    help=f"y of the first line (safe box starts at {cs.SAFE_Y0})")
     p.add_argument("--model", default=MODEL)
     p.add_argument("--out", default=None)
+    p.add_argument("--drop-unmatched", action="store_true",
+                   help="show nothing for a heard segment that matches no written line "
+                        "(the edges of a shot cut inside a song)")
     a = p.parse_args(argv)
 
     video = Path(a.video).expanduser()
@@ -203,7 +213,7 @@ def main(argv=None) -> int:
 
     print(f"transcribing the stem {a.start}s +{dur:.2f}s ({a.model})")
     segs = transcribe(vox, a.start, dur, model=a.model)
-    cues = align(segs, lyr, a.start, dur)
+    cues = align(segs, lyr, a.start, dur, drop_unmatched=a.drop_unmatched)
     for c in cues:
         flag = "" if c["score"] >= 0.5 else "   <- no line matched, showing what was heard"
         print(f"  {c['start']:6.2f}-{c['end']:6.2f}  {c['text']}{flag}")
